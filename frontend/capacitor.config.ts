@@ -5,12 +5,12 @@ const config: CapacitorConfig = {
   appName: 'Nisse',
   webDir: 'out',
   server: {
-    // Production API — all requests go directly to Railway backend
+    // Production API — all requests go directly to the api.nisse.io backend
     url: undefined, // Uses local files (static export)
     androidScheme: 'https',
     iosScheme: 'https',
     allowNavigation: [
-      'receptsida-production.up.railway.app',
+      'api.nisse.io',
     ],
   },
   plugins: {
