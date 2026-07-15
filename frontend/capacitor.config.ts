@@ -5,12 +5,13 @@ const config: CapacitorConfig = {
   appName: 'Nisse',
   webDir: 'out',
   server: {
-    // Production API — all requests go directly to the api.nisse.io backend
+    // Production API — same-origin under nisse.io/api (Vercel Services, one project)
     url: undefined, // Uses local files (static export)
     androidScheme: 'https',
     iosScheme: 'https',
     allowNavigation: [
-      'api.nisse.io',
+      'nisse.io',
+      'www.nisse.io',
     ],
   },
   plugins: {

@@ -18,9 +18,10 @@ function getApiUrl() {
     if (nativeUrl && !nativeUrl.includes('localhost')) {
       return nativeUrl;
     }
-    // Production backend (Vercel serverless project, Supabase database).
-    // Override per-build with NEXT_PUBLIC_NATIVE_API_URL if needed.
-    return 'https://api.nisse.io/api/v1';
+    // Production backend — same Vercel project as the web app (Vercel Services),
+    // reachable same-origin under nisse.io/api. Override per-build with
+    // NEXT_PUBLIC_NATIVE_API_URL if needed.
+    return 'https://nisse.io/api/v1';
   }
   return '/api/v1';
 }
