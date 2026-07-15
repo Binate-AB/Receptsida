@@ -8,6 +8,7 @@ import { config } from '../config/env.js';
 import { cacheGet, cacheSet } from '../config/redis.js';
 import { AppError } from '../middleware/errorHandler.js';
 import crypto from 'crypto';
+import { repairJSON } from '../utils/json-repair.js';
 
 const client = new Anthropic({
   apiKey: config.ANTHROPIC_API_KEY,
@@ -328,52 +329,6 @@ Svara ENBART med giltig JSON (ingen markdown, inga backticks):
       console.error('Raw text length:', rawText.length, '| stop_reason:', response.stop_reason);
       throw new Error('Failed to parse recipe JSON from AI response');
     }
-  }
-}
-
-/**
- * Attempt to repair common JSON issues from LLM output:
- * - Trailing commas: [1, 2,] or {"a": 1,}
- * - Truncated output: close unclosed brackets/braces
- */
-function repairJSON(str) {
-  // Strip trailing commas before } or ]
-  let repaired = str.replace(/,\s*([}\]])/g, '$1');
-
-  // If output was truncated (stop_reason=max_tokens), try to close brackets
-  try {
-    JSON.parse(repaired);
-    return repaired;
-  } catch {
-    // Count unclosed brackets/braces and close them
-    let braces = 0;
-    let brackets = 0;
-    let inString = false;
-    let escape = false;
-
-    for (const ch of repaired) {
-      if (escape) { escape = false; continue; }
-      if (ch === '\\' && inString) { escape = true; continue; }
-      if (ch === '"') { inString = !inString; continue; }
-      if (inString) continue;
-      if (ch === '{') braces++;
-      else if (ch === '}') braces--;
-      else if (ch === '[') brackets++;
-      else if (ch === ']') brackets--;
-    }
-
-    // Trim trailing incomplete value (e.g. truncated string or number)
-    repaired = repaired.replace(/,\s*"[^"]*$/, '');   // trailing incomplete key/string
-    repaired = repaired.replace(/,\s*\d+$/, '');       // trailing incomplete number
-    repaired = repaired.replace(/:\s*"[^"]*$/, ': ""'); // truncated string value
-    // Re-strip trailing commas
-    repaired = repaired.replace(/,\s*([}\]])/g, '$1');
-
-    repaired += ']'.repeat(Math.max(0, brackets)) + '}'.repeat(Math.max(0, braces));
-    // Final trailing-comma cleanup after bracket-closing
-    repaired = repaired.replace(/,\s*([}\]])/g, '$1');
-
-    return repaired;
   }
 }
 

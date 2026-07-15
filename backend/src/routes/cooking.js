@@ -62,7 +62,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const { recipe } = req.body;
     if (!recipe?.title || !recipe?.steps?.length) {
-      throw new AppError('Recipe with title and steps is required', 400);
+      throw new AppError(400, 'invalid_recipe', 'Recept med titel och steg krävs.');
     }
 
     evictExpired();
@@ -96,7 +96,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const session = touchSession(req.params.id);
     if (!session) {
-      throw new AppError('Cooking session not found or expired', 404);
+      throw new AppError(404, 'session_not_found', 'Matlagningssessionen hittades inte eller har gått ut.');
     }
 
     const { question, context } = req.validated;
@@ -143,7 +143,7 @@ router.patch(
   asyncHandler(async (req, res) => {
     const session = touchSession(req.params.id);
     if (!session) {
-      throw new AppError('Cooking session not found or expired', 404);
+      throw new AppError(404, 'session_not_found', 'Matlagningssessionen hittades inte eller har gått ut.');
     }
 
     const { currentStep, timers } = req.body;
@@ -183,7 +183,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const session = touchSession(req.params.id);
     if (!session) {
-      throw new AppError('Cooking session not found or expired', 404);
+      throw new AppError(404, 'session_not_found', 'Matlagningssessionen hittades inte eller har gått ut.');
     }
 
     res.json({
