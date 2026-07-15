@@ -1,6 +1,10 @@
 # Nisse MVP — Genomförandeplan
 
-> Status: levande dokument under bygget på branch `claude/nisse-kitchen-assistant-t7nz31`.
+> Status: **MVP-leveransen klar** på branch `claude/nisse-kitchen-assistant-t7nz31` — alla 12 steg ✅.
+> Definition of Done (§28) verifierad end-to-end 2026-07-15: hushåll med 2 vuxna + 2 barn (glutenallergi)
+> → fritext-solve → 3 förslag utan allergiöverträdelser → gren-recept accepterat → inköpslista (6 varor per hylla)
+> → guidad session med 3 lanes och timers → rescue ("för tunn sås") → slutförd → feedback → nästa solve
+> rankar rätten högre med "uppskattad förra gången". Legacy-sök/veckoplanerare/cooking regressionstestade.
 > Bakgrund och risker: se `docs/NISSE_PRODUCT_AND_TECH_AUDIT.md`.
 
 ## Mål
@@ -36,7 +40,7 @@ rekommendation. (Masterprompt §28, Definition of Done.)
 | 8 | Frontend: Inköpslista | `/inkop`: hyllgrupper, nödvändigt/valfritt, "har troligen hemma", kostnad, avbockning | Checks persisterar via PATCH | ✅ |
 | 9 | Guidad matlagning v2 | `CookingSession` + migration; `routes/cook-sessions.js` (start/get/patch/ask/rescue); `templateToLegacyRecipe`-adapter; `CookingMode` session-prop + `BranchSwitcher` + `RescueSheet`; `/cooking?session=` | Gren-recept visar Gemensamt/Barnens/Vuxnas; "det bränns" ger kontextuell fix (canned utan AI); stegposition överlever reload | ✅ |
 | 10 | Feedback + analys | `MealFeedback` + `AnalyticsEvent` + migration; feedback-endpoint + `FeedbackSheet`; `/events`; feedback-signaler in i rankern | Betyg lyfter mall vid nästa solve; `avoid` utesluter; funnel-events i DB | ✅ |
-| 11 | Härdning | Rate limit på solve; Redis-cache för AI-parse; full testkörning; manuell regression av legacy-flöden; docs färdiga | DoD §28 passerar end-to-end | ⬜ |
+| 11 | Härdning | Rate limit på solve; Redis-cache för AI-parse; full testkörning; manuell regression av legacy-flöden; docs färdiga | DoD §28 passerar end-to-end | ✅ |
 
 ## Beroenden
 

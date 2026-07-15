@@ -13,6 +13,8 @@ import { callStructured, aiAvailable, AiOutputError } from './client.js';
 import { deterministicParse } from '../engine/chipsParse.js';
 import { rescueFallback } from '../engine/rescueFallbacks.js';
 import { canonicalIngredient } from '../engine/normalize.js';
+import { cacheGet, cacheSet } from '../../../config/redis.js';
+import crypto from 'crypto';
 
 /**
  * Parse tonight's situation.
@@ -31,6 +33,15 @@ export async function parseMealSituation(rawText, chips, householdSummary) {
   if (!rawText || !aiAvailable()) {
     return { parsed: baseline, source: 'chips_fallback', confidence: null };
   }
+
+  // Cache identical situations (text + chips + member set) for 1h
+  const cacheKey = 'nisse:parse:' + crypto
+    .createHash('sha256')
+    .update(JSON.stringify({ rawText: rawText.trim().toLowerCase(), chips, m: (householdSummary?.members || []).map((x) => x.id).sort() }))
+    .digest('hex')
+    .slice(0, 24);
+  const cached = await cacheGet(cacheKey);
+  if (cached) return cached;
 
   try {
     const prompt = PROMPTS.mealParse;
@@ -64,7 +75,9 @@ export async function parseMealSituation(rawText, chips, householdSummary) {
       avoidIngredients: (data.avoidIngredients || []).map((n) => canonicalIngredient(n)),
     };
 
-    return { parsed, source: 'ai', confidence: data.confidence };
+    const result = { parsed, source: 'ai', confidence: data.confidence };
+    await cacheSet(cacheKey, result, 3600);
+    return result;
   } catch (err) {
     if (!(err instanceof AiOutputError)) {
       console.error('mealParse AI call failed:', err.message);

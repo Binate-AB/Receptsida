@@ -12,6 +12,7 @@
 import { Router } from 'express';
 import { prisma } from '../config/db.js';
 import { requireAuth } from '../middleware/auth.js';
+import { dinnerSolveRateLimit } from '../middleware/rateLimit.js';
 import { validate, solveDinnerSchema, alternativeSchema } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
@@ -166,6 +167,7 @@ function recommendationResponse({ rec, template, computed }) {
 router.post(
   '/solve',
   requireAuth,
+  dinnerSolveRateLimit,
   validate(solveDinnerSchema),
   asyncHandler(async (req, res) => {
     const { rawText, chips } = req.validated;
