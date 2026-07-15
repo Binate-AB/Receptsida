@@ -23,6 +23,8 @@ import locationRoutes from './routes/locations.js';
 import mealPlanRoutes from './routes/meal-plans.js';
 import cookingRoutes from './routes/cooking.js';
 import householdRoutes from './routes/households.js';
+import dinnerRoutes from './routes/dinner.js';
+import shoppingListRoutes from './routes/shopping-lists.js';
 
 const app = express();
 
@@ -78,6 +80,8 @@ app.use('/api/v1/locations', locationRoutes);
 app.use('/api/v1/meal-plans', mealPlanRoutes);
 app.use('/api/v1/cooking', cookingRoutes);
 app.use('/api/v1/households', householdRoutes);
+app.use('/api/v1/dinner', dinnerRoutes);
+app.use('/api/v1/shopping-lists', shoppingListRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {

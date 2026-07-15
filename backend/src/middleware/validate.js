@@ -246,3 +246,43 @@ export const inventoryBulkSchema = z.object({
     )
     .max(200, 'Max 200 varor'),
 });
+
+// ──────────────────────────────────────────
+// Nisse — Dinner solver schemas
+// ──────────────────────────────────────────
+
+const dinnerChipsSchema = z.object({
+  timeBudgetMin: z.number().int().min(10).max(240).optional(),
+  energy: z.enum(['slut', 'låg', 'normal', 'inspirerad']).optional(),
+  budget: z.enum(['snålt', 'normal', 'flexibelt']).optional(),
+  eaterIds: z.array(z.string().min(1)).max(20).optional(),
+  occasion: z.enum(['vardag', 'helg', 'gäster', 'matlådor']).optional(),
+  wantsLeftovers: z.boolean().optional(),
+});
+
+export const solveDinnerSchema = z
+  .object({
+    rawText: z.string().min(3).max(500).optional(),
+    chips: dinnerChipsSchema.optional(),
+  })
+  .refine((data) => data.rawText || data.chips, {
+    message: 'Beskriv kvällen eller använd snabbvalen.',
+  });
+
+export const alternativeSchema = z.object({
+  direction: z.enum(['enklare', 'billigare', 'barnvänligare']),
+  excludeTemplateIds: z.array(z.string()).max(20).optional().default([]),
+});
+
+// ──────────────────────────────────────────
+// Nisse — Shopping list schemas
+// ──────────────────────────────────────────
+
+export const updateListItemSchema = z.object({
+  checked: z.boolean().optional(),
+  necessary: z.boolean().optional(),
+});
+
+export const updateListStatusSchema = z.object({
+  status: z.enum(['ACTIVE', 'DONE']),
+});
