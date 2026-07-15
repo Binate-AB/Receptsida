@@ -154,41 +154,40 @@ app.use(errorHandler);
 // ──────────────────────────────────────────
 
 async function start() {
-  try {
-    // Connect Redis (optional)
-    if (redis) {
-      try {
-        await redis.connect();
-        console.log('✅ Redis connected');
-      } catch (err) {
-        console.warn('⚠️ Redis connection failed, continuing without cache:', err.message);
-      }
-    }
+  // Start listening first so the platform detects the HTTP server immediately
+  // (Vercel's Node runtime discovers a service by its listen() call) and
+  // /api/health can report status even if a dependency is degraded.
+  app.listen(config.PORT, '0.0.0.0', () => {
+    console.log(`\n🍳 Nisse API running on port ${config.PORT}`);
+    console.log(`   Environment: ${config.NODE_ENV}`);
+    console.log(`   Health:      http://localhost:${config.PORT}/api/health`);
+    console.log(`   CORS origin: ${config.CORS_ORIGIN}\n`);
+  });
 
-    // Verify DB connection
+  // Connect dependencies best-effort. Redis is optional (fail-open), and
+  // Prisma also connects lazily on first query — so a failed startup connect
+  // must never take the server down (the health check reports DB status).
+  if (redis) {
+    try {
+      await redis.connect();
+      console.log('✅ Redis connected');
+    } catch (err) {
+      console.warn('⚠️ Redis connection failed, continuing without cache:', err.message);
+    }
+  }
+
+  try {
     await prisma.$connect();
     console.log('✅ Database connected');
-
-    // Start Express
-    app.listen(config.PORT, '0.0.0.0', () => {
-      console.log(`\n🍳 Nisse API running on port ${config.PORT}`);
-      console.log(`   Environment: ${config.NODE_ENV}`);
-      console.log(`   Health:      http://localhost:${config.PORT}/api/health`);
-      console.log(`   CORS origin: ${config.CORS_ORIGIN}\n`);
-    });
   } catch (err) {
-    console.error('❌ Failed to start server:', err);
-    process.exit(1);
+    console.error('⚠️ Database connection failed at startup (will retry on demand):', err.message);
   }
 }
 
-// On Vercel (serverless) we don't listen on a port — the Express app is
-// exported as the function handler (see api/index.js) and Prisma connects
-// lazily on first query. Everywhere else (local, Railway, any Node host)
-// we start the HTTP server normally.
-if (!process.env.VERCEL) {
-  start();
-}
+// Always start the HTTP server. Vercel's Node runtime (Services) detects the
+// backend by its listen() call, and every other host (local, any Node host)
+// needs it too. `config.PORT` reads process.env.PORT, which Vercel provides.
+start();
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
