@@ -22,6 +22,7 @@ import gdprRoutes from './routes/gdpr.js';
 import locationRoutes from './routes/locations.js';
 import mealPlanRoutes from './routes/meal-plans.js';
 import cookingRoutes from './routes/cooking.js';
+import householdRoutes from './routes/households.js';
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use('/api/v1/gdpr', gdprRoutes);
 app.use('/api/v1/locations', locationRoutes);
 app.use('/api/v1/meal-plans', mealPlanRoutes);
 app.use('/api/v1/cooking', cookingRoutes);
+app.use('/api/v1/households', householdRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {

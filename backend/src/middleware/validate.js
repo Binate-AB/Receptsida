@@ -208,3 +208,41 @@ export const suggestRecipesSchema = z.object({
     .enum(['frukost', 'lunch', 'middag', 'dessert', 'mellanmål'])
     .optional(),
 });
+
+// ──────────────────────────────────────────
+// Nisse — Household schemas
+// ──────────────────────────────────────────
+
+import { ALLERGEN_CODES, DIETARY_RESTRICTIONS, EQUIPMENT_CODES } from '../services/nisse/engine/allergens.js';
+
+export const upsertHouseholdSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  cookingSkill: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).optional(),
+  equipment: z.array(z.enum(EQUIPMENT_CODES)).max(20).optional(),
+});
+
+export const householdMemberSchema = z.object({
+  name: z.string().min(1, 'Namn krävs').max(100),
+  ageCategory: z.enum(['BABY', 'CHILD', 'TEEN', 'ADULT', 'SENIOR']).optional().default('ADULT'),
+  allergies: z.array(z.enum(ALLERGEN_CODES)).max(12).optional().default([]),
+  dietaryRestrictions: z.array(z.enum(DIETARY_RESTRICTIONS)).max(5).optional().default([]),
+  dislikedIngredients: z.array(z.string().min(1).max(50)).max(30).optional().default([]),
+  spiceTolerance: z.enum(['NONE', 'MILD', 'MEDIUM', 'HOT']).optional().default('MEDIUM'),
+  portionFactor: z.number().min(0.25).max(3).optional(),
+  isDefaultPresent: z.boolean().optional().default(true),
+});
+
+export const updateHouseholdMemberSchema = householdMemberSchema.partial();
+
+export const inventoryBulkSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        name: z.string().min(1, 'Varunamn krävs').max(100),
+        quantity: z.number().positive().max(100000).optional(),
+        unit: z.string().max(20).optional(),
+        expiresAt: z.string().datetime().optional(),
+      })
+    )
+    .max(200, 'Max 200 varor'),
+});
