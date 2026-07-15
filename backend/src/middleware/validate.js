@@ -286,3 +286,62 @@ export const updateListItemSchema = z.object({
 export const updateListStatusSchema = z.object({
   status: z.enum(['ACTIVE', 'DONE']),
 });
+
+// ──────────────────────────────────────────
+// Nisse — Cook session schemas
+// ──────────────────────────────────────────
+
+export const startCookSessionSchema = z
+  .object({
+    recommendationId: z.string().min(1).optional(),
+    templateSlug: z.string().min(1).optional(),
+    branch: z.enum(['base', 'split']).optional().default('base'),
+    eaterIds: z.array(z.string()).max(20).optional(),
+  })
+  .refine((d) => d.recommendationId || d.templateSlug, {
+    message: 'recommendationId eller templateSlug krävs.',
+  });
+
+export const updateCookSessionSchema = z.object({
+  currentStepIndex: z.number().int().min(0).max(200).optional(),
+  branchState: z.record(z.number().int().min(0).max(200)).optional(),
+  status: z.enum(['ACTIVE', 'COMPLETED', 'ABANDONED']).optional(),
+});
+
+export const rescueRequestSchema = z.object({
+  problem: z.string().min(3, 'Beskriv problemet').max(300),
+});
+
+export const sessionAskSchema = z.object({
+  question: z.string().min(1, 'Ställ en fråga').max(500),
+  context: z.object({
+    currentStep: z.number().int().min(0).optional(),
+    activeTimers: z.array(z.object({
+      label: z.string(),
+      remaining_seconds: z.number(),
+    })).optional(),
+    inputMode: z.enum(['voice', 'text']).optional(),
+  }).optional().default({}),
+});
+
+export const mealFeedbackSchema = z.object({
+  cooked: z.boolean().optional().default(true),
+  actualTimeMin: z.number().int().min(1).max(600).optional(),
+  cookAgain: z.boolean().optional(),
+  avoid: z.boolean().optional().default(false),
+  comment: z.string().max(500).optional(),
+  memberRatings: z
+    .array(z.object({ memberId: z.string().min(1), rating: z.number().int().min(1).max(5) }))
+    .max(20)
+    .optional()
+    .default([]),
+});
+
+export const analyticsEventSchema = z.object({
+  name: z.enum([
+    'recommendation_viewed',
+    'cooking_step_viewed',
+    'voice_used',
+  ]),
+  payload: z.record(z.any()).optional(),
+});

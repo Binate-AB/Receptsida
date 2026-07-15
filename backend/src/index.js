@@ -25,6 +25,8 @@ import cookingRoutes from './routes/cooking.js';
 import householdRoutes from './routes/households.js';
 import dinnerRoutes from './routes/dinner.js';
 import shoppingListRoutes from './routes/shopping-lists.js';
+import cookSessionRoutes from './routes/cook-sessions.js';
+import eventRoutes from './routes/events.js';
 
 const app = express();
 
@@ -82,6 +84,8 @@ app.use('/api/v1/cooking', cookingRoutes);
 app.use('/api/v1/households', householdRoutes);
 app.use('/api/v1/dinner', dinnerRoutes);
 app.use('/api/v1/shopping-lists', shoppingListRoutes);
+app.use('/api/v1/cook-sessions', cookSessionRoutes);
+app.use('/api/v1/events', eventRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {
