@@ -65,6 +65,7 @@ export function Navbar() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             <NavLink href="/">Recept</NavLink>
+            <NavLink href="/middag">Lös middagen</NavLink>
             <NavLink href="/butiker">Butiker</NavLink>
             {user && (
               <>
@@ -170,6 +171,7 @@ export function Navbar() {
             >
               <div className="flex flex-col gap-1 py-3">
                 <MobileLink href="/" onClick={() => setMobileOpen(false)}>Recept</MobileLink>
+                <MobileLink href="/middag" onClick={() => setMobileOpen(false)}>Lös middagen</MobileLink>
                 <MobileLink href="/butiker" onClick={() => setMobileOpen(false)}>
                   <MapPin size={15} className="text-forest-400" /> Butiker
                 </MobileLink>

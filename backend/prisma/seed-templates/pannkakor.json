@@ -1,0 +1,162 @@
+{
+  "slug": "pannkakor",
+  "title": "Pannkakor med spenatsallad",
+  "description": "Barnens självklara favorit — och med en enkel spenatsallad blir det middag av det.",
+  "tags": [
+    "vardag",
+    "barnfavorit",
+    "vegetariskt"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 25,
+  "passiveTimeMin": 5,
+  "servingsBase": 4,
+  "costPerPortionMin": 8,
+  "costPerPortionMax": 15,
+  "childFriendly": 3,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": [
+    "vegetarisk"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "stekpanna"
+  ],
+  "ingredients": [
+    {
+      "name": "Vetemjöl",
+      "canonical": "vetemjöl",
+      "qtyPerPortion": 0.6,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 15,
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "name": "Mjölk",
+      "canonical": "mjölk",
+      "qtyPerPortion": 1.5,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "estPriceSek": 15,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "substitutions": [
+        {
+          "name": "Havredryck",
+          "canonical": "havredryck",
+          "note": "Laktosfritt/veganskt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Ägg",
+      "canonical": "ägg",
+      "qtyPerPortion": 0.75,
+      "unit": "st",
+      "aisle": "Mejeri",
+      "estPriceSek": 35,
+      "allergens": [
+        "ägg"
+      ]
+    },
+    {
+      "name": "Smör",
+      "canonical": "smör",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Mejeri",
+      "estPriceSek": 30,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "pantryStaple": true
+    },
+    {
+      "name": "Babyspenat",
+      "canonical": "spenat",
+      "qtyPerPortion": 20,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 20
+    },
+    {
+      "name": "Gurka",
+      "canonical": "gurka",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 15
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.25,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 40,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Vispa ihop mjöl och hälften av mjölken till en klumpfri smet. Vispa i resten av mjölken och äggen.",
+      "voiceCue": "Vispa ihop mjölet med hälften av mjölken först, så slipper du klumpar. Vispa sedan i resten av mjölken och äggen.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "beginnerTip": "Låt gärna smeten svälla i 5–10 minuter om du hinner."
+    },
+    {
+      "id": "s2",
+      "text": "Låt smeten vila medan du gör salladen.",
+      "voiceCue": "Låt smeten vila en stund.",
+      "durationMin": 5,
+      "activeMin": 0,
+      "dependsOn": [
+        "s1"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": "Skölj spenaten, skiva gurkan och blanda med olivolja och en nypa salt.",
+      "voiceCue": "Skölj spenaten och skiva gurkan. Blanda med lite olivolja och salt.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s4",
+      "text": "Stek pannkakorna i smör på medelvärme, cirka en minut per sida.",
+      "voiceCue": "Stek pannkakorna i smör på medelvärme, ungefär en minut per sida. Vänd när ytan börjat stelna.",
+      "durationMin": 15,
+      "activeMin": 15,
+      "dependsOn": [
+        "s2"
+      ],
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Första pannkakan blir nästan alltid misslyckad — det är normalt!",
+      "beginnerTip": "Vänd när kanterna släpper och ytan inte längre är blank."
+    },
+    {
+      "id": "s5",
+      "text": "Servera pannkakorna med salladen och gärna sylt till barnen.",
+      "voiceCue": "Servera pannkakorna med salladen, och lite sylt till den som vill.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3",
+        "s4"
+      ]
+    }
+  ]
+}

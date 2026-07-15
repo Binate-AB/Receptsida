@@ -290,8 +290,14 @@ function NisseChat({
 // Main CookingMode Component
 // ═══════════════════════════════════════════
 
-export const CookingMode = forwardRef(function CookingMode({ recipe, onClose }, ref) {
-  const [currentStep, setCurrentStep] = useState(0);
+export const CookingMode = forwardRef(function CookingMode({ recipe, onClose, initialStep = 0, onStepChange }, ref) {
+  const [currentStep, setCurrentStep] = useState(initialStep);
+
+  // Report step changes to parent (Nisse cook sessions persist progress)
+  useEffect(() => {
+    onStepChange?.(currentStep);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [showChat, setShowChat] = useState(false);
   const [chatInput, setChatInput] = useState('');

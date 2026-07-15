@@ -1,0 +1,157 @@
+{
+  "slug": "ugnsbakad-lax",
+  "title": "Ugnsbakad lax med klyftpotatis och dillsås",
+  "description": "Ugnen gör jobbet: potatis och lax bakas parallellt medan du rör ihop en kall dillsås. Mycket smak, lite disk.",
+  "tags": [
+    "vardag",
+    "helg",
+    "nyttigt"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 35,
+  "activeTimeMin": 14,
+  "passiveTimeMin": 21,
+  "servingsBase": 4,
+  "costPerPortionMin": 30,
+  "costPerPortionMax": 45,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": [
+    "glutenfri"
+  ],
+  "equipmentRequired": [
+    "ugn",
+    "ugnsform"
+  ],
+  "ingredients": [
+    {
+      "name": "Laxfilé",
+      "canonical": "lax",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 89,
+      "allergens": [
+        "fisk"
+      ]
+    },
+    {
+      "name": "Potatis",
+      "canonical": "potatis",
+      "qtyPerPortion": 200,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 20
+    },
+    {
+      "name": "Gräddfil",
+      "canonical": "gräddfil",
+      "qtyPerPortion": 0.5,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "estPriceSek": 20,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ]
+    },
+    {
+      "name": "Färsk dill",
+      "canonical": "dill",
+      "qtyPerPortion": 0.25,
+      "unit": "knippe",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 18
+    },
+    {
+      "name": "Citron",
+      "canonical": "citron",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 6
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 40,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Sätt ugnen på 225 grader.",
+      "voiceCue": "Sätt ugnen på tvåhundratjugofem grader.",
+      "durationMin": 2,
+      "activeMin": 1,
+      "equipment": [
+        "ugn"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Klyfta potatisen, vänd i olivolja och salt i en ugnsform. Baka i cirka 30 minuter.",
+      "voiceCue": "Klyfta potatisen, vänd den i olja och salt, och in i ugnen i ungefär trettio minuter.",
+      "durationMin": 30,
+      "activeMin": 5,
+      "dependsOn": [
+        "s1"
+      ],
+      "timerNeeded": true,
+      "equipment": [
+        "ugn",
+        "ugnsform"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": "Krydda laxen med salt, peppar och citronskivor.",
+      "voiceCue": "Krydda laxen med salt och peppar, och lägg citronskivor ovanpå.",
+      "durationMin": 3,
+      "activeMin": 3
+    },
+    {
+      "id": "s4",
+      "text": "Baka laxen i ugnen i 12–15 minuter tills den precis blir klar i mitten.",
+      "voiceCue": "In med laxen i ugnen i tolv till femton minuter, tills den precis är klar i mitten.",
+      "durationMin": 15,
+      "activeMin": 2,
+      "dependsOn": [
+        "s1",
+        "s3"
+      ],
+      "timerNeeded": true,
+      "equipment": [
+        "ugn",
+        "ugnsform"
+      ],
+      "warning": "Överbaka inte — laxen ska vara lätt glansig i mitten när den tas ut.",
+      "beginnerTip": "Laxen är klar när den flagar sig lätt med en gaffel."
+    },
+    {
+      "id": "s5",
+      "text": "Rör ihop gräddfil, hackad dill, lite citronsaft, salt och peppar till en sås.",
+      "voiceCue": "Rör ihop gräddfil, hackad dill och lite citronsaft till en enkel sås.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s6",
+      "text": "Servera laxen med potatis, dillsås och en citronklyfta.",
+      "voiceCue": "Servera laxen med potatisen, såsen och en citronklyfta. Smaklig måltid!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s2",
+        "s4",
+        "s5"
+      ]
+    }
+  ]
+}

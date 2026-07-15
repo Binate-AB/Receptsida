@@ -1,17 +1,35 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+// ============================================
+// Cooking Page — hosts CookingMode
+// Two modes:
+// 1. Legacy: recipe from useRecipeStore (search flow) — unchanged
+// 2. Nisse session (?session= / ?rec=): DB-persisted progress,
+//    branch lanes (Gemensamt/Barnens/Vuxnas), rescue mode and
+//    post-meal feedback.
+// ============================================
+
+import { useEffect, useState, useCallback, useRef, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChefHat, ArrowLeft, Mic, MicOff } from 'lucide-react';
-import { useRecipeStore } from '../../lib/store';
+import { useRecipeStore, useHouseholdStore } from '../../lib/store';
 import { CookingMode } from '../../components/CookingMode';
+import { BranchSwitcher } from '../../components/dinner/BranchSwitcher';
+import { RescueSheet } from '../../components/dinner/RescueSheet';
+import { FeedbackSheet } from '../../components/dinner/FeedbackSheet';
 import { useVoiceInput, useSpeech } from '../../hooks/useVoice';
-import { cooking } from '../../lib/api';
+import { cooking, cookSessions } from '../../lib/api';
+import { Spinner } from '../../components/Spinner';
 
-export default function CookingPage() {
+function CookingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionParam = searchParams.get('session');
+  const recParam = searchParams.get('rec');
+
   const { selectedRecipe, clearRecipe } = useRecipeStore();
+  const { household, fetch: fetchHousehold } = useHouseholdStore();
   const { isListening, transcript, supported, startListening, stopListening, resetTranscript } = useVoiceInput();
   const [voiceText, setVoiceText] = useState('');
   const [nisseReply, setNisseReply] = useState('');
@@ -19,18 +37,91 @@ export default function CookingPage() {
   const { speak } = useSpeech();
   const cookingRef = useRef(null);
 
+  // ── Nisse session state ──
+  const [session, setSession] = useState(null);
+  const [sessionLoading, setSessionLoading] = useState(Boolean(sessionParam || recParam));
+  const [sessionError, setSessionError] = useState(null);
+  const [activeLane, setActiveLane] = useState('base');
+  const [showFeedback, setShowFeedback] = useState(false);
+
   useEffect(() => {
-    if (!selectedRecipe) return;
+    if (!sessionParam && !recParam) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        let s;
+        if (sessionParam) {
+          ({ session: s } = await cookSessions.get(sessionParam));
+        } else {
+          ({ session: s } = await cookSessions.start({ recommendationId: recParam }));
+          // Put the session id in the URL so a reload resumes it
+          router.replace(`/cooking?session=${s.id}`);
+        }
+        if (!cancelled) {
+          setSession(s);
+          fetchHousehold().catch(() => {});
+        }
+      } catch (err) {
+        if (!cancelled) setSessionError(err.message);
+      } finally {
+        if (!cancelled) setSessionLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionParam, recParam]);
+
+  // Lane-filtered recipe for CookingMode: Gemensamt = full timeline;
+  // Barnens/Vuxnas = shared base + that branch only.
+  const sessionRecipe = useMemo(() => {
+    if (!session) return null;
+    const rd = session.recipeData;
+    const steps = (rd.steps || []).filter((s) =>
+      activeLane === 'base' ? true : s.lane === 'base' || s.lane === activeLane
+    ).map((s) => ({
+      ...s,
+      text: s.lane !== 'base' ? `[${s.laneLabel}] ${s.text}` : s.text,
+    }));
+    return { ...rd, steps };
+  }, [session, activeLane]);
+
+  const lanes = session?.timeline?.lanes || [];
+  const isSplit = lanes.length > 1;
+
+  const initialStep = useMemo(() => {
+    if (!session) return 0;
+    if (isSplit && session.branchState && session.branchState[activeLane] != null) {
+      return session.branchState[activeLane];
+    }
+    return session.currentStepIndex || 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.id, activeLane]);
+
+  const handleStepChange = useCallback(
+    (index) => {
+      if (!session) return;
+      const data = isSplit
+        ? { currentStepIndex: index, branchState: { ...(session.branchState || {}), [activeLane]: index } }
+        : { currentStepIndex: index };
+      cookSessions.update(session.id, data).catch(() => {});
+    },
+    [session, isSplit, activeLane]
+  );
+
+  const activeRecipe = sessionRecipe || selectedRecipe;
+
+  useEffect(() => {
+    if (!activeRecipe) return;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
-  }, [selectedRecipe]);
+  }, [activeRecipe]);
 
   const handleVoiceResult = useCallback(async (finalText) => {
     setVoiceText(finalText);
     setNisseReply('');
     setNisseLoading(true);
     try {
-      const data = await cooking.speak(finalText, selectedRecipe);
+      const data = await cooking.speak(finalText, activeRecipe);
       const reply = data.reply ?? data.answer ?? '';
       setNisseReply(reply);
       if (reply) speak(reply);
@@ -42,7 +133,7 @@ export default function CookingPage() {
     } finally {
       setNisseLoading(false);
     }
-  }, [selectedRecipe, speak]);
+  }, [activeRecipe, speak]);
 
   function toggleMic() {
     if (isListening) {
@@ -56,11 +147,31 @@ export default function CookingPage() {
   }
 
   function handleClose() {
+    if (session && session.status === 'ACTIVE' && !session.hasFeedback) {
+      setShowFeedback(true);
+      return;
+    }
     clearRecipe();
-    router.back();
+    router.push(session ? '/middag' : '/');
   }
 
-  if (!selectedRecipe) {
+  const completeAndExit = useCallback(async () => {
+    try {
+      await cookSessions.update(session.id, { status: 'COMPLETED' });
+    } catch {}
+    clearRecipe();
+    router.push('/middag');
+  }, [session, clearRecipe, router]);
+
+  if (sessionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#1A1A2E' }}>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!activeRecipe) {
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
@@ -78,18 +189,18 @@ export default function CookingPage() {
             <ChefHat size={28} style={{ color: 'rgba(255,255,255,0.3)' }} />
           </div>
           <div>
-            <h1 className="text-xl font-bold mb-2">Inget recept valt</h1>
+            <h1 className="text-xl font-bold mb-2">{sessionError ? 'Kunde inte starta' : 'Inget recept valt'}</h1>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Sök efter ett recept och tryck på "Börja laga" för att starta kokläget.
+              {sessionError || 'Sök efter ett recept och tryck på "Börja laga" för att starta kokläget.'}
             </p>
           </div>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push(sessionError ? '/middag' : '/')}
             className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold transition-all"
             style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF' }}
           >
             <ArrowLeft size={16} />
-            Tillbaka till sökning
+            Tillbaka
           </button>
         </motion.div>
       </div>
@@ -104,7 +215,29 @@ export default function CookingPage() {
 
   return (
     <div className="relative">
-      <CookingMode ref={cookingRef} recipe={selectedRecipe} onClose={handleClose} />
+      <CookingMode
+        key={session ? `${session.id}-${activeLane}` : 'legacy'}
+        ref={cookingRef}
+        recipe={activeRecipe}
+        onClose={handleClose}
+        initialStep={session ? initialStep : 0}
+        onStepChange={session ? handleStepChange : undefined}
+      />
+
+      {/* Nisse session overlays */}
+      {session && isSplit && (
+        <BranchSwitcher lanes={lanes} activeLane={activeLane} onSwitch={setActiveLane} />
+      )}
+      {session && <RescueSheet sessionId={session.id} onSpeak={speak} />}
+
+      {showFeedback && (
+        <FeedbackSheet
+          sessionId={session.id}
+          members={household?.members || []}
+          onDone={completeAndExit}
+          onSkip={completeAndExit}
+        />
+      )}
 
       {/* Voice conversation bubbles */}
       <AnimatePresence>
@@ -185,5 +318,19 @@ export default function CookingPage() {
         </motion.button>
       )}
     </div>
+  );
+}
+
+export default function CookingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center" style={{ background: '#1A1A2E' }}>
+          <Spinner size="lg" />
+        </div>
+      }
+    >
+      <CookingContent />
+    </Suspense>
   );
 }

@@ -8,11 +8,11 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Home, Search, CalendarDays, Heart, User } from 'lucide-react';
+import { Home, UtensilsCrossed, CalendarDays, Heart, User } from 'lucide-react';
 
 const TABS = [
   { href: '/', label: 'Hem', icon: Home },
-  { href: '/butiker', label: 'Sök', icon: Search },
+  { href: '/middag', label: 'Middag', icon: UtensilsCrossed },
   { href: '/ny', label: '', icon: CalendarDays, isCenter: true },
   { href: '/favoriter', label: 'Favoriter', icon: Heart },
   { href: '/installningar', label: 'Profil', icon: User },

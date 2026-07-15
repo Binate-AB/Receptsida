@@ -208,3 +208,140 @@ export const suggestRecipesSchema = z.object({
     .enum(['frukost', 'lunch', 'middag', 'dessert', 'mellanmål'])
     .optional(),
 });
+
+// ──────────────────────────────────────────
+// Nisse — Household schemas
+// ──────────────────────────────────────────
+
+import { ALLERGEN_CODES, DIETARY_RESTRICTIONS, EQUIPMENT_CODES } from '../services/nisse/engine/allergens.js';
+
+export const upsertHouseholdSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  cookingSkill: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).optional(),
+  equipment: z.array(z.enum(EQUIPMENT_CODES)).max(20).optional(),
+});
+
+export const householdMemberSchema = z.object({
+  name: z.string().min(1, 'Namn krävs').max(100),
+  ageCategory: z.enum(['BABY', 'CHILD', 'TEEN', 'ADULT', 'SENIOR']).optional().default('ADULT'),
+  allergies: z.array(z.enum(ALLERGEN_CODES)).max(12).optional().default([]),
+  dietaryRestrictions: z.array(z.enum(DIETARY_RESTRICTIONS)).max(5).optional().default([]),
+  dislikedIngredients: z.array(z.string().min(1).max(50)).max(30).optional().default([]),
+  spiceTolerance: z.enum(['NONE', 'MILD', 'MEDIUM', 'HOT']).optional().default('MEDIUM'),
+  portionFactor: z.number().min(0.25).max(3).optional(),
+  isDefaultPresent: z.boolean().optional().default(true),
+});
+
+export const updateHouseholdMemberSchema = householdMemberSchema.partial();
+
+export const inventoryBulkSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        name: z.string().min(1, 'Varunamn krävs').max(100),
+        quantity: z.number().positive().max(100000).optional(),
+        unit: z.string().max(20).optional(),
+        expiresAt: z.string().datetime().optional(),
+      })
+    )
+    .max(200, 'Max 200 varor'),
+});
+
+// ──────────────────────────────────────────
+// Nisse — Dinner solver schemas
+// ──────────────────────────────────────────
+
+const dinnerChipsSchema = z.object({
+  timeBudgetMin: z.number().int().min(10).max(240).optional(),
+  energy: z.enum(['slut', 'låg', 'normal', 'inspirerad']).optional(),
+  budget: z.enum(['snålt', 'normal', 'flexibelt']).optional(),
+  eaterIds: z.array(z.string().min(1)).max(20).optional(),
+  occasion: z.enum(['vardag', 'helg', 'gäster', 'matlådor']).optional(),
+  wantsLeftovers: z.boolean().optional(),
+});
+
+export const solveDinnerSchema = z
+  .object({
+    rawText: z.string().min(3).max(500).optional(),
+    chips: dinnerChipsSchema.optional(),
+  })
+  .refine((data) => data.rawText || data.chips, {
+    message: 'Beskriv kvällen eller använd snabbvalen.',
+  });
+
+export const alternativeSchema = z.object({
+  direction: z.enum(['enklare', 'billigare', 'barnvänligare']),
+  excludeTemplateIds: z.array(z.string()).max(20).optional().default([]),
+});
+
+// ──────────────────────────────────────────
+// Nisse — Shopping list schemas
+// ──────────────────────────────────────────
+
+export const updateListItemSchema = z.object({
+  checked: z.boolean().optional(),
+  necessary: z.boolean().optional(),
+});
+
+export const updateListStatusSchema = z.object({
+  status: z.enum(['ACTIVE', 'DONE']),
+});
+
+// ──────────────────────────────────────────
+// Nisse — Cook session schemas
+// ──────────────────────────────────────────
+
+export const startCookSessionSchema = z
+  .object({
+    recommendationId: z.string().min(1).optional(),
+    templateSlug: z.string().min(1).optional(),
+    branch: z.enum(['base', 'split']).optional().default('base'),
+    eaterIds: z.array(z.string()).max(20).optional(),
+  })
+  .refine((d) => d.recommendationId || d.templateSlug, {
+    message: 'recommendationId eller templateSlug krävs.',
+  });
+
+export const updateCookSessionSchema = z.object({
+  currentStepIndex: z.number().int().min(0).max(200).optional(),
+  branchState: z.record(z.number().int().min(0).max(200)).optional(),
+  status: z.enum(['ACTIVE', 'COMPLETED', 'ABANDONED']).optional(),
+});
+
+export const rescueRequestSchema = z.object({
+  problem: z.string().min(3, 'Beskriv problemet').max(300),
+});
+
+export const sessionAskSchema = z.object({
+  question: z.string().min(1, 'Ställ en fråga').max(500),
+  context: z.object({
+    currentStep: z.number().int().min(0).optional(),
+    activeTimers: z.array(z.object({
+      label: z.string(),
+      remaining_seconds: z.number(),
+    })).optional(),
+    inputMode: z.enum(['voice', 'text']).optional(),
+  }).optional().default({}),
+});
+
+export const mealFeedbackSchema = z.object({
+  cooked: z.boolean().optional().default(true),
+  actualTimeMin: z.number().int().min(1).max(600).optional(),
+  cookAgain: z.boolean().optional(),
+  avoid: z.boolean().optional().default(false),
+  comment: z.string().max(500).optional(),
+  memberRatings: z
+    .array(z.object({ memberId: z.string().min(1), rating: z.number().int().min(1).max(5) }))
+    .max(20)
+    .optional()
+    .default([]),
+});
+
+export const analyticsEventSchema = z.object({
+  name: z.enum([
+    'recommendation_viewed',
+    'cooking_step_viewed',
+    'voice_used',
+  ]),
+  payload: z.record(z.any()).optional(),
+});

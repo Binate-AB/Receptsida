@@ -1,0 +1,162 @@
+{
+  "slug": "linssoppa",
+  "title": "Vegetarisk linssoppa med kokos",
+  "description": "Billig, mättande och vegansk. Röda linser kokar på kvarten och skafferiet står för resten.",
+  "tags": [
+    "vardag",
+    "billigt",
+    "vegetariskt",
+    "matlådor"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 15,
+  "passiveTimeMin": 15,
+  "servingsBase": 4,
+  "costPerPortionMin": 9,
+  "costPerPortionMax": 16,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 1,
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
+  "ingredients": [
+    {
+      "name": "Röda linser",
+      "canonical": "linser",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 25
+    },
+    {
+      "name": "Kokosmjölk",
+      "canonical": "kokosmjölk",
+      "qtyPerPortion": 100,
+      "unit": "ml",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 18
+    },
+    {
+      "name": "Krossade tomater",
+      "canonical": "krossade tomater",
+      "qtyPerPortion": 100,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Morot",
+      "canonical": "morot",
+      "qtyPerPortion": 0.5,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Grönsaksbuljong",
+      "canonical": "grönsaksbuljong",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 20,
+      "pantryStaple": true
+    },
+    {
+      "name": "Currypulver",
+      "canonical": "curry",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 15
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 40,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Hacka lök, vitlök och morot.",
+      "voiceCue": "Hacka löken, vitlöken och moroten.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s2",
+      "text": "Fräs grönsakerna med curry i olivolja ett par minuter.",
+      "voiceCue": "Fräs grönsakerna med curryn i olja ett par minuter, tills det doftar gott.",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": "Skölj linserna. Tillsätt linser, tomater, kokosmjölk, buljong och 5 dl vatten.",
+      "voiceCue": "Skölj linserna och lägg i dem tillsammans med tomater, kokosmjölk, buljong och en halv liter vatten.",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": "Låt soppan sjuda i 15 minuter tills linserna är mjuka.",
+      "voiceCue": "Låt soppan sjuda i femton minuter tills linserna är helt mjuka.",
+      "durationMin": 15,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3"
+      ],
+      "timerNeeded": true,
+      "beginnerTip": "Rör om då och då — linser lägger sig gärna på botten."
+    },
+    {
+      "id": "s5",
+      "text": "Smaka av med salt och peppar. Servera.",
+      "voiceCue": "Smaka av med salt och peppar. Soppan är klar!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s4"
+      ]
+    }
+  ]
+}

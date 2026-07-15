@@ -1,0 +1,148 @@
+{
+  "slug": "ugnspannkaka",
+  "title": "Ugnspannkaka med korv",
+  "description": "Lägsta möjliga ansträngning: vispa smeten, in i ugnen, klart. En form — nästan ingen disk.",
+  "tags": [
+    "vardag",
+    "billigt",
+    "barnfavorit",
+    "lat-dag"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 40,
+  "activeTimeMin": 10,
+  "passiveTimeMin": 30,
+  "servingsBase": 4,
+  "costPerPortionMin": 10,
+  "costPerPortionMax": 18,
+  "childFriendly": 3,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "equipmentRequired": [
+    "ugn",
+    "ugnsform"
+  ],
+  "ingredients": [
+    {
+      "name": "Vetemjöl",
+      "canonical": "vetemjöl",
+      "qtyPerPortion": 0.6,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 15,
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "name": "Mjölk",
+      "canonical": "mjölk",
+      "qtyPerPortion": 1.5,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "estPriceSek": 15,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ]
+    },
+    {
+      "name": "Ägg",
+      "canonical": "ägg",
+      "qtyPerPortion": 0.75,
+      "unit": "st",
+      "aisle": "Mejeri",
+      "estPriceSek": 35,
+      "allergens": [
+        "ägg"
+      ]
+    },
+    {
+      "name": "Falukorv",
+      "canonical": "falukorv",
+      "qtyPerPortion": 75,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 35,
+      "optional": true,
+      "substitutions": [
+        {
+          "name": "Vegokorv",
+          "canonical": "vegokorv",
+          "note": "Vegetariskt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Smör",
+      "canonical": "smör",
+      "qtyPerPortion": 0.25,
+      "unit": "msk",
+      "aisle": "Mejeri",
+      "estPriceSek": 30,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Sätt ugnen på 200 grader.",
+      "voiceCue": "Sätt ugnen på tvåhundra grader.",
+      "durationMin": 2,
+      "activeMin": 1,
+      "equipment": [
+        "ugn"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Vispa ihop mjöl, mjölk och ägg till en slät smet.",
+      "voiceCue": "Vispa ihop mjöl, mjölk och ägg till en slät smet.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s3",
+      "text": "Skiva korven. Smörj formen, häll i smeten och fördela korven.",
+      "voiceCue": "Skiva korven, smörj formen, häll i smeten och strö korven över.",
+      "durationMin": 4,
+      "activeMin": 4,
+      "dependsOn": [
+        "s2"
+      ],
+      "equipment": [
+        "ugnsform"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": "Grädda mitt i ugnen i cirka 25 minuter tills pannkakan är gyllene och stannat.",
+      "voiceCue": "In i ugnen i ungefär tjugofem minuter, tills pannkakan är gyllene och har stannat i mitten.",
+      "durationMin": 25,
+      "activeMin": 0,
+      "dependsOn": [
+        "s1",
+        "s3"
+      ],
+      "timerNeeded": true,
+      "equipment": [
+        "ugn"
+      ]
+    },
+    {
+      "id": "s5",
+      "text": "Servera med lingonsylt och rivna morötter.",
+      "voiceCue": "Servera med lingonsylt. Klart!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s4"
+      ]
+    }
+  ]
+}

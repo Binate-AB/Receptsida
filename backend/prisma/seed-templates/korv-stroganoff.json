@@ -1,0 +1,157 @@
+{
+  "slug": "korv-stroganoff",
+  "title": "Korv stroganoff med ris",
+  "description": "Krämig klassiker som nästan alla barn älskar. Snabb, billig och görs på skafferivaror.",
+  "tags": [
+    "vardag",
+    "snabbt",
+    "billigt",
+    "barnfavorit"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 25,
+  "activeTimeMin": 17,
+  "passiveTimeMin": 8,
+  "servingsBase": 4,
+  "costPerPortionMin": 14,
+  "costPerPortionMax": 24,
+  "childFriendly": 3,
+  "effortScore": 1,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "equipmentRequired": [
+    "spis",
+    "stekpanna",
+    "kastrull"
+  ],
+  "ingredients": [
+    {
+      "name": "Falukorv",
+      "canonical": "falukorv",
+      "qtyPerPortion": 100,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 35,
+      "substitutions": [
+        {
+          "name": "Vegokorv",
+          "canonical": "vegokorv",
+          "note": "Vegetariskt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Tomatpuré",
+      "canonical": "tomatpuré",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Vispgrädde",
+      "canonical": "grädde",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "estPriceSek": 22,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "substitutions": [
+        {
+          "name": "Havregrädde",
+          "canonical": "havregrädde",
+          "note": "Laktosfritt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Ris",
+      "canonical": "ris",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 25
+    },
+    {
+      "name": "Smör",
+      "canonical": "smör",
+      "qtyPerPortion": 0.25,
+      "unit": "msk",
+      "aisle": "Mejeri",
+      "estPriceSek": 30,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Koka riset enligt anvisningen på förpackningen.",
+      "voiceCue": "Sätt på riset först, det tar längst tid. Koka enligt förpackningen.",
+      "durationMin": 18,
+      "activeMin": 3,
+      "timerNeeded": true,
+      "equipment": [
+        "kastrull"
+      ],
+      "beginnerTip": "Skölj riset i kallt vatten först så blir det mindre kladdigt."
+    },
+    {
+      "id": "s2",
+      "text": "Strimla falukorven och hacka löken fint.",
+      "voiceCue": "Under tiden riset kokar: strimla korven och hacka löken fint.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s3",
+      "text": "Stek korv och lök i smör på medelhög värme tills de fått fin färg, cirka 5 minuter.",
+      "voiceCue": "Stek korv och lök i smör tills de får fin färg, ungefär fem minuter.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "dependsOn": [
+        "s2"
+      ],
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Rör om då och då så att löken inte bränns."
+    },
+    {
+      "id": "s4",
+      "text": "Rör ner tomatpuré, låt fräsa en minut. Häll i grädden och låt sjuda 3–4 minuter.",
+      "voiceCue": "Rör ner tomatpurén och låt den fräsa med en minut. Häll sedan i grädden och låt allt sjuda i tre till fyra minuter.",
+      "durationMin": 5,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3"
+      ],
+      "timerNeeded": true
+    },
+    {
+      "id": "s5",
+      "text": "Smaka av med salt och peppar. Servera stroganoffen med riset.",
+      "voiceCue": "Smaka av med salt och peppar, och servera med riset. Klart!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s1",
+        "s4"
+      ]
+    }
+  ]
+}

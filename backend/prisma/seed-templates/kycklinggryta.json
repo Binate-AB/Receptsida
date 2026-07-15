@@ -1,0 +1,223 @@
+{
+  "slug": "kycklinggryta",
+  "title": "Krämig kycklinggryta med ris",
+  "description": "Gemensam kycklingbas som blir en mild gräddig barnvariant och en vuxenvariant med curry.",
+  "tags": [
+    "vardag",
+    "familj",
+    "barnfavorit"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 35,
+  "activeTimeMin": 22,
+  "passiveTimeMin": 13,
+  "servingsBase": 4,
+  "costPerPortionMin": 22,
+  "costPerPortionMax": 35,
+  "childFriendly": 3,
+  "effortScore": 2,
+  "dishLoad": 3,
+  "spiceLevel": 0,
+  "equipmentRequired": [
+    "spis",
+    "stekpanna",
+    "kastrull"
+  ],
+  "hasChildAdultBranch": true,
+  "variants": {
+    "child": {
+      "label": "Barnens: mild och gräddig",
+      "note": "Utan curry, med ärtor."
+    },
+    "adult": {
+      "label": "Vuxnas: gul curry",
+      "note": "Currykryddad version."
+    }
+  },
+  "ingredients": [
+    {
+      "name": "Kycklingfilé",
+      "canonical": "kyckling",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 75,
+      "substitutions": [
+        {
+          "name": "Quornfilé",
+          "canonical": "quorn",
+          "note": "Vegetariskt alternativ",
+          "allergens": [
+            "ägg"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ris",
+      "canonical": "ris",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 25
+    },
+    {
+      "name": "Vispgrädde",
+      "canonical": "grädde",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "estPriceSek": 22,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "substitutions": [
+        {
+          "name": "Havregrädde",
+          "canonical": "havregrädde",
+          "note": "Laktosfritt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Frysta ärtor",
+      "canonical": "ärtor",
+      "qtyPerPortion": 40,
+      "unit": "g",
+      "aisle": "Frys",
+      "estPriceSek": 18
+    },
+    {
+      "name": "Kycklingbuljong",
+      "canonical": "kycklingbuljong",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 20,
+      "pantryStaple": true
+    },
+    {
+      "name": "Currypulver",
+      "canonical": "curry",
+      "qtyPerPortion": 0.5,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 15,
+      "group": "vuxen"
+    },
+    {
+      "name": "Smör",
+      "canonical": "smör",
+      "qtyPerPortion": 0.25,
+      "unit": "msk",
+      "aisle": "Mejeri",
+      "estPriceSek": 30,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Koka riset enligt förpackningen.",
+      "voiceCue": "Sätt på riset först.",
+      "durationMin": 18,
+      "activeMin": 3,
+      "timerNeeded": true,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Strimla kycklingen och hacka löken.",
+      "voiceCue": "Strimla kycklingen och hacka löken medan riset kokar.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s3",
+      "text": "Stek kyckling och lök i smör tills kycklingen fått färg runt om.",
+      "voiceCue": "Stek kyckling och lök i smör tills kycklingen har fått fin färg runt om.",
+      "durationMin": 6,
+      "activeMin": 6,
+      "dependsOn": [
+        "s2"
+      ],
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Kycklingen ska vara helt genomstekt — vit rakt igenom, ingen rosa."
+    },
+    {
+      "id": "s4",
+      "text": "Häll i grädde och smula i buljongen. Låt sjuda 5 minuter.",
+      "voiceCue": "Häll i grädden och smula i buljongtärningen. Låt sjuda i fem minuter.",
+      "durationMin": 5,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3"
+      ],
+      "timerNeeded": true
+    },
+    {
+      "id": "s5",
+      "text": "Ta undan barnens del och rör ner ärtorna i den.",
+      "voiceCue": "Ta undan barnens del av grytan och rör ner ärtorna.",
+      "durationMin": 3,
+      "activeMin": 2,
+      "dependsOn": [
+        "s4"
+      ],
+      "branch": "child"
+    },
+    {
+      "id": "s6",
+      "text": "Rör ner curry i vuxendelen och låt sjuda ett par minuter.",
+      "voiceCue": "Rör ner curryn i vuxendelen och låt den sjuda ett par minuter till.",
+      "durationMin": 3,
+      "activeMin": 2,
+      "dependsOn": [
+        "s4",
+        "s5"
+      ],
+      "branch": "adult"
+    },
+    {
+      "id": "s7",
+      "text": "Servera barnens milda gryta med ris.",
+      "voiceCue": "Servera barnens milda gryta med riset.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s1",
+        "s5"
+      ],
+      "branch": "child"
+    },
+    {
+      "id": "s8",
+      "text": "Servera currygrytan med ris.",
+      "voiceCue": "Servera currygrytan med riset. Klart!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s1",
+        "s6"
+      ],
+      "branch": "adult"
+    }
+  ]
+}

@@ -44,6 +44,16 @@ export function recipeSearchRateLimit(req, res, next) {
 }
 
 /**
+ * Nisse dinner solver: generous but bounded (solve can make
+ * up to two small AI calls). Per-user, 30/h (premium 100/h).
+ */
+export function dinnerSolveRateLimit(req, res, next) {
+  const limit =
+    req.user?.plan === 'PREMIUM' || req.user?.plan === 'ADMIN' ? 100 : 30;
+  return rateLimitByKey(`rl:dinner:${req.user.id}`, limit, 3600)(req, res, next);
+}
+
+/**
  * Generic rate limiter factory
  */
 function rateLimitByKey(key, maxRequests, windowSeconds) {

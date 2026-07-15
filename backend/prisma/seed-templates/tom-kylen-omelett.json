@@ -1,0 +1,164 @@
+{
+  "slug": "tom-kylen-omelett",
+  "title": "Töm kylen-omelett",
+  "description": "Räddaren när det är tomt hemma: ägg plus det som råkar finnas i kylen blir middag på kvarten.",
+  "tags": [
+    "vardag",
+    "snabbt",
+    "billigt",
+    "tom-kylen",
+    "vegetariskt"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 15,
+  "activeTimeMin": 13,
+  "passiveTimeMin": 2,
+  "servingsBase": 2,
+  "costPerPortionMin": 8,
+  "costPerPortionMax": 15,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [
+    "vegetarisk",
+    "glutenfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "stekpanna"
+  ],
+  "ingredients": [
+    {
+      "name": "Ägg",
+      "canonical": "ägg",
+      "qtyPerPortion": 2.5,
+      "unit": "st",
+      "aisle": "Mejeri",
+      "estPriceSek": 35,
+      "allergens": [
+        "ägg"
+      ]
+    },
+    {
+      "name": "Mjölk",
+      "canonical": "mjölk",
+      "qtyPerPortion": 0.25,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "estPriceSek": 15,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "optional": true,
+      "substitutions": [
+        {
+          "name": "Vatten",
+          "canonical": "vatten",
+          "note": "Funkar lika bra"
+        }
+      ]
+    },
+    {
+      "name": "Riven ost",
+      "canonical": "ost",
+      "qtyPerPortion": 25,
+      "unit": "g",
+      "aisle": "Mejeri",
+      "estPriceSek": 45,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "optional": true
+    },
+    {
+      "name": "Paprika",
+      "canonical": "paprika",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12,
+      "optional": true,
+      "substitutions": [
+        {
+          "name": "Tomat",
+          "canonical": "tomat",
+          "note": "Eller det som finns i kylen"
+        },
+        {
+          "name": "Champinjoner",
+          "canonical": "svamp",
+          "note": "Fräs dem först"
+        }
+      ]
+    },
+    {
+      "name": "Smör",
+      "canonical": "smör",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Mejeri",
+      "estPriceSek": 30,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Vispa ihop ägg, mjölk (eller vatten), salt och peppar.",
+      "voiceCue": "Vispa ihop äggen med lite mjölk eller vatten, salt och peppar.",
+      "durationMin": 3,
+      "activeMin": 3
+    },
+    {
+      "id": "s2",
+      "text": "Skär grönsakerna du hittar i kylen i småbitar.",
+      "voiceCue": "Skär de grönsaker du har i småbitar. Det mesta funkar.",
+      "durationMin": 3,
+      "activeMin": 3
+    },
+    {
+      "id": "s3",
+      "text": "Fräs grönsakerna i smör en minut. Häll i äggsmeten.",
+      "voiceCue": "Fräs grönsakerna snabbt i smör, och häll sedan i äggsmeten.",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s1",
+        "s2"
+      ],
+      "equipment": [
+        "stekpanna"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": "Sänk värmen och låt omeletten stanna långsamt. Strö ost på toppen.",
+      "voiceCue": "Sänk värmen och låt omeletten stanna långsamt. Strö osten på toppen mot slutet.",
+      "durationMin": 5,
+      "activeMin": 3,
+      "dependsOn": [
+        "s3"
+      ],
+      "timerNeeded": true,
+      "warning": "Låg värme och tålamod — hög värme gör omeletten torr och bränd i botten.",
+      "beginnerTip": "Omeletten är klar när ytan precis har stannat men fortfarande är lite glansig."
+    },
+    {
+      "id": "s5",
+      "text": "Vik omeletten och servera direkt.",
+      "voiceCue": "Vik omeletten på mitten och servera direkt.",
+      "durationMin": 1,
+      "activeMin": 1,
+      "dependsOn": [
+        "s4"
+      ]
+    }
+  ]
+}
