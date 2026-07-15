@@ -3,7 +3,7 @@
 // ============================================
 
 import { create } from 'zustand';
-import { auth as authApi } from '../lib/api';
+import { auth as authApi, households as householdApi, dinner as dinnerApi } from '../lib/api';
 
 // ──────────────────────────────────────────
 // Recipe Store — selected recipe for cooking
@@ -115,4 +115,138 @@ export const useAuthStore = create((set, get) => ({
     const user = get().user;
     return user && !user.onboardingDone;
   },
+}));
+
+// ──────────────────────────────────────────
+// Nisse: Household Store
+// ──────────────────────────────────────────
+
+export const useHouseholdStore = create((set, get) => ({
+  household: null,
+  inventory: [],
+  meta: null,
+  loading: false,
+  error: null,
+
+  fetch: async () => {
+    set({ loading: true, error: null });
+    try {
+      const [{ household }, { items }] = await Promise.all([
+        householdApi.current(),
+        householdApi.inventory(),
+      ]);
+      set({ household, inventory: items, loading: false });
+      return household;
+    } catch (err) {
+      // 404 no_household is a normal state for new users
+      set({ household: null, inventory: [], loading: false, error: err.code === 'no_household' ? null : err.message });
+      return null;
+    }
+  },
+
+  fetchMeta: async () => {
+    if (get().meta) return get().meta;
+    const meta = await householdApi.meta();
+    set({ meta });
+    return meta;
+  },
+
+  saveHousehold: async (data) => {
+    const { household } = await householdApi.upsert(data);
+    set({ household });
+    return household;
+  },
+
+  addMember: async (member) => {
+    const { member: created } = await householdApi.addMember(member);
+    set((state) => ({
+      household: state.household
+        ? { ...state.household, members: [...(state.household.members || []), created] }
+        : state.household,
+    }));
+    return created;
+  },
+
+  updateMember: async (id, data) => {
+    const { member } = await householdApi.updateMember(id, data);
+    set((state) => ({
+      household: state.household
+        ? {
+            ...state.household,
+            members: state.household.members.map((m) => (m.id === id ? member : m)),
+          }
+        : state.household,
+    }));
+    return member;
+  },
+
+  removeMember: async (id) => {
+    await householdApi.removeMember(id);
+    set((state) => ({
+      household: state.household
+        ? { ...state.household, members: state.household.members.filter((m) => m.id !== id) }
+        : state.household,
+    }));
+  },
+
+  saveInventory: async (items) => {
+    const { items: saved } = await householdApi.saveInventory(items);
+    set({ inventory: saved });
+    return saved;
+  },
+}));
+
+// ──────────────────────────────────────────
+// Nisse: Dinner Store — "Lös middagen"
+// ──────────────────────────────────────────
+
+export const useDinnerStore = create((set, get) => ({
+  request: null,
+  recommendations: [],
+  degraded: null,
+  solving: false,
+  error: null,
+  accepted: null, // { recommendation, shoppingList }
+
+  solve: async (rawText, chips) => {
+    set({ solving: true, error: null, accepted: null });
+    try {
+      const data = await dinnerApi.solve(rawText, chips);
+      set({
+        request: data.request,
+        recommendations: data.recommendations,
+        degraded: data.degraded,
+        solving: false,
+      });
+      return data;
+    } catch (err) {
+      set({ solving: false, error: err.message });
+      throw err;
+    }
+  },
+
+  requestAlternative: async (direction, replaceId) => {
+    const { request, recommendations } = get();
+    if (!request) return null;
+    const { recommendation } = await dinnerApi.alternative(request.id, direction);
+    set({
+      recommendations: replaceId
+        ? recommendations.map((r) => (r.id === replaceId ? recommendation : r))
+        : [...recommendations, recommendation],
+    });
+    return recommendation;
+  },
+
+  accept: async (recommendationId) => {
+    const result = await dinnerApi.accept(recommendationId);
+    set((state) => ({
+      accepted: result,
+      recommendations: state.recommendations.map((r) =>
+        r.id === recommendationId ? { ...r, status: 'ACCEPTED' } : r
+      ),
+    }));
+    return result;
+  },
+
+  reset: () => set({ request: null, recommendations: [], degraded: null, accepted: null, error: null }),
 }));

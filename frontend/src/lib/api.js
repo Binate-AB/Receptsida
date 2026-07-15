@@ -381,4 +381,143 @@ export const lexicon = {
   },
 };
 
-export default { auth, recipes, lexicon, gdpr, locations, mealPlans, cooking };
+
+// ── Nisse: Household API ──
+
+export const households = {
+  async meta() {
+    return apiFetch('/households/meta');
+  },
+
+  async upsert(data) {
+    return apiFetch('/households', { method: 'POST', body: JSON.stringify(data) });
+  },
+
+  async current() {
+    return apiFetch('/households/current');
+  },
+
+  async update(data) {
+    return apiFetch('/households/current', { method: 'PATCH', body: JSON.stringify(data) });
+  },
+
+  async addMember(member) {
+    return apiFetch('/households/current/members', {
+      method: 'POST',
+      body: JSON.stringify(member),
+    });
+  },
+
+  async updateMember(id, data) {
+    return apiFetch(`/households/current/members/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async removeMember(id) {
+    return apiFetch(`/households/current/members/${id}`, { method: 'DELETE' });
+  },
+
+  async inventory() {
+    return apiFetch('/households/current/inventory');
+  },
+
+  async saveInventory(items) {
+    return apiFetch('/households/current/inventory', {
+      method: 'PUT',
+      body: JSON.stringify({ items }),
+    });
+  },
+};
+
+// ── Nisse: Dinner solver API ──
+
+export const dinner = {
+  async solve(rawText, chips) {
+    return apiFetch('/dinner/solve', {
+      method: 'POST',
+      body: JSON.stringify({ rawText: rawText || undefined, chips: chips || undefined }),
+      timeout: 60_000, // AI parse + motivations can take a while
+    });
+  },
+
+  async alternative(requestId, direction, excludeTemplateIds = []) {
+    return apiFetch(`/dinner/requests/${requestId}/alternative`, {
+      method: 'POST',
+      body: JSON.stringify({ direction, excludeTemplateIds }),
+      timeout: 60_000,
+    });
+  },
+
+  async accept(recommendationId) {
+    return apiFetch(`/dinner/recommendations/${recommendationId}/accept`, { method: 'POST' });
+  },
+};
+
+// ── Nisse: Shopping list API ──
+
+export const shoppingLists = {
+  async list(status = 'ACTIVE') {
+    return apiFetch(`/shopping-lists?status=${status}`);
+  },
+
+  async get(id) {
+    return apiFetch(`/shopping-lists/${id}`);
+  },
+
+  async updateItem(listId, itemId, data) {
+    return apiFetch(`/shopping-lists/${listId}/items/${itemId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async setStatus(listId, status) {
+    return apiFetch(`/shopping-lists/${listId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  },
+};
+
+// ── Nisse: Cook session API ──
+
+export const cookSessions = {
+  async start(payload) {
+    return apiFetch('/cook-sessions', { method: 'POST', body: JSON.stringify(payload) });
+  },
+
+  async get(id) {
+    return apiFetch(`/cook-sessions/${id}`);
+  },
+
+  async update(id, data) {
+    return apiFetch(`/cook-sessions/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+  },
+
+  async rescue(id, problem) {
+    return apiFetch(`/cook-sessions/${id}/rescue`, {
+      method: 'POST',
+      body: JSON.stringify({ problem }),
+      timeout: 45_000,
+    });
+  },
+
+  async ask(id, question, context) {
+    return apiFetch(`/cook-sessions/${id}/ask`, {
+      method: 'POST',
+      body: JSON.stringify({ question, context }),
+      timeout: 60_000,
+    });
+  },
+
+  async feedback(id, data) {
+    return apiFetch(`/cook-sessions/${id}/feedback`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+export default { auth, recipes, lexicon, gdpr, locations, mealPlans, cooking, households, dinner, shoppingLists, cookSessions };

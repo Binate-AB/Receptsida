@@ -8,7 +8,8 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mic, ArrowRight, Sparkles, Zap, Trash2, Flame, Package, List, Type } from 'lucide-react';
+import { X, Mic, ArrowRight, Sparkles, Zap, Trash2, Flame, Package, List, Type, UtensilsCrossed } from 'lucide-react';
+import Link from 'next/link';
 import { useAuthStore } from '../../lib/store';
 import { NisseLogo } from '../NisseLogo';
 
@@ -177,6 +178,30 @@ export function AppHome({ onSearch, onStartSearch }) {
           <p className="font-body text-[14px] text-warm-400 max-w-[280px] mx-auto leading-relaxed">
             Jag är din personliga kock. Berätta vad du har hemma, så fixar vi resten.
           </p>
+        </motion.div>
+
+        {/* ═══ LÖS MIDDAGEN — primary CTA banner ═══ */}
+        <motion.div variants={fadeUp} className="mb-4">
+          <Link
+            href="/middag"
+            className="flex items-center gap-3 p-4 rounded-2xl"
+            style={{
+              background: '#1A1A2E',
+              boxShadow: '0 10px 30px rgba(26,26,46,0.25)',
+            }}
+          >
+            <span
+              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: '#FF6B35' }}
+            >
+              <UtensilsCrossed size={20} className="text-white" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-white font-semibold text-[15px]">Vad ska ni äta ikväll?</span>
+              <span className="block text-white/60 text-[12px]">Berätta hur kvällen ser ut — Nisse löser resten.</span>
+            </span>
+            <ArrowRight size={18} className="text-white/70 shrink-0" />
+          </Link>
         </motion.div>
 
         {/* ═══ MODE TOGGLE — Switch between ingredients and free text ═══ */}
