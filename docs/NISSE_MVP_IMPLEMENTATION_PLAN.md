@@ -26,7 +26,7 @@ rekommendation. (Masterprompt §28, Definition of Done.)
 | # | Steg | Innehåll | Acceptanskriterier | Status |
 |---|------|----------|--------------------|--------|
 | 0 | Hygien | AppError-fix i `routes/cooking.js`; `repairJSON` → `utils/json-repair.js` (+stack-korrekt stängning); `node --test`-setup; revisionsrapport + denna plan | `npm test` grönt; docs finns | ✅ |
-| 1 | Migrations-reconciliering | Drift-migration via `prisma migrate diff`; prod-runbook (nedan) | `prisma migrate deploy` bygger komplett schema på färsk DB | ⬜ |
+| 1 | Migrations-reconciliering | Drift-migration via `prisma migrate diff`; prod-runbook (nedan) | `prisma migrate deploy` bygger komplett schema på färsk DB | ✅ |
 | 2 | Hushållsdomän | Modeller `Household`/`HouseholdMember`/`InventoryItem` + migration; `routes/households.js`; Zod-scheman; `getOwnedHousehold`-helper | CRUD fungerar; gamla endpoints opåverkade | ⬜ |
 | 3 | Receptmallar + motor-kärna | `RecipeTemplate` + migration; delad `templateSchema` (Zod); 10 seed-JSON + seed-script; motor: `allergens/units/portions/normalize/timeline` + tester | Seed validerar (DAG-bygge körs per mall); motortester gröna | ⬜ |
 | 4 | Rekommendationsmotor | Motor: `pantry/cost/shopping/ranker` + tester; `MealRequest`/`MealRecommendation`/`ShoppingList(+Item)` + migration; `POST /dinner/solve` (chips-only, utan AI); accept → auto-inköpslista | 3 kort utan allergiöverträdelser; lista aggregerad per hylla | ⬜ |
