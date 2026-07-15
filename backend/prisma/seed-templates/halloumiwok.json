@@ -1,0 +1,173 @@
+{
+  "slug": "halloumiwok",
+  "title": "Halloumi- och grönsakswok med nudlar",
+  "description": "Snabb vegetarisk wok där allt går i samma panna. Klar på 20 minuter.",
+  "tags": [
+    "vardag",
+    "snabbt",
+    "vegetariskt"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 20,
+  "activeTimeMin": 17,
+  "passiveTimeMin": 3,
+  "servingsBase": 4,
+  "costPerPortionMin": 20,
+  "costPerPortionMax": 32,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 1,
+  "dietaryFlags": [
+    "vegetarisk"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "stekpanna",
+    "kastrull"
+  ],
+  "ingredients": [
+    {
+      "name": "Halloumi",
+      "canonical": "halloumi",
+      "qtyPerPortion": 60,
+      "unit": "g",
+      "aisle": "Mejeri",
+      "estPriceSek": 40,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ]
+    },
+    {
+      "name": "Äggnudlar",
+      "canonical": "nudlar",
+      "qtyPerPortion": 60,
+      "unit": "g",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 20,
+      "allergens": [
+        "gluten",
+        "ägg"
+      ],
+      "substitutions": [
+        {
+          "name": "Risnudlar",
+          "canonical": "risnudlar",
+          "note": "Glutenfritt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Broccoli",
+      "canonical": "broccoli",
+      "qtyPerPortion": 80,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 20
+    },
+    {
+      "name": "Paprika",
+      "canonical": "paprika",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Morot",
+      "canonical": "morot",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Sojasås",
+      "canonical": "sojasås",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 25,
+      "allergens": [
+        "soja",
+        "gluten"
+      ]
+    },
+    {
+      "name": "Sweet chilisås",
+      "canonical": "sweet chili",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 25
+    },
+    {
+      "name": "Sesamfrön",
+      "canonical": "sesamfrön",
+      "qtyPerPortion": 0.5,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 20,
+      "allergens": [
+        "sesam"
+      ],
+      "optional": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Koka nudlarna enligt förpackningen. Skölj i kallt vatten.",
+      "voiceCue": "Koka nudlarna enligt förpackningen och skölj dem sedan i kallt vatten.",
+      "durationMin": 5,
+      "activeMin": 2,
+      "timerNeeded": true,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Skär halloumin i stavar och grönsakerna i mindre bitar.",
+      "voiceCue": "Skär halloumin i stavar och grönsakerna i lagom stora bitar.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s3",
+      "text": "Stek halloumin gyllene i en het panna. Ta upp och lägg åt sidan.",
+      "voiceCue": "Stek halloumin tills den är gyllene, och lägg den sedan åt sidan.",
+      "durationMin": 4,
+      "activeMin": 4,
+      "dependsOn": [
+        "s2"
+      ],
+      "equipment": [
+        "stekpanna"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": "Woka grönsakerna på hög värme 3–4 minuter — de ska ha tuggmotstånd kvar.",
+      "voiceCue": "Woka grönsakerna på hög värme i tre till fyra minuter. De ska fortfarande ha lite tuggmotstånd.",
+      "durationMin": 4,
+      "activeMin": 4,
+      "dependsOn": [
+        "s3"
+      ],
+      "warning": "Hög värme och kort tid — annars blir grönsakerna mjuka och vattniga."
+    },
+    {
+      "id": "s5",
+      "text": "Vänd ner nudlar, halloumi, soja och sweet chili. Toppa med sesamfrön.",
+      "voiceCue": "Vänd ner nudlarna, halloumin och såserna. Toppa med sesamfrön och servera direkt.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s1",
+        "s4"
+      ]
+    }
+  ]
+}

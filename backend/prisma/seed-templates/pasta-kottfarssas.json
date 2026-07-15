@@ -1,0 +1,240 @@
+{
+  "slug": "pasta-kottfarssas",
+  "title": "Pasta med köttfärssås",
+  "description": "Tryggaste vardagsrätten — med gemensam grund och en mild barnvariant plus en vuxenvariant med vitlök, chili och parmesan.",
+  "tags": [
+    "vardag",
+    "barnfavorit",
+    "familj"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 20,
+  "passiveTimeMin": 10,
+  "servingsBase": 4,
+  "costPerPortionMin": 16,
+  "costPerPortionMax": 28,
+  "childFriendly": 3,
+  "effortScore": 2,
+  "dishLoad": 3,
+  "spiceLevel": 0,
+  "equipmentRequired": [
+    "spis",
+    "stekpanna",
+    "kastrull"
+  ],
+  "hasChildAdultBranch": true,
+  "variants": {
+    "child": {
+      "label": "Barnens: mild sås",
+      "note": "Såsen tas undan innan vitlök och chili tillsätts."
+    },
+    "adult": {
+      "label": "Vuxnas: vitlök, chili & parmesan",
+      "note": "Extra sting och sälta för de vuxna."
+    }
+  },
+  "ingredients": [
+    {
+      "name": "Köttfärs",
+      "canonical": "köttfärs",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 55,
+      "substitutions": [
+        {
+          "name": "Vegofärs",
+          "canonical": "vegofärs",
+          "note": "Vegetariskt alternativ",
+          "allergens": [
+            "soja"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pasta",
+      "canonical": "pasta",
+      "qtyPerPortion": 90,
+      "unit": "g",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 18,
+      "allergens": [
+        "gluten"
+      ],
+      "substitutions": [
+        {
+          "name": "Glutenfri pasta",
+          "canonical": "glutenfri pasta",
+          "note": "Glutenfritt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Krossade tomater",
+      "canonical": "krossade tomater",
+      "qtyPerPortion": 100,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Morot",
+      "canonical": "morot",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Tomatpuré",
+      "canonical": "tomatpuré",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 40,
+      "pantryStaple": true
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12,
+      "group": "vuxen"
+    },
+    {
+      "name": "Chiliflakes",
+      "canonical": "chili",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 15,
+      "group": "vuxen"
+    },
+    {
+      "name": "Parmesan",
+      "canonical": "parmesan",
+      "qtyPerPortion": 10,
+      "unit": "g",
+      "aisle": "Mejeri",
+      "estPriceSek": 40,
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "group": "vuxen",
+      "optional": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Hacka löken och riv moroten grovt.",
+      "voiceCue": "Börja med att hacka löken och riva moroten grovt.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s2",
+      "text": "Bryn köttfärsen i olivolja på hög värme. Tillsätt lök och morot mot slutet.",
+      "voiceCue": "Bryn färsen i olja på hög värme. Lägg i lök och morot mot slutet.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Bryn i omgångar om pannan är liten — annars kokar färsen i stället för att stekas."
+    },
+    {
+      "id": "s3",
+      "text": "Tillsätt krossade tomater och tomatpuré. Låt såsen sjuda under lock i 10 minuter.",
+      "voiceCue": "Häll i krossade tomater och tomatpuré, och låt såsen sjuda under lock i tio minuter.",
+      "durationMin": 10,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2"
+      ],
+      "timerNeeded": true
+    },
+    {
+      "id": "s4",
+      "text": "Koka pastan enligt förpackningen. Spara lite pastavatten.",
+      "voiceCue": "Koka pastan enligt förpackningen, och spara en skvätt av pastavattnet till såsen.",
+      "durationMin": 10,
+      "activeMin": 2,
+      "timerNeeded": true,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s5",
+      "text": "Ta undan barnens portion av såsen till en egen liten kastrull eller skål.",
+      "voiceCue": "Ta undan barnens del av såsen nu, innan kryddningen.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3"
+      ],
+      "branch": "child"
+    },
+    {
+      "id": "s6",
+      "text": "Pressa i vitlök och strö i chiliflakes i den kvarvarande såsen. Sjud 2–3 minuter.",
+      "voiceCue": "Pressa i vitlöken och strö i chilin i vuxensåsen. Låt sjuda ett par minuter till.",
+      "durationMin": 3,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3",
+        "s5"
+      ],
+      "branch": "adult"
+    },
+    {
+      "id": "s7",
+      "text": "Servera barnens pasta med den milda såsen. Gärna komponenterna separat på tallriken.",
+      "voiceCue": "Servera barnens pasta med den milda såsen. Gärna var sak för sig på tallriken.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s4",
+        "s5"
+      ],
+      "branch": "child"
+    },
+    {
+      "id": "s8",
+      "text": "Servera de vuxnas pasta med såsen och riven parmesan på toppen.",
+      "voiceCue": "Servera de vuxnas pasta med sås och riven parmesan på toppen.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s4",
+        "s6"
+      ],
+      "branch": "adult"
+    }
+  ]
+}
