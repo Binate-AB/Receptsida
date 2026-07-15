@@ -39,13 +39,26 @@ app.use(helmet());
 
 // CORS — allow explicit origins + all Vercel preview deployments
 const allowedOrigins = config.CORS_ORIGIN.split(',').map((o) => o.trim());
-const vercelPreviewRegex = /^https:\/\/receptsida(-[a-z0-9]+-promoe88)?\.vercel\.app$/;
+const vercelPreviewRegex = /^https:\/\/(receptsida|nisse)(-[a-z0-9]+-promoe88)?\.vercel\.app$/;
+// Capacitor/native app webview origins (iOS + Android). The native app calls
+// the API cross-origin from its local webview host, so these must be allowed.
+const nativeAppOrigins = new Set([
+  'capacitor://localhost',
+  'ionic://localhost',
+  'http://localhost',
+  'https://localhost',
+]);
 
 app.use(
   cors({
     origin(origin, cb) {
-      // Allow server-to-server (no origin) and allowed list
-      if (!origin || allowedOrigins.includes(origin) || vercelPreviewRegex.test(origin)) {
+      // Allow server-to-server (no origin), allowed list, native app, previews
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        nativeAppOrigins.has(origin) ||
+        vercelPreviewRegex.test(origin)
+      ) {
         return cb(null, true);
       }
       cb(new Error('Blocked by CORS'));
