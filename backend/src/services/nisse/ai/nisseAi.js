@@ -17,6 +17,26 @@ import { cacheGet, cacheSet } from '../../../config/redis.js';
 import crypto from 'crypto';
 
 /**
+ * Reject a promise after `ms` so a slow AI call can never block the request
+ * past the serverless function budget. Callers already fall back to the
+ * deterministic path on any rejection.
+ */
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+// Per-call budgets. Two AI calls (parse + motivations) can run in one
+// /dinner/solve; keeping each well under the Vercel Hobby 10s limit leaves
+// headroom for DB work. Both degrade gracefully when they trip.
+const PARSE_BUDGET_MS = 7_000;
+const MOTIVATIONS_BUDGET_MS = 6_000;
+const RESCUE_BUDGET_MS = 8_000;
+
+/**
  * Parse tonight's situation.
  * Free text → AI parse (validated, retried once) merged over the
  * chips baseline. No free text, no AI, or AI failure → pure
@@ -45,14 +65,18 @@ export async function parseMealSituation(rawText, chips, householdSummary) {
 
   try {
     const prompt = PROMPTS.mealParse;
-    const { data } = await callStructured({
-      promptKey: 'mealParse',
-      promptVersion: prompt.version,
-      system: prompt.system,
-      user: prompt.build({ rawText, chips, householdSummary }),
-      maxTokens: prompt.maxTokens,
-      schema: parsedMealRequestSchema,
-    });
+    const { data } = await withTimeout(
+      callStructured({
+        promptKey: 'mealParse',
+        promptVersion: prompt.version,
+        system: prompt.system,
+        user: prompt.build({ rawText, chips, householdSummary }),
+        maxTokens: prompt.maxTokens,
+        schema: parsedMealRequestSchema,
+      }),
+      PARSE_BUDGET_MS,
+      'mealParse'
+    );
 
     // Chips take precedence over AI interpretation on conflict
     // (explicit clicks beat inferred text), and eaterIds must be
@@ -100,14 +124,18 @@ export async function writeMotivations(recommendations, parsed, householdSummary
 
   try {
     const prompt = PROMPTS.motivations;
-    const { data } = await callStructured({
-      promptKey: 'motivations',
-      promptVersion: prompt.version,
-      system: prompt.system,
-      user: prompt.build({ recommendations, parsed, householdSummary }),
-      maxTokens: prompt.maxTokens,
-      schema: motivationsSchema,
-    });
+    const { data } = await withTimeout(
+      callStructured({
+        promptKey: 'motivations',
+        promptVersion: prompt.version,
+        system: prompt.system,
+        user: prompt.build({ recommendations, parsed, householdSummary }),
+        maxTokens: prompt.maxTokens,
+        schema: motivationsSchema,
+      }),
+      MOTIVATIONS_BUDGET_MS,
+      'motivations'
+    );
 
     const map = {};
     for (const item of data.items) map[item.slot] = item.motivation;
@@ -134,14 +162,18 @@ export async function rescueHelp(sessionSnapshot, problemText) {
 
   try {
     const prompt = PROMPTS.rescue;
-    const { data } = await callStructured({
-      promptKey: 'rescue',
-      promptVersion: prompt.version,
-      system: prompt.system,
-      user: prompt.build({ problem: problemText, ...sessionSnapshot }),
-      maxTokens: prompt.maxTokens,
-      schema: rescueSchema,
-    });
+    const { data } = await withTimeout(
+      callStructured({
+        promptKey: 'rescue',
+        promptVersion: prompt.version,
+        system: prompt.system,
+        user: prompt.build({ problem: problemText, ...sessionSnapshot }),
+        maxTokens: prompt.maxTokens,
+        schema: rescueSchema,
+      }),
+      RESCUE_BUDGET_MS,
+      'rescue'
+    );
     return { ...data, source: 'ai' };
   } catch (err) {
     console.error('rescue AI call failed, using fallback:', err.message);

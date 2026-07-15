@@ -182,7 +182,13 @@ async function start() {
   }
 }
 
-start();
+// On Vercel (serverless) we don't listen on a port — the Express app is
+// exported as the function handler (see api/index.js) and Prisma connects
+// lazily on first query. Everywhere else (local, Railway, any Node host)
+// we start the HTTP server normally.
+if (!process.env.VERCEL) {
+  start();
+}
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
@@ -191,3 +197,7 @@ process.on('SIGTERM', async () => {
   if (redis) redis.disconnect();
   process.exit(0);
 });
+
+// Export the Express app so serverless platforms (Vercel) can use it
+// as the request handler. An Express app is itself a (req, res) handler.
+export default app;

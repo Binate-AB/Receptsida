@@ -26,8 +26,12 @@ function getClient() {
   if (!client) {
     client = new Anthropic({
       apiKey: config.ANTHROPIC_API_KEY,
-      timeout: 30_000, // structured calls are small — fail fast to the fallback
-      maxRetries: 1,
+      // Structured calls are small. Keep the per-request timeout tight so a
+      // slow model call fails fast to the deterministic fallback — important
+      // on serverless hosts with a hard function timeout (Vercel Hobby = 10s).
+      // We do our own validation retry, so no SDK-level retries.
+      timeout: 8_000,
+      maxRetries: 0,
     });
   }
   return client;
