@@ -48,6 +48,7 @@ model User {
   consentRecords ConsentRecord[]
   mealPlans      MealPlan[]
   household      Household?
+  membership     HouseholdMembership?
 
   @@index([authProvider, providerId])
   @@map("users")
@@ -393,22 +394,49 @@ model ScrapeJob {
 
 model Household {
   id           String       @id @default(cuid())
-  ownerId      String       @unique @map("owner_id") // MVP: one household per user
+  ownerId      String       @unique @map("owner_id") // creator; access goes via memberships
   name         String       @default("Mitt hushåll")
   cookingSkill CookingSkill @default(INTERMEDIATE) @map("cooking_skill")
   equipment    String[]     @default([]) // canonical slugs: "ugn","spis","mikro","airfryer","mixer","ugnsform","stekpanna","kastrull"
+  inviteCode   String?      @unique @map("invite_code") // short code for a second adult to join
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
 
   owner           User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  members         HouseholdMember[]
-  inventory       InventoryItem[]
-  mealRequests    MealRequest[]
-  shoppingLists   ShoppingList[]
-  cookingSessions CookingSession[]
-  feedback        MealFeedback[]
+  members              HouseholdMember[]
+  inventory            InventoryItem[]
+  mealRequests         MealRequest[]
+  shoppingLists        ShoppingList[]
+  cookingSessions      CookingSession[]
+  feedback             MealFeedback[]
+  ingredientConfidence HouseholdIngredientConfidence[]
+  dishPreferences      DishPreference[]
+  memberships          HouseholdMembership[]
 
   @@map("households")
+}
+
+// Hushållsdelning: several adult accounts share one household —
+// profile, allergies, preferences, outcomes and learning. Whoever
+// initiates tonight's decision is tonight's decision maker. MVP:
+// a user belongs to exactly ONE household (userId is unique).
+model HouseholdMembership {
+  id          String         @id @default(cuid())
+  userId      String         @unique @map("user_id")
+  householdId String         @map("household_id")
+  role        MembershipRole @default(ADULT)
+  joinedAt    DateTime       @default(now()) @map("joined_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId])
+  @@map("household_memberships")
+}
+
+enum MembershipRole {
+  OWNER
+  ADULT
 }
 
 enum CookingSkill {
@@ -495,6 +523,9 @@ model RecipeTemplate {
   equipmentRequired   String[] @default([]) @map("equipment_required")
   spiceLevel          Int      @default(0) @map("spice_level") // 0-3 base branch
   hasChildAdultBranch Boolean  @default(false) @map("has_child_adult_branch")
+  // How well the dish survives uncertain pantry, missing ingredients,
+  // less time than planned, child adaptation and simple substitutions (1-5)
+  robustness          Int      @default(3)
   ingredients         Json     // TemplateIngredient[] — Zod-validated at seed
   steps               Json     // TemplateStep[] — DAG with dependsOn + branch tags
   variants            Json?    // branch metadata { child: {...}, adult: {...} }
@@ -505,6 +536,7 @@ model RecipeTemplate {
 
   recommendations MealRecommendation[]
   cookingSessions CookingSession[]
+  dishPreferences DishPreference[]
 
   @@index([isActive])
   @@map("recipe_templates")
@@ -524,9 +556,68 @@ model MealRequest {
 
   household       Household            @relation(fields: [householdId], references: [id], onDelete: Cascade)
   recommendations MealRecommendation[]
+  assumptions     DinnerAssumption[]
 
   @@index([householdId, createdAt(sort: Desc)])
   @@map("meal_requests")
+}
+
+// ── Assumption economy ──
+// Every dinner decision records what Nisse assumed. Level 1 must be
+// verified, level 2 is shown and one-tap correctable, level 3 is silent.
+model DinnerAssumption {
+  id             String    @id @default(cuid())
+  requestId      String    @map("request_id")
+  key            String    // "portions" | "time_budget" | "energy" | "budget" | "pantry:<canonical>"
+  level          Int       @default(2) // 1 verify | 2 show | 3 silent
+  value          Json
+  confidence     Float     @default(0.6)
+  correctedValue Json?     @map("corrected_value")
+  correctedAt    DateTime? @map("corrected_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  request MealRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, key])
+  @@map("dinner_assumptions")
+}
+
+// Smakförankring: dishes the household says usually work at home.
+// Set from a fast curated multi-select at onboarding (<30 s), extended
+// by learning. A ranking signal — never a filter.
+model DishPreference {
+  id          String               @id @default(cuid())
+  householdId String               @map("household_id")
+  templateId  String               @map("template_id")
+  source      DishPreferenceSource @default(ONBOARDING)
+  createdAt   DateTime             @default(now()) @map("created_at")
+
+  household Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  template  RecipeTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, templateId])
+  @@map("dish_preferences")
+}
+
+enum DishPreferenceSource {
+  ONBOARDING
+  LEARNED
+}
+
+// Per-household learned confidence that a canonical ingredient is home.
+// Seeded by a transparent initial heuristic for common Swedish staples;
+// updated by outcomes (missing reported ↓, confirmed at prep ↑).
+model HouseholdIngredientConfidence {
+  id          String   @id @default(cuid())
+  householdId String   @map("household_id")
+  canonical   String
+  confidence  Float    @default(0.6)
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, canonical])
+  @@map("household_ingredient_confidence")
 }
 
 model MealRecommendation {

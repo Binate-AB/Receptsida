@@ -219,6 +219,11 @@ export const upsertHouseholdSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   cookingSkill: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']).optional(),
   equipment: z.array(z.enum(EQUIPMENT_CODES)).max(20).optional(),
+  // Smakförankring: template slugs from the onboarding quick-pick
+  dishPreferences: z.array(z.string().regex(/^[a-z0-9-]+$/)).max(30).optional(),
+  // Set by the wizard on final save (first completion logs onboarding_completed)
+  onboardingCompleted: z.boolean().optional(),
+  onboardingDurationMs: z.number().int().min(0).max(3_600_000).optional(),
 });
 
 export const householdMemberSchema = z.object({
@@ -272,6 +277,39 @@ export const solveDinnerSchema = z
 export const alternativeSchema = z.object({
   direction: z.enum(['enklare', 'billigare', 'barnvänligare']),
   excludeTemplateIds: z.array(z.string()).max(20).optional().default([]),
+});
+
+// Join an existing household with a short invite code
+export const joinHouseholdSchema = z.object({
+  inviteCode: z.string().min(4).max(16),
+});
+
+// Prep screen: level 1 verification of critical ingredients before cooking
+export const prepVerifySchema = z.object({
+  confirmed: z.array(z.string().max(60)).max(30).default([]),
+  missing: z.array(z.string().max(60)).max(30).default([]),
+});
+
+// "Jag saknar något" — structured missing-ingredient report
+export const missingIngredientSchema = z.object({
+  canonical: z.string().min(1).max(60),
+});
+
+// "Jag ligger efter" — behind-schedule replan
+export const behindScheduleSchema = z.object({
+  minutesBehind: z.number().int().min(0).max(240).optional(),
+});
+
+// One-tap assumption correction (assumption economy).
+// Value semantics per key are validated in assumptionService.
+export const assumptionCorrectionSchema = z.object({
+  key: z
+    .string()
+    .regex(
+      /^(portions|time_budget|energy|budget|pantry:[a-zåäöé0-9 _-]{1,60})$/,
+      'Ogiltig antagande-nyckel'
+    ),
+  value: z.union([z.string().max(60), z.number(), z.boolean(), z.null()]),
 });
 
 // ──────────────────────────────────────────

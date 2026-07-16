@@ -400,6 +400,19 @@ export const households = {
     return apiFetch('/households/current');
   },
 
+  // Join an existing household with an invite code (second adult)
+  async join(inviteCode) {
+    return apiFetch('/households/join', {
+      method: 'POST',
+      body: JSON.stringify({ inviteCode }),
+    });
+  },
+
+  // Get (lazily create) the household's invite code
+  async invite() {
+    return apiFetch('/households/current/invite');
+  },
+
   async update(data) {
     return apiFetch('/households/current', { method: 'PATCH', body: JSON.stringify(data) });
   },
@@ -449,6 +462,22 @@ export const dinner = {
     return apiFetch(`/dinner/requests/${requestId}/alternative`, {
       method: 'POST',
       body: JSON.stringify({ direction, excludeTemplateIds }),
+      timeout: 60_000,
+    });
+  },
+
+  // One-tap assumption correction → deterministic re-rank (fast, no AI)
+  async correctAssumption(requestId, key, value) {
+    return apiFetch(`/dinner/requests/${requestId}/assumptions`, {
+      method: 'PATCH',
+      body: JSON.stringify({ key, value }),
+    });
+  },
+
+  // "Inget av dessa" → three new options excluding everything shown
+  async regenerate(requestId) {
+    return apiFetch(`/dinner/requests/${requestId}/regenerate`, {
+      method: 'POST',
       timeout: 60_000,
     });
   },
@@ -504,6 +533,30 @@ export const cookSessions = {
       method: 'POST',
       body: JSON.stringify({ problem }),
       timeout: 45_000,
+    });
+  },
+
+  // Level 1 verification: confirm/deny critical ingredients before cooking
+  async prep(id, { confirmed = [], missing = [] }) {
+    return apiFetch(`/cook-sessions/${id}/prep`, {
+      method: 'POST',
+      body: JSON.stringify({ confirmed, missing }),
+    });
+  },
+
+  // "Jag saknar något" — deterministic substitution/simplify/fallback plan
+  async missing(id, canonical) {
+    return apiFetch(`/cook-sessions/${id}/missing`, {
+      method: 'POST',
+      body: JSON.stringify({ canonical }),
+    });
+  },
+
+  // "Jag ligger efter" — deterministic replan of the remaining steps
+  async behind(id, minutesBehind) {
+    return apiFetch(`/cook-sessions/${id}/behind`, {
+      method: 'POST',
+      body: JSON.stringify(minutesBehind != null ? { minutesBehind } : {}),
     });
   },
 

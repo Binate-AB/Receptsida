@@ -1,0 +1,37 @@
+{
+  "slug": "tonfiskpasta",
+  "title": "Krämig tonfiskpasta",
+  "description": "Skafferiräddaren: pasta, tonfisk på burk och crème fraiche. Billig, snabb och förvånansvärt omtyckt.",
+  "tags": ["vardag", "billigt", "snabbt", "skafferi"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 20,
+  "activeTimeMin": 12,
+  "passiveTimeMin": 8,
+  "servingsBase": 4,
+  "costPerPortionMin": 12,
+  "costPerPortionMax": 20,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [],
+  "equipmentRequired": ["spis", "kastrull", "stekpanna"],
+  "robustness": 4,
+  "ingredients": [
+    { "name": "Pasta", "canonical": "pasta", "qtyPerPortion": 90, "unit": "g", "aisle": "Torrvaror & Pasta", "allergens": ["gluten"], "estPriceSek": 15, "critical": true, "pantryStaple": true,
+      "substitutions": [ { "name": "Glutenfri pasta", "canonical": "glutenfri pasta", "note": "koka enligt paketet" } ] },
+    { "name": "Tonfisk i vatten", "canonical": "tonfisk", "qtyPerPortion": 0.5, "unit": "burk", "aisle": "Konserver & Såser", "allergens": ["fisk"], "estPriceSek": 15, "critical": true,
+      "substitutions": [ { "name": "Kikärtor", "canonical": "kikärtor", "note": "vegetariskt — mosa lätt med gaffel" } ] },
+    { "name": "Crème fraiche", "canonical": "crème fraiche", "qtyPerPortion": 0.5, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 18, "critical": true,
+      "substitutions": [ { "name": "Havrefraiche", "canonical": "havrefraiche", "allergens": ["gluten"], "note": "laktosfritt alternativ" } ] },
+    { "name": "Gul lök", "canonical": "lök", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 10 },
+    { "name": "Majs", "canonical": "majs", "qtyPerPortion": 30, "unit": "g", "aisle": "Konserver & Såser", "estPriceSek": 12, "optional": true },
+    { "name": "Citron", "canonical": "citron", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 8, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Koka pastan enligt paketet.", "voiceCue": "Sätt på pastavattnet och koka pastan enligt paketet.", "durationMin": 12, "activeMin": 3, "timerNeeded": true, "equipment": ["kastrull"] },
+    { "id": "s2", "text": "Finhacka och fräs löken mjuk.", "voiceCue": "Finhacka löken och fräs den mjuk i lite olja.", "durationMin": 4, "activeMin": 4, "equipment": ["stekpanna"] },
+    { "id": "s3", "text": "Rör ner tonfisk, crème fraiche och majs. Låt bli varmt.", "voiceCue": "Rör ner tonfisken, crème fraichen och majsen. Låt allt bli genomvarmt.", "durationMin": 4, "activeMin": 3, "dependsOn": ["s2"] },
+    { "id": "s4", "text": "Blanda pastan med såsen, smaka av med salt, peppar och citron.", "voiceCue": "Blanda pastan med såsen och smaka av med salt, peppar och en skvätt citron. Klart!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s1", "s3"] }
+  ]
+}

@@ -35,6 +35,9 @@ export const templateIngredientSchema = z.object({
   unit: z.enum(KNOWN_UNITS),
   group: z.enum(['bas', 'barn', 'vuxen']).optional().default('bas'),
   optional: z.boolean().optional().default(false),
+  // Avgörande ingrediens — dish cannot reasonably be cooked without it.
+  // Unset → derived: required and not a pantry staple (see engine/uncertainty.js).
+  critical: z.boolean().optional(),
   allergens: z.array(z.enum(ALLERGEN_CODES)).optional().default([]),
   aisle: z.enum(AISLES).optional().default('Övrigt'),
   // Approximate SEK cost of buying this item once (smallest sensible pack)
@@ -47,6 +50,9 @@ export const templateIngredientSchema = z.object({
 export const templateStepSchema = z.object({
   id: z.string().regex(/^s\d+$/, 'Steg-id ska vara s1, s2, ...'),
   branch: z.enum(['base', 'child', 'adult']).optional().default('base'),
+  // Optional steps can be dropped by the behind-schedule replan
+  // (garnish, extra polish) — never load-bearing cooking steps.
+  optional: z.boolean().optional().default(false),
   text: z.string().min(5),
   voiceCue: z.string().min(5),
   durationMin: z.number().int().min(0).max(240),
@@ -78,6 +84,9 @@ export const templateSchema = z
     equipmentRequired: z.array(z.enum(EQUIPMENT_CODES)).default([]),
     spiceLevel: z.number().int().min(0).max(3).default(0),
     hasChildAdultBranch: z.boolean().default(false),
+    // How well the dish survives uncertain pantry, a missing ingredient,
+    // less time than planned, child adaptation and simple substitutions (1-5)
+    robustness: z.number().int().min(1).max(5).default(3),
     ingredients: z.array(templateIngredientSchema).min(2),
     steps: z.array(templateStepSchema).min(2),
     variants: z

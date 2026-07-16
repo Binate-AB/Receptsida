@@ -1,0 +1,45 @@
+{
+  "slug": "vegetarisk-tacos",
+  "title": "Vegetariska tacos på bönor",
+  "description": "Fredagsmys utan kött: kryddiga svarta bönor, majs och alla tillbehör. Barnen bygger milda, vuxna kryddar upp.",
+  "tags": ["vardag", "fredagsmys", "vegetariskt", "billigt"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 25,
+  "activeTimeMin": 20,
+  "passiveTimeMin": 5,
+  "servingsBase": 4,
+  "costPerPortionMin": 14,
+  "costPerPortionMax": 24,
+  "childFriendly": 3,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 1,
+  "dietaryFlags": ["vegetarisk", "laktosfri"],
+  "equipmentRequired": ["spis", "stekpanna"],
+  "hasChildAdultBranch": true,
+  "robustness": 4,
+  "variants": {
+    "child": { "label": "Milda bönor", "note": "Bönorna kryddas med bara tomat och lite salt." },
+    "adult": { "label": "Kryddiga bönor", "note": "Tacokrydda och het salsa för de vuxna." }
+  },
+  "ingredients": [
+    { "name": "Svarta bönor", "canonical": "svarta bönor", "qtyPerPortion": 0.5, "unit": "burk", "aisle": "Konserver & Såser", "estPriceSek": 12, "critical": true,
+      "substitutions": [ { "name": "Kidneybönor", "canonical": "kidneybönor", "note": "samma tillagning" }, { "name": "Linser (kokta)", "canonical": "linser", "note": "lite lösare konsistens" } ] },
+    { "name": "Tortillabröd eller tacoskal", "canonical": "tortilla", "qtyPerPortion": 2, "unit": "st", "aisle": "Bröd", "allergens": ["gluten"], "estPriceSek": 25, "critical": true,
+      "substitutions": [ { "name": "Majstortilla", "canonical": "majstortilla", "note": "glutenfritt alternativ" } ] },
+    { "name": "Tacokrydda", "canonical": "tacokrydda", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Kryddor & Smaksättare", "estPriceSek": 12, "group": "vuxen" },
+    { "name": "Tomatpuré", "canonical": "tomatpuré", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Konserver & Såser", "estPriceSek": 10, "pantryStaple": true },
+    { "name": "Majs", "canonical": "majs", "qtyPerPortion": 40, "unit": "g", "aisle": "Konserver & Såser", "estPriceSek": 12 },
+    { "name": "Tomat", "canonical": "tomat", "qtyPerPortion": 0.5, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 12 },
+    { "name": "Gurka", "canonical": "gurka", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 12, "optional": true },
+    { "name": "Riven ost", "canonical": "ost", "qtyPerPortion": 25, "unit": "g", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 30, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Skölj bönorna. Hacka tomat och gurka.", "voiceCue": "Skölj bönorna och hacka tomaten och gurkan.", "durationMin": 6, "activeMin": 6 },
+    { "id": "s2", "branch": "child", "text": "Värm barnens bönor med tomatpuré och en nypa salt. Mosa lätt.", "voiceCue": "Värm barnens bönor med tomatpuré och lite salt, och mosa dem lätt med en gaffel.", "durationMin": 5, "activeMin": 4, "dependsOn": ["s1"], "equipment": ["stekpanna"] },
+    { "id": "s3", "branch": "adult", "text": "Stek de vuxnas bönor med tacokrydda och tomatpuré, späd med lite vatten.", "voiceCue": "Stek de vuxnas bönor med tacokryddan och tomatpurén, och späd med en skvätt vatten.", "durationMin": 6, "activeMin": 5, "dependsOn": ["s1"], "equipment": ["stekpanna"] },
+    { "id": "s4", "text": "Värm tortillabröden.", "voiceCue": "Värm tortillabröden hastigt.", "durationMin": 2, "activeMin": 2, "optional": true },
+    { "id": "s5", "branch": "child", "text": "Låt barnen bygga tacos med de milda bönorna.", "voiceCue": "Låt barnen bygga sina tacos med de milda bönorna. Klart för barnen!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s2"] },
+    { "id": "s6", "branch": "adult", "text": "Bygg de vuxnas tacos med de kryddiga bönorna.", "voiceCue": "Bygg era egna tacos med de kryddiga bönorna. Klart!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s3"] }
+  ]
+}

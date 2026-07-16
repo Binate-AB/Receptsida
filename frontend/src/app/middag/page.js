@@ -39,6 +39,127 @@ const SLOT_META = {
   CHEAPEST: { label: 'Billigast', color: '#B8860B', bg: '#FFF9E0' },
 };
 
+// ── Nisse's visible assumptions (level 2) ──
+// One tap corrects an assumption and deterministically re-ranks.
+const ENERGY_LABELS = { slut: 'helt slut', låg: 'låg ork', normal: 'normal ork', inspirerad: 'vill laga ordentligt' };
+const BUDGET_LABELS = { snålt: 'billigt', normal: 'normal budget', flexibelt: 'flexibel budget' };
+
+function AssumptionChips({ assumptions, onCorrect, correcting }) {
+  const visible = (assumptions || []).filter((a) => a.level === 2);
+  if (visible.length === 0) return null;
+
+  const pantryName = (a) =>
+    (a.value && typeof a.value === 'object' && a.value.name) || a.key.slice('pantry:'.length);
+
+  const chipFor = (a) => {
+    if (a.key === 'portions') {
+      const n = Number(a.value) || 4;
+      return {
+        label: `${n} portioner`,
+        actions: [
+          { symbol: '−', next: Math.max(1, n - 1) },
+          { symbol: '+', next: Math.min(20, n + 1) },
+        ],
+      };
+    }
+    if (a.key === 'time_budget') {
+      const order = [20, 30, 45, 60, null];
+      const idx = order.indexOf(a.value);
+      return {
+        label: a.value ? `max ${a.value} min` : 'ingen tidsgräns',
+        next: order[(idx + 1) % order.length],
+      };
+    }
+    if (a.key === 'energy') {
+      const order = ['slut', 'låg', 'normal', 'inspirerad'];
+      return {
+        label: ENERGY_LABELS[a.value] || a.value,
+        next: order[(order.indexOf(a.value) + 1) % order.length],
+      };
+    }
+    if (a.key === 'budget') {
+      const order = ['snålt', 'normal', 'flexibelt'];
+      return {
+        label: BUDGET_LABELS[a.value] || a.value,
+        next: order[(order.indexOf(a.value) + 1) % order.length],
+      };
+    }
+    if (a.key.startsWith('pantry:')) {
+      const home = typeof a.value === 'boolean' ? a.value : a.value?.assumedHome !== false;
+      return {
+        label: home ? `${pantryName(a)} hemma` : `${pantryName(a)} köps`,
+        next: !home,
+      };
+    }
+    return null;
+  };
+
+  return (
+    <div className="card p-4 mt-4" style={{ borderRadius: 14 }}>
+      <p className="text-xs font-medium text-warm-500 mb-2">
+        NISSE ANTAR — tryck för att rätta
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {visible.map((a) => {
+          const chip = chipFor(a);
+          if (!chip) return null;
+          const style = {
+            background: a.corrected ? '#EDF3EF' : '#FFFFFF',
+            color: '#1A1A2E',
+            border: '1px dashed #C9C9D1',
+            minHeight: '36px',
+          };
+          if (chip.actions) {
+            return (
+              <span
+                key={a.key}
+                className="px-2 py-1.5 rounded-full text-sm font-medium inline-flex items-center gap-1"
+                style={style}
+              >
+                <button
+                  type="button"
+                  disabled={correcting}
+                  onClick={() => onCorrect(a.key, chip.actions[0].next)}
+                  className="w-6 h-6 rounded-full font-bold"
+                  style={{ background: '#F2F2F5' }}
+                  aria-label="Färre portioner"
+                >
+                  −
+                </button>
+                {chip.label}
+                {a.corrected && <Check size={13} className="text-warm-500" />}
+                <button
+                  type="button"
+                  disabled={correcting}
+                  onClick={() => onCorrect(a.key, chip.actions[1].next)}
+                  className="w-6 h-6 rounded-full font-bold"
+                  style={{ background: '#F2F2F5' }}
+                  aria-label="Fler portioner"
+                >
+                  +
+                </button>
+              </span>
+            );
+          }
+          return (
+            <button
+              key={a.key}
+              type="button"
+              disabled={correcting}
+              onClick={() => onCorrect(a.key, chip.next)}
+              className="px-3 py-1.5 rounded-full text-sm font-medium inline-flex items-center gap-1.5 transition-all"
+              style={style}
+            >
+              {chip.label}
+              {a.corrected && <Check size={13} className="text-warm-500" />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ChipBtn({ active, onClick, children }) {
   return (
     <button
@@ -156,7 +277,10 @@ export default function DinnerPage() {
   const toast = useToast();
   const { user, loading: authLoading } = useAuthStore();
   const { household, fetch: fetchHousehold } = useHouseholdStore();
-  const { recommendations, degraded, solving, solve, requestAlternative, accept, accepted } = useDinnerStore();
+  const {
+    recommendations, assumptions, degraded, solving, correcting,
+    solve, requestAlternative, accept, accepted, correctAssumption, regenerate,
+  } = useDinnerStore();
 
   const [freeText, setFreeText] = useState('');
   const [timeBudget, setTimeBudget] = useState(null);
@@ -205,6 +329,24 @@ export default function DinnerPage() {
       toast.success('Nytt förslag framme');
     } catch (err) {
       toast.error(err.code === 'no_alternative' ? err.message : 'Kunde inte hämta alternativ.');
+    }
+  };
+
+  const handleCorrect = async (key, value) => {
+    try {
+      await correctAssumption(key, value);
+      toast.success('Rättat — nya förslag framme');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    try {
+      await regenerate();
+      toast.success('Tre nya förslag');
+    } catch (err) {
+      toast.error(err.code === 'no_more_options' ? err.message : 'Kunde inte hämta nya förslag.');
     }
   };
 
@@ -325,7 +467,16 @@ export default function DinnerPage() {
         {degraded && (
           <p className="text-sm text-warm-500 mt-4 text-center">{degraded}</p>
         )}
-        <div className="space-y-4 mt-6">
+
+        {recommendations.length > 0 && (
+          <AssumptionChips
+            assumptions={assumptions}
+            onCorrect={handleCorrect}
+            correcting={correcting}
+          />
+        )}
+
+        <div className="space-y-4 mt-6" style={{ opacity: correcting ? 0.5 : 1, transition: 'opacity 150ms' }}>
           <AnimatePresence>
             {recommendations.map((rec) => (
               <RecommendationCard
@@ -338,6 +489,17 @@ export default function DinnerPage() {
             ))}
           </AnimatePresence>
         </div>
+
+        {recommendations.length > 0 && !accepted && (
+          <button
+            onClick={handleRegenerate}
+            disabled={solving || correcting}
+            className="btn-secondary w-full mt-4 flex items-center justify-center gap-2"
+          >
+            {solving ? <Spinner size="sm" /> : <UtensilsCrossed size={16} />}
+            Inget av dessa — visa tre nya
+          </button>
+        )}
 
         {accepted?.shoppingList && (
           <div className="card p-4 mt-4 flex items-center gap-3" style={{ borderRadius: 14 }}>

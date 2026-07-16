@@ -26,15 +26,16 @@ export function resolveEaters(members, parsed) {
 /**
  * Build the deterministic `computed` payload for a slotted template.
  *
- * @param {object} slotResult — { slot, template, score, reasons } from rankCandidates
- * @param {object} ctx — { eaters, inventory }
+ * @param {object} slotResult — { slot, template, score, reasons, uncertainty?, uncertainCritical? } from rankCandidates
+ * @param {object} ctx — { eaters, inventory, portionsOverride? }
  * @returns {object} computed snapshot (JSON-safe)
  */
 export function buildComputedPayload(slotResult, ctx) {
   const { template, reasons, score } = slotResult;
   const { eaters, inventory } = ctx;
 
-  const portions = computePortions(eaters, eaters.map((m) => m.id));
+  // A corrected portions assumption overrides the member-derived count
+  const portions = ctx.portionsOverride ?? computePortions(eaters, eaters.map((m) => m.id));
   const scaled = scaleIngredients(template.ingredients, portions);
   const match = matchInventory(scaled, inventory);
   const cost = estimateCost(template, portions, [...match.toBuy, ...match.uncertain]);
@@ -60,6 +61,15 @@ export function buildComputedPayload(slotResult, ctx) {
     effortScore: template.effortScore,
     dishLoad: template.dishLoad,
     branchPossible: template.hasChildAdultBranch,
+    robustness: template.robustness ?? 3,
+    // Assumption economy: how uncertain the pantry signal was for this
+    // dish, and which critical ingredients the prep screen must verify.
+    uncertainty: slotResult.uncertainty ?? null,
+    criticalToVerify: (slotResult.uncertainCritical || []).map((e) => ({
+      name: e.name,
+      canonical: e.canonical,
+      confidence: e.confidence,
+    })),
     score: Math.round(score),
     reasons,
     cost,

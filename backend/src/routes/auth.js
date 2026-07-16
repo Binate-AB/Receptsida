@@ -349,12 +349,44 @@ router.get(
       where: { id: req.user.id },
       include: {
         searchQuota: true,
+        membership: { select: { householdId: true } },
         _count: { select: { favorites: true, searches: true } },
       },
     });
 
     if (!user) {
       throw new AppError(404, 'user_not_found', 'Användaren hittades inte.');
+    }
+
+    // app_return: /auth/me runs once per app open — dedup to one event
+    // per user and calendar day (return-frequency metric). Fail-open.
+    try {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const todays = await prisma.analyticsEvent.findFirst({
+        where: { userId: user.id, name: 'app_return', createdAt: { gte: startOfDay } },
+        select: { id: true },
+      });
+      if (!todays) {
+        const last = await prisma.analyticsEvent.findFirst({
+          where: { userId: user.id, name: 'app_return' },
+          orderBy: { createdAt: 'desc' },
+          select: { createdAt: true },
+        });
+        const daysSinceLast = last
+          ? Math.round((Date.now() - last.createdAt.getTime()) / 86_400_000)
+          : null;
+        await prisma.analyticsEvent.create({
+          data: {
+            userId: user.id,
+            householdId: user.membership?.householdId || null,
+            name: 'app_return',
+            payload: { days_since_last: daysSinceLast },
+          },
+        });
+      }
+    } catch {
+      // analytics must never break auth
     }
 
     const limit =

@@ -15,12 +15,16 @@ import {
   rescueRequestSchema,
   sessionAskSchema,
   mealFeedbackSchema,
+  prepVerifySchema,
+  missingIngredientSchema,
+  behindScheduleSchema,
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
 import { buildSessionData } from '../services/nisse/cookSessionService.js';
 import { resolveEaters } from '../services/nisse/recommendationService.js';
 import { hardGates } from '../services/nisse/engine/allergenGate.js';
+import { resolveMissingIngredient, replanRemaining } from '../services/nisse/engine/rescuePlan.js';
 import { rescueHelp } from '../services/nisse/ai/nisseAi.js';
 import { askCookingAssistant } from '../services/claude.js';
 import { buildCookingPrompt } from '../services/cookingPrompt.js';
@@ -183,6 +187,159 @@ router.patch(
     }
 
     res.json({ session: sessionResponse(updated) });
+  })
+);
+
+/**
+ * Upsert learned pantry confidence for a household ingredient
+ * (level 1 verification and missing reports are the strongest
+ * learning signals we have).
+ */
+async function setIngredientConfidence(householdId, canonical, confidence) {
+  await prisma.householdIngredientConfidence.upsert({
+    where: { householdId_canonical: { householdId, canonical } },
+    create: { householdId, canonical, confidence },
+    update: { confidence },
+  });
+}
+
+// ──────────────────────────────────────────
+// POST /cook-sessions/:id/prep — level 1 verification
+// Confirm/deny the critical ingredients before the
+// stove goes on. Updates learned pantry confidence.
+// ──────────────────────────────────────────
+router.post(
+  '/:id/prep',
+  requireAuth,
+  validate(prepVerifySchema),
+  asyncHandler(async (req, res) => {
+    const { session, household } = await getOwnedSession(req.user.id, req.params.id);
+    const { confirmed, missing } = req.validated;
+
+    for (const canonical of confirmed) {
+      await setIngredientConfidence(household.id, canonical, 0.95);
+    }
+    for (const canonical of missing) {
+      await setIngredientConfidence(household.id, canonical, 0.05);
+      await prisma.inventoryItem.deleteMany({ where: { householdId: household.id, canonical } });
+    }
+
+    await logEvent(prisma, {
+      userId: req.user.id,
+      householdId: household.id,
+      name: 'prep_verified',
+      payload: {
+        sessionId: session.id,
+        critical_confirmed: confirmed.length,
+        critical_missing: missing.length,
+      },
+    });
+
+    res.json({ ok: true, confirmed: confirmed.length, missing: missing.length });
+  })
+);
+
+// ──────────────────────────────────────────
+// POST /cook-sessions/:id/missing — "Jag saknar något"
+// Deterministic resolution: safe substitution →
+// simplification → fallback plan. Substitutions can
+// never bypass the allergen gate.
+// ──────────────────────────────────────────
+router.post(
+  '/:id/missing',
+  requireAuth,
+  validate(missingIngredientSchema),
+  asyncHandler(async (req, res) => {
+    const { session, household } = await getOwnedSession(req.user.id, req.params.id);
+    const { canonical } = req.validated;
+
+    const template = await prisma.recipeTemplate.findUnique({
+      where: { id: session.templateId },
+    });
+    if (!template) {
+      throw new AppError(404, 'template_not_found', 'Receptet hittades inte.');
+    }
+
+    // Conservative: gate substitutions against ALL household members —
+    // a substitute is only offered when it is safe for everyone.
+    const plan = resolveMissingIngredient(template, canonical, household.members);
+
+    // The report itself is a learning signal: the household did not have it.
+    await setIngredientConfidence(household.id, canonical, 0.05);
+    await prisma.inventoryItem.deleteMany({ where: { householdId: household.id, canonical } });
+
+    await logEvent(prisma, {
+      userId: req.user.id,
+      householdId: household.id,
+      name: 'missing_ingredient_reported',
+      payload: {
+        sessionId: session.id,
+        canonical,
+        resolution: plan.resolution,
+        substitute_canonical: plan.substitute?.canonical || null,
+      },
+    });
+
+    res.json(plan);
+  })
+);
+
+// ──────────────────────────────────────────
+// POST /cook-sessions/:id/behind — "Jag ligger efter"
+// Deterministic replan of the remaining steps:
+// drop optional steps, re-pack, new realistic ETA.
+// ──────────────────────────────────────────
+router.post(
+  '/:id/behind',
+  requireAuth,
+  validate(behindScheduleSchema),
+  asyncHandler(async (req, res) => {
+    const { session, household } = await getOwnedSession(req.user.id, req.params.id);
+
+    const template = await prisma.recipeTemplate.findUnique({
+      where: { id: session.templateId },
+    });
+    if (!template) {
+      throw new AppError(404, 'template_not_found', 'Receptet hittades inte.');
+    }
+
+    const sessionSteps = session.recipeData?.steps || [];
+    const completedIds = new Set(
+      sessionSteps.slice(0, session.currentStepIndex).map((s) => s.id)
+    );
+
+    const replan = replanRemaining(template.steps, completedIds, {
+      branch: session.recipeData?.branch || 'base',
+    });
+
+    await logEvent(prisma, {
+      userId: req.user.id,
+      householdId: household.id,
+      name: 'time_problem_reported',
+      payload: {
+        sessionId: session.id,
+        stepIndex: session.currentStepIndex,
+        minutes_behind: req.validated.minutesBehind ?? null,
+        new_eta_min: replan.newEtaMin,
+        steps_simplified: replan.skipped.length,
+      },
+    });
+
+    res.json({
+      newEtaMin: replan.newEtaMin,
+      skipped: replan.skipped,
+      remainingSteps: replan.steps.map((s) => ({
+        id: s.id,
+        text: s.text,
+        durationMin: s.durationMin,
+        lane: s.lane,
+        startMin: s.startMin,
+      })),
+      message:
+        replan.skipped.length > 0
+          ? `Ingen fara. Vi hoppar över ${replan.skipped.length} moment som inte behövs — klart om ca ${replan.newEtaMin} min.`
+          : `Ingen fara. Fokusera på nästa steg i taget — klart om ca ${replan.newEtaMin} min.`,
+    });
   })
 );
 

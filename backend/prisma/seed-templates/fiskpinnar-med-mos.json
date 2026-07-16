@@ -1,0 +1,37 @@
+{
+  "slug": "fiskpinnar-med-mos",
+  "title": "Fiskpinnar med potatismos och ärtor",
+  "description": "Snabbaste barnmiddagen som finns. Fiskpinnar i ugn, mos och söta ärtor — klart på 25 minuter.",
+  "tags": ["vardag", "barnfavorit", "snabbt"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 25,
+  "activeTimeMin": 12,
+  "passiveTimeMin": 13,
+  "servingsBase": 4,
+  "costPerPortionMin": 14,
+  "costPerPortionMax": 22,
+  "childFriendly": 3,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [],
+  "equipmentRequired": ["ugn", "spis", "kastrull"],
+  "robustness": 4,
+  "ingredients": [
+    { "name": "Fiskpinnar", "canonical": "fiskpinnar", "qtyPerPortion": 4, "unit": "st", "aisle": "Frys", "allergens": ["fisk", "gluten"], "estPriceSek": 35, "critical": true },
+    { "name": "Potatis", "canonical": "potatis", "qtyPerPortion": 250, "unit": "g", "aisle": "Frukt & Grönt", "estPriceSek": 20, "critical": true,
+      "substitutions": [ { "name": "Färdigt potatismospulver", "canonical": "mospulver", "allergens": ["laktos"], "note": "följ paketet" } ] },
+    { "name": "Gröna ärtor", "canonical": "ärtor", "qtyPerPortion": 75, "unit": "g", "aisle": "Frys", "estPriceSek": 15 },
+    { "name": "Mjölk", "canonical": "mjölk", "qtyPerPortion": 0.5, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 15,
+      "substitutions": [ { "name": "Havredryck", "canonical": "havredryck", "allergens": ["gluten"], "note": "osötad" } ] },
+    { "name": "Smör", "canonical": "smör", "qtyPerPortion": 15, "unit": "g", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 30, "pantryStaple": true },
+    { "name": "Citron", "canonical": "citron", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 8, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Sätt ugnen på 225°. Lägg fiskpinnarna på plåt.", "voiceCue": "Sätt ugnen på tvåhundratjugofem grader och lägg fiskpinnarna på en plåt.", "durationMin": 3, "activeMin": 3, "equipment": ["ugn"] },
+    { "id": "s2", "text": "Skala och koka potatisen, 15–20 min.", "voiceCue": "Skala potatisen och koka den mjuk, femton till tjugo minuter.", "durationMin": 20, "activeMin": 5, "timerNeeded": true, "equipment": ["kastrull"] },
+    { "id": "s3", "text": "In med fiskpinnarna, ca 12 min. Vänd halvvägs.", "voiceCue": "In med fiskpinnarna i ugnen, tolv minuter. Vänd dem halvvägs.", "durationMin": 12, "activeMin": 2, "dependsOn": ["s1"], "timerNeeded": true },
+    { "id": "s4", "text": "Mosa potatisen med smör och mjölk. Koka upp ärtorna.", "voiceCue": "Mosa potatisen med smör och mjölk, och koka upp ärtorna.", "durationMin": 5, "activeMin": 5, "dependsOn": ["s2"] },
+    { "id": "s5", "text": "Servera med en citronklyfta.", "voiceCue": "Servera fiskpinnarna med mos, ärtor och en klyfta citron. Klart!", "durationMin": 2, "activeMin": 2, "dependsOn": ["s3", "s4"] }
+  ]
+}

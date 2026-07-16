@@ -1,0 +1,35 @@
+{
+  "slug": "pyttipanna",
+  "title": "Pyttipanna med stekt ägg",
+  "description": "Tömmer kylen och räddar kvällen. Färdig pytt eller rester — allt funkar, och ägget gör den komplett.",
+  "tags": ["vardag", "billigt", "snabbt", "restmat"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 20,
+  "activeTimeMin": 15,
+  "passiveTimeMin": 5,
+  "servingsBase": 4,
+  "costPerPortionMin": 12,
+  "costPerPortionMax": 20,
+  "childFriendly": 3,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": ["glutenfri", "laktosfri"],
+  "equipmentRequired": ["spis", "stekpanna"],
+  "robustness": 5,
+  "ingredients": [
+    { "name": "Pyttipanna (fryst)", "canonical": "pyttipanna", "qtyPerPortion": 200, "unit": "g", "aisle": "Frys", "estPriceSek": 30, "critical": true,
+      "substitutions": [ { "name": "Kokt potatis + korv + lök (rester)", "canonical": "potatis", "note": "tärna smått och stek gyllene" } ] },
+    { "name": "Ägg", "canonical": "ägg", "qtyPerPortion": 1, "unit": "st", "aisle": "Mejeri", "allergens": ["ägg"], "estPriceSek": 30, "critical": true,
+      "substitutions": [ { "name": "Rödbetor", "canonical": "rödbetor", "note": "hoppa över ägget och servera med inlagda rödbetor" } ] },
+    { "name": "Smör eller olja", "canonical": "smör", "qtyPerPortion": 10, "unit": "g", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 30, "pantryStaple": true,
+      "substitutions": [ { "name": "Rapsolja", "canonical": "olja", "note": "helt laktosfritt" } ] },
+    { "name": "Inlagda rödbetor", "canonical": "rödbetor", "qtyPerPortion": 30, "unit": "g", "aisle": "Konserver & Såser", "estPriceSek": 20, "optional": true },
+    { "name": "Ketchup", "canonical": "ketchup", "qtyPerPortion": 1, "unit": "msk", "aisle": "Konserver & Såser", "estPriceSek": 20, "optional": true, "pantryStaple": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Stek pytten i smör på hög värme tills gyllene, 10–12 min.", "voiceCue": "Stek pytten i smör på hög värme, tio till tolv minuter tills den är gyllene. Rör inte för ofta.", "durationMin": 12, "activeMin": 8, "timerNeeded": true, "equipment": ["stekpanna"], "beginnerTip": "Låt pytten ligga still emellanåt — det är så den får stekyta." },
+    { "id": "s2", "text": "Stek äggen i en annan panna (eller knuffa pytten åt sidan).", "voiceCue": "Stek äggen — i en egen panna, eller knuffa pytten åt sidan och stek dem där.", "durationMin": 4, "activeMin": 4, "dependsOn": ["s1"] },
+    { "id": "s3", "text": "Servera med rödbetor och ketchup.", "voiceCue": "Servera pytten med stekt ägg, rödbetor och ketchup. Klart!", "durationMin": 2, "activeMin": 2, "dependsOn": ["s2"] }
+  ]
+}

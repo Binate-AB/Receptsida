@@ -18,6 +18,8 @@ import { CookingMode } from '../../components/CookingMode';
 import { BranchSwitcher } from '../../components/dinner/BranchSwitcher';
 import { RescueSheet } from '../../components/dinner/RescueSheet';
 import { FeedbackSheet } from '../../components/dinner/FeedbackSheet';
+import { PrepScreen } from '../../components/dinner/PrepScreen';
+import { CookAdjustSheets } from '../../components/dinner/CookAdjustSheets';
 import { useVoiceInput, useSpeech } from '../../hooks/useVoice';
 import { cooking, cookSessions } from '../../lib/api';
 import { Spinner } from '../../components/Spinner';
@@ -39,6 +41,7 @@ function CookingContent() {
 
   // ── Nisse session state ──
   const [session, setSession] = useState(null);
+  const [prepDone, setPrepDone] = useState(false);
   const [sessionLoading, setSessionLoading] = useState(Boolean(sessionParam || recParam));
   const [sessionError, setSessionError] = useState(null);
   const [activeLane, setActiveLane] = useState('base');
@@ -229,6 +232,16 @@ function CookingContent() {
         <BranchSwitcher lanes={lanes} activeLane={activeLane} onSwitch={setActiveLane} />
       )}
       {session && <RescueSheet sessionId={session.id} onSpeak={speak} />}
+      {session && <CookAdjustSheets session={session} />}
+
+      {/* Level 1 verification before the first step (fresh sessions only) */}
+      {session &&
+        !prepDone &&
+        session.status === 'ACTIVE' &&
+        (session.currentStepIndex || 0) === 0 &&
+        session.recipeData?.prep && (
+          <PrepScreen session={session} onDone={() => setPrepDone(true)} />
+        )}
 
       {showFeedback && (
         <FeedbackSheet
