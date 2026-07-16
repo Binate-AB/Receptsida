@@ -1,0 +1,45 @@
+{
+  "slug": "chili-sin-carne",
+  "title": "Chili sin carne",
+  "description": "Mustig böngryta som blir bättre dagen efter — perfekt för matlådor. Barnen får mild, vuxna toppar med hetta.",
+  "tags": ["vardag", "vegetariskt", "billigt", "matlådor"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 35,
+  "activeTimeMin": 15,
+  "passiveTimeMin": 20,
+  "servingsBase": 4,
+  "costPerPortionMin": 11,
+  "costPerPortionMax": 18,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 1,
+  "spiceLevel": 1,
+  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
+  "equipmentRequired": ["spis", "kastrull"],
+  "hasChildAdultBranch": true,
+  "robustness": 4,
+  "variants": {
+    "child": { "label": "Mild chili", "note": "Barnens portion tas undan innan chilin läggs i." },
+    "adult": { "label": "Het chili", "note": "Chilipulver och ev. färsk chili i de vuxnas gryta." }
+  },
+  "ingredients": [
+    { "name": "Kidneybönor", "canonical": "kidneybönor", "qtyPerPortion": 0.5, "unit": "burk", "aisle": "Konserver & Såser", "estPriceSek": 12, "critical": true,
+      "substitutions": [ { "name": "Svarta bönor", "canonical": "svarta bönor", "note": "samma tillagning" } ] },
+    { "name": "Krossade tomater", "canonical": "krossade tomater", "qtyPerPortion": 100, "unit": "g", "aisle": "Konserver & Såser", "estPriceSek": 12, "critical": true },
+    { "name": "Gul lök", "canonical": "lök", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 10 },
+    { "name": "Vitlök", "canonical": "vitlök", "qtyPerPortion": 0.25, "unit": "klyfta", "aisle": "Frukt & Grönt", "estPriceSek": 12 },
+    { "name": "Spiskummin", "canonical": "spiskummin", "qtyPerPortion": 0.25, "unit": "tsk", "aisle": "Kryddor & Smaksättare", "estPriceSek": 12, "pantryStaple": true },
+    { "name": "Chilipulver", "canonical": "chilipulver", "qtyPerPortion": 0.25, "unit": "tsk", "aisle": "Kryddor & Smaksättare", "estPriceSek": 12, "group": "vuxen" },
+    { "name": "Ris", "canonical": "ris", "qtyPerPortion": 0.75, "unit": "dl", "aisle": "Torrvaror & Pasta", "estPriceSek": 15, "pantryStaple": true },
+    { "name": "Majs", "canonical": "majs", "qtyPerPortion": 40, "unit": "g", "aisle": "Konserver & Såser", "estPriceSek": 12, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Hacka lök och vitlök, fräs med spiskummin.", "voiceCue": "Hacka löken och vitlöken och fräs dem med spiskummin i lite olja.", "durationMin": 5, "activeMin": 5, "equipment": ["kastrull"] },
+    { "id": "s2", "text": "Tillsätt bönor, tomater och majs. Låt puttra 15 min.", "voiceCue": "Tillsätt bönorna, tomaterna och majsen och låt puttra i femton minuter.", "durationMin": 15, "activeMin": 3, "dependsOn": ["s1"], "timerNeeded": true },
+    { "id": "s3", "text": "Koka riset under tiden.", "voiceCue": "Koka riset under tiden grytan puttrar.", "durationMin": 18, "activeMin": 3, "timerNeeded": true },
+    { "id": "s4", "branch": "child", "text": "Ta undan barnens portion — den är klar som den är.", "voiceCue": "Ta undan barnens portion nu — den är klar som den är, mild och god.", "durationMin": 2, "activeMin": 2, "dependsOn": ["s2"] },
+    { "id": "s5", "branch": "adult", "text": "Krydda upp resten med chilipulver och låt puttra 2 min till.", "voiceCue": "Krydda upp de vuxnas gryta med chilipulver och låt puttra ett par minuter till.", "durationMin": 3, "activeMin": 2, "dependsOn": ["s2"] },
+    { "id": "s6", "branch": "child", "text": "Servera barnens milda chili med ris.", "voiceCue": "Servera barnens milda chili med riset. Klart för barnen!", "durationMin": 2, "activeMin": 2, "dependsOn": ["s3", "s4"] },
+    { "id": "s7", "branch": "adult", "text": "Servera de vuxnas chili med ris.", "voiceCue": "Servera de vuxnas chili med riset. Klart!", "durationMin": 2, "activeMin": 2, "dependsOn": ["s3", "s5"] }
+  ]
+}

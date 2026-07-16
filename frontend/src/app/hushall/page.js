@@ -1,18 +1,20 @@
 // ============================================
 // Hushåll — Nisse household profile wizard
-// 3 steps: members (allergies = absolute rules) →
-// equipment/skill → what's at home. Short by design;
+// 4 steps: members (allergies = absolute rules) →
+// equipment/skill → taste anchoring (curated quick
+// pick, <30 s) → what's at home. Short by design;
 // Nisse learns the rest from actual use.
 // ============================================
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ChefHat, Refrigerator, Plus, X, Check, ArrowRight, ArrowLeft, Trash2 } from 'lucide-react';
+import { Users, ChefHat, Refrigerator, UtensilsCrossed, Plus, X, Check, ArrowRight, ArrowLeft, Trash2 } from 'lucide-react';
 import { useAuthStore, useHouseholdStore } from '../../lib/store';
+import { households as householdsApi } from '../../lib/api';
 import { useToast } from '../../components/Toast';
 import { AppPageHeader } from '../../components/app/AppPageHeader';
 import { Spinner } from '../../components/Spinner';
@@ -189,9 +191,34 @@ export default function HouseholdPage() {
   const [showMemberForm, setShowMemberForm] = useState(false);
   const [equipment, setEquipment] = useState([]);
   const [skill, setSkill] = useState('INTERMEDIATE');
+  const [dishPrefs, setDishPrefs] = useState([]); // template slugs — "brukar funka hos er"
   const [invItems, setInvItems] = useState([]);
   const [invInput, setInvInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [joinCode, setJoinCode] = useState('');
+  const [inviteCode, setInviteCode] = useState(null);
+  const wizardStartRef = useRef(Date.now());
+
+  const handleJoin = async () => {
+    if (!joinCode.trim()) return;
+    try {
+      await householdsApi.join(joinCode.trim());
+      await fetch();
+      toast.success('Du är nu med i hushållet!');
+      router.push('/middag');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const showInvite = async () => {
+    try {
+      const { inviteCode: code } = await householdsApi.invite();
+      setInviteCode(code);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -236,7 +263,13 @@ export default function HouseholdPage() {
     setSaving(true);
     try {
       await ensureHousehold();
-      await saveHousehold({ cookingSkill: skill, equipment });
+      await saveHousehold({
+        cookingSkill: skill,
+        equipment,
+        dishPreferences: dishPrefs,
+        onboardingCompleted: true,
+        onboardingDurationMs: Date.now() - wizardStartRef.current,
+      });
       await saveInventory(invItems.map((name) => ({ name })));
       toast.success('Hushållet sparat!');
       router.push('/middag');
@@ -269,8 +302,10 @@ export default function HouseholdPage() {
   const steps = [
     { icon: Users, title: 'Vilka är ni?', sub: 'Allergier är absoluta regler — allt annat lär sig Nisse längs vägen.' },
     { icon: ChefHat, title: 'Ert kök', sub: 'Utrustning och hur van kocken är.' },
+    { icon: UtensilsCrossed, title: 'Vad brukar funka?', sub: 'Välj rätter som brukar gå hem hos er — hoppa över om du är osäker.' },
     { icon: Refrigerator, title: 'Vad finns hemma?', sub: 'Grovt räcker — det här är en gissning, inte bokföring.' },
   ];
+  const lastStep = steps.length - 1;
   const StepIcon = steps[step].icon;
 
   return (
@@ -278,7 +313,7 @@ export default function HouseholdPage() {
       <AppPageHeader title="Hushåll" />
       <div className="max-w-xl mx-auto px-4 sm:px-6 py-6 pb-32">
         {/* Progress */}
-        <div className="flex gap-2 mb-6" role="progressbar" aria-valuenow={step + 1} aria-valuemax={3}>
+        <div className="flex gap-2 mb-6" role="progressbar" aria-valuenow={step + 1} aria-valuemax={steps.length}>
           {steps.map((_, i) => (
             <div key={i} className="flex-1 h-1.5 rounded-full" style={{ background: i <= step ? '#FF6B35' : '#E5E5EA' }} />
           ))}
@@ -289,6 +324,45 @@ export default function HouseholdPage() {
           <h1 className="font-display text-2xl text-warm-800">{steps[step].title}</h1>
         </div>
         <p className="text-warm-500 text-sm mb-6">{steps[step].sub}</p>
+
+        {/* Join an existing household (second adult) */}
+        {step === 0 && !household && (
+          <div className="card p-4 mb-4" style={{ borderRadius: 14, background: '#EDF3EF' }}>
+            <p className="text-sm text-warm-700 mb-2">Har din partner redan skapat ert hushåll? Ange koden:</p>
+            <div className="flex gap-2">
+              <input
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleJoin(); }}
+                placeholder="T.ex. A1B2C3"
+                className="input-field flex-1"
+                maxLength={16}
+              />
+              <button onClick={handleJoin} disabled={!joinCode.trim()} className="btn-secondary disabled:opacity-40">
+                Gå med
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Invite the other adult (existing household) */}
+        {step === 0 && household && (
+          <div className="card p-4 mb-4 flex items-center gap-3" style={{ borderRadius: 14 }}>
+            <Users size={18} className="text-warm-600 shrink-0" />
+            {inviteCode ? (
+              <p className="text-sm text-warm-700 flex-1">
+                Dela koden med din partner: <span className="font-mono font-bold tracking-widest">{inviteCode}</span>
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-warm-700 flex-1">Fler vuxna i hushållet? Dela Nisse.</p>
+                <button onClick={showInvite} className="text-sm font-semibold whitespace-nowrap" style={{ color: '#FF6B35' }}>
+                  Visa kod →
+                </button>
+              </>
+            )}
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {/* ── Step 1: Members ── */}
@@ -349,9 +423,40 @@ export default function HouseholdPage() {
             </motion.div>
           )}
 
-          {/* ── Step 3: Inventory ── */}
+          {/* ── Step 3: Taste anchoring (curated quick pick) ── */}
           {step === 2 && (
             <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {(meta?.dishChoices || []).map((d) => (
+                  <Chip
+                    key={d.slug}
+                    active={dishPrefs.includes(d.slug)}
+                    onClick={() =>
+                      setDishPrefs(
+                        dishPrefs.includes(d.slug)
+                          ? dishPrefs.filter((s) => s !== d.slug)
+                          : [...dishPrefs, d.slug]
+                      )
+                    }
+                  >
+                    {d.title}
+                  </Chip>
+                ))}
+              </div>
+              {(meta?.dishChoices || []).length === 0 && (
+                <p className="text-sm text-warm-400">Inga rätter att välja bland ännu.</p>
+              )}
+              <p className="text-xs text-warm-400">
+                {dishPrefs.length > 0
+                  ? `${dishPrefs.length} valda — Nisse väger in dem från första förslaget.`
+                  : 'Frivilligt. Nisse lär sig ändå av vad ni faktiskt lagar.'}
+              </p>
+            </motion.div>
+          )}
+
+          {/* ── Step 4: Inventory ── */}
+          {step === 3 && (
+            <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 {invItems.map((item) => (
                   <span key={item} className="px-3 py-1.5 rounded-full text-sm bg-white text-warm-700 flex items-center gap-1.5" style={{ border: '1px solid #E5E5EA' }}>
@@ -381,7 +486,7 @@ export default function HouseholdPage() {
               <ArrowLeft size={16} /> Tillbaka
             </button>
           )}
-          {step < 2 ? (
+          {step < lastStep ? (
             <button
               onClick={() => setStep(step + 1)}
               disabled={step === 0 && (household?.members || []).length === 0}

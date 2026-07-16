@@ -11,6 +11,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { validate, analyticsEventSchema } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { logEvent } from '../services/nisse/analytics.js';
+import { findMemberHousehold } from '../services/nisse/householdAccess.js';
 
 const router = Router();
 
@@ -19,10 +20,7 @@ router.post(
   requireAuth,
   validate(analyticsEventSchema),
   asyncHandler(async (req, res) => {
-    const household = await prisma.household.findUnique({
-      where: { ownerId: req.user.id },
-      select: { id: true },
-    });
+    const household = await findMemberHousehold(prisma, req.user.id);
 
     await logEvent(prisma, {
       userId: req.user.id,

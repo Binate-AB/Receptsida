@@ -203,8 +203,10 @@ export const useHouseholdStore = create((set, get) => ({
 export const useDinnerStore = create((set, get) => ({
   request: null,
   recommendations: [],
+  assumptions: [], // level 2: shown + one-tap correctable
   degraded: null,
   solving: false,
+  correcting: false,
   error: null,
   accepted: null, // { recommendation, shoppingList }
 
@@ -215,12 +217,51 @@ export const useDinnerStore = create((set, get) => ({
       set({
         request: data.request,
         recommendations: data.recommendations,
+        assumptions: data.assumptions || [],
         degraded: data.degraded,
         solving: false,
       });
       return data;
     } catch (err) {
       set({ solving: false, error: err.message });
+      throw err;
+    }
+  },
+
+  correctAssumption: async (key, value) => {
+    const { request } = get();
+    if (!request) return null;
+    set({ correcting: true });
+    try {
+      const data = await dinnerApi.correctAssumption(request.id, key, value);
+      set({
+        recommendations: data.recommendations,
+        assumptions: data.assumptions || [],
+        degraded: data.degraded,
+        correcting: false,
+      });
+      return data;
+    } catch (err) {
+      set({ correcting: false });
+      throw err;
+    }
+  },
+
+  regenerate: async () => {
+    const { request } = get();
+    if (!request) return null;
+    set({ solving: true });
+    try {
+      const data = await dinnerApi.regenerate(request.id);
+      set({
+        recommendations: data.recommendations,
+        assumptions: data.assumptions || [],
+        degraded: data.degraded,
+        solving: false,
+      });
+      return data;
+    } catch (err) {
+      set({ solving: false });
       throw err;
     }
   },
@@ -248,5 +289,13 @@ export const useDinnerStore = create((set, get) => ({
     return result;
   },
 
-  reset: () => set({ request: null, recommendations: [], degraded: null, accepted: null, error: null }),
+  reset: () =>
+    set({
+      request: null,
+      recommendations: [],
+      assumptions: [],
+      degraded: null,
+      accepted: null,
+      error: null,
+    }),
 }));

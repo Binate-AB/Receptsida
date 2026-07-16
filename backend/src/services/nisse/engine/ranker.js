@@ -8,6 +8,12 @@
 
 import { hardGates } from './allergenGate.js';
 import { pantryOverlapScore } from './pantry.js';
+import {
+  templateUncertainty,
+  unconfirmedCritical,
+  inventoryConfidenceMap,
+  learnedConfidenceMap,
+} from './uncertainty.js';
 
 /**
  * Rank recipe templates for a meal situation and pick 3 slots:
@@ -24,6 +30,8 @@ import { pantryOverlapScore } from './pantry.js';
  * @param {Map<string, object>} [ctx.feedbackScores] — templateId → { avgRating, count, avoid, cookAgain }
  * @param {string[]} [ctx.recentTemplateIds] — recently cooked (variation penalty)
  * @param {string[]} [ctx.excludeTemplateIds] — explicitly excluded (alternative flow)
+ * @param {Array<object>} [ctx.confidenceRows] — HouseholdIngredientConfidence rows (learned pantry signal)
+ * @param {Map<string, string>} [ctx.dishPreferences] — templateId → 'ONBOARDING'|'LEARNED' ("brukar funka hos er")
  * @returns {{ slots: Array<{slot: string, template: object, score: number, reasons: string[]}>, rejected: Array<{templateId, slug, reason}> }}
  */
 export function rankCandidates(templates, ctx) {
@@ -35,10 +43,16 @@ export function rankCandidates(templates, ctx) {
     feedbackScores = new Map(),
     recentTemplateIds = [],
     excludeTemplateIds = [],
+    confidenceRows = [],
+    dishPreferences = new Map(),
   } = ctx;
 
   const rejected = [];
   const candidates = [];
+
+  // Pantry-signal maps for the uncertainty measure (assumption economy)
+  const invConfidence = inventoryConfidenceMap(inventory);
+  const learnedConfidence = learnedConfidenceMap(confidenceRows);
 
   const hasChildEater = eaters.some((m) => m.ageCategory === 'BABY' || m.ageCategory === 'CHILD');
   const hasAdultEater = eaters.some((m) => m.ageCategory !== 'BABY' && m.ageCategory !== 'CHILD');
@@ -178,7 +192,26 @@ export function rankCandidates(templates, ctx) {
     // Variation: recently cooked → penalty
     if (recentTemplateIds.includes(tpl.id)) score -= 15;
 
-    candidates.push({ template: tpl, score, overlap, reasons });
+    // ── Assumption economy: robustness under uncertainty ──
+    // High uncertainty (unknown pantry) prefers dishes that survive a
+    // missing ingredient — the engine picks safer instead of asking.
+    const uncertainty = templateUncertainty(tpl, invConfidence, learnedConfidence);
+    const uncertainCritical = unconfirmedCritical(tpl, invConfidence, learnedConfidence);
+    const robustness = tpl.robustness ?? 3;
+    score += uncertainty * (robustness - 3) * 6;
+    if (uncertainty >= 0.5 && robustness >= 4) reasons.push('tålig rätt när skafferiet är osäkert');
+    // Many uncertain hard dependencies is a liability when we can't verify
+    score -= uncertainty * Math.max(0, uncertainCritical.length - 2) * 4;
+    if (uncertainCritical.length <= 1) reasons.push('få avgörande ingredienser');
+
+    // Smakförankring: dishes the household said usually work (+8 onboarding, +4 learned)
+    const prefSource = dishPreferences.get(tpl.id);
+    if (prefSource) {
+      score += prefSource === 'ONBOARDING' ? 8 : 4;
+      reasons.push('brukar fungera hos er');
+    }
+
+    candidates.push({ template: tpl, score, overlap, reasons, uncertainty, uncertainCritical });
   }
 
   // ── SLOT SELECTION ────────────────────────

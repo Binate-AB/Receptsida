@@ -1,0 +1,41 @@
+{
+  "slug": "kottbullar-potatismos",
+  "title": "Köttbullar med potatismos",
+  "description": "Klassikern som nästan alltid går hem. Köpta eller hemrullade köttbullar med krämigt mos och lite grönt.",
+  "tags": ["vardag", "barnfavorit", "klassiker"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 20,
+  "passiveTimeMin": 10,
+  "servingsBase": 4,
+  "costPerPortionMin": 15,
+  "costPerPortionMax": 28,
+  "childFriendly": 3,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": ["glutenfri"],
+  "equipmentRequired": ["spis", "stekpanna", "kastrull"],
+  "robustness": 4,
+  "ingredients": [
+    { "name": "Köttbullar", "canonical": "köttbullar", "qtyPerPortion": 125, "unit": "g", "aisle": "Kött & Fisk", "estPriceSek": 45, "critical": true,
+      "substitutions": [
+        { "name": "Kycklingköttbullar", "canonical": "kycklingköttbullar", "note": "samma stektid" },
+        { "name": "Vegobullar", "canonical": "vegobullar", "allergens": ["soja"], "note": "stek försiktigt, de är känsligare" }
+      ] },
+    { "name": "Potatis", "canonical": "potatis", "qtyPerPortion": 250, "unit": "g", "aisle": "Frukt & Grönt", "estPriceSek": 20, "critical": true,
+      "substitutions": [ { "name": "Färdigt potatismospulver", "canonical": "mospulver", "allergens": ["laktos"], "note": "följ paketet" } ] },
+    { "name": "Mjölk", "canonical": "mjölk", "qtyPerPortion": 0.5, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 15,
+      "substitutions": [ { "name": "Havredryck", "canonical": "havredryck", "allergens": ["gluten"], "note": "osötad funkar bäst" } ] },
+    { "name": "Smör", "canonical": "smör", "qtyPerPortion": 15, "unit": "g", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 30, "pantryStaple": true },
+    { "name": "Gurka eller ärtor", "canonical": "ärtor", "qtyPerPortion": 50, "unit": "g", "aisle": "Frys", "estPriceSek": 15, "optional": true },
+    { "name": "Lingonsylt", "canonical": "lingonsylt", "qtyPerPortion": 1, "unit": "msk", "aisle": "Konserver & Såser", "estPriceSek": 25, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Skala potatisen och koka i saltat vatten 15–20 min tills mjuk.", "voiceCue": "Skala potatisen och sätt den att koka i saltat vatten, femton till tjugo minuter.", "durationMin": 20, "activeMin": 6, "timerNeeded": true, "equipment": ["kastrull"] },
+    { "id": "s2", "text": "Stek köttbullarna i smör på medelvärme tills genomvarma, ca 8–10 min.", "voiceCue": "Stek köttbullarna i smör på medelvärme, åtta till tio minuter. Skaka pannan då och då.", "durationMin": 10, "activeMin": 6, "timerNeeded": true, "equipment": ["stekpanna"] },
+    { "id": "s3", "text": "Häll av vattnet, mosa potatisen med smör och mjölk. Salta.", "voiceCue": "Häll av vattnet och mosa potatisen med smör och mjölk. Smaka av med salt.", "durationMin": 5, "activeMin": 5, "dependsOn": ["s1"] },
+    { "id": "s4", "text": "Koka upp ärtorna hastigt.", "voiceCue": "Koka upp ärtorna hastigt, en minut räcker.", "durationMin": 2, "activeMin": 1, "dependsOn": ["s3"], "optional": true },
+    { "id": "s5", "text": "Servera köttbullar och mos med lingon.", "voiceCue": "Servera köttbullarna med moset och lite lingon. Klart!", "durationMin": 2, "activeMin": 2, "dependsOn": ["s2", "s3"] }
+  ]
+}

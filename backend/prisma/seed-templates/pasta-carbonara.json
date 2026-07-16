@@ -1,0 +1,36 @@
+{
+  "slug": "pasta-carbonara",
+  "title": "Enkel carbonara",
+  "description": "Vardagsversionen: pasta, bacon, ägg och ost. Klar på 20 minuter med det som oftast redan finns hemma.",
+  "tags": ["vardag", "snabbt", "pasta", "klassiker"],
+  "difficulty": "Medel",
+  "totalTimeMin": 20,
+  "activeTimeMin": 15,
+  "passiveTimeMin": 5,
+  "servingsBase": 4,
+  "costPerPortionMin": 15,
+  "costPerPortionMax": 25,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [],
+  "equipmentRequired": ["spis", "kastrull", "stekpanna"],
+  "robustness": 3,
+  "ingredients": [
+    { "name": "Spaghetti", "canonical": "pasta", "qtyPerPortion": 90, "unit": "g", "aisle": "Torrvaror & Pasta", "allergens": ["gluten"], "estPriceSek": 15, "critical": true, "pantryStaple": true,
+      "substitutions": [ { "name": "Glutenfri spaghetti", "canonical": "glutenfri pasta", "note": "koka enligt paketet" } ] },
+    { "name": "Bacon", "canonical": "bacon", "qtyPerPortion": 35, "unit": "g", "aisle": "Kött & Fisk", "estPriceSek": 25, "critical": true,
+      "substitutions": [ { "name": "Kalkonbacon", "canonical": "kalkonbacon", "note": "fläskfritt alternativ" }, { "name": "Rökt tofu", "canonical": "tofu", "allergens": ["soja"], "note": "vegetariskt — stek knaprig" } ] },
+    { "name": "Äggulor", "canonical": "ägg", "qtyPerPortion": 1, "unit": "st", "aisle": "Mejeri", "allergens": ["ägg"], "estPriceSek": 30, "critical": true },
+    { "name": "Riven parmesan eller västerbotten", "canonical": "parmesan", "qtyPerPortion": 20, "unit": "g", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 35, "critical": true,
+      "substitutions": [ { "name": "Vanlig riven ost", "canonical": "ost", "allergens": ["laktos", "mjölkprotein"], "note": "mildare men funkar" } ] },
+    { "name": "Svartpeppar", "canonical": "svartpeppar", "qtyPerPortion": 0.25, "unit": "krm", "aisle": "Kryddor & Smaksättare", "estPriceSek": 15, "pantryStaple": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Koka pastan. Spara en kopp pastavatten!", "voiceCue": "Koka pastan enligt paketet — och spara en kopp av pastavattnet innan du häller av.", "durationMin": 12, "activeMin": 3, "timerNeeded": true, "equipment": ["kastrull"], "beginnerTip": "Pastavattnet är hemligheten — stärkelsen gör såsen krämig." },
+    { "id": "s2", "text": "Stek baconet knaprigt.", "voiceCue": "Stek baconet knaprigt i en stekpanna.", "durationMin": 6, "activeMin": 5, "equipment": ["stekpanna"] },
+    { "id": "s3", "text": "Vispa ihop äggulor, ost och rikligt med svartpeppar.", "voiceCue": "Vispa ihop äggulorna med osten och rikligt med svartpeppar i en skål.", "durationMin": 3, "activeMin": 3 },
+    { "id": "s4", "text": "Dra pannan från värmen. Blanda pasta, bacon och äggsmet med en skvätt pastavatten.", "voiceCue": "Dra pannan från värmen. Blanda pastan med baconet och äggsmeten, och späd med pastavatten tills såsen blir krämig. Klart!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s1", "s2", "s3"], "warning": "Blanda av värmen — annars blir det äggröra i stället för sås." }
+  ]
+}

@@ -9,6 +9,7 @@ import { computePortions, scaleIngredients } from './engine/portions.js';
 import { buildTimeline } from './engine/timeline.js';
 import { formatAmount, normalizeAmount } from './engine/units.js';
 import { matchInventory } from './engine/pantry.js';
+import { isCriticalIngredient } from './engine/uncertainty.js';
 
 const LANE_LABELS = { base: 'Gemensamt', child: 'Barnens', adult: 'Vuxnas' };
 
@@ -35,6 +36,7 @@ export function buildSessionData(template, { eaters, inventory, branch }) {
 
   const steps = timeline.steps.map((s) => ({
     id: s.id,
+    optional: Boolean(s.optional),
     text: s.text,
     voice_cue: s.voiceCue,
     duration_seconds: s.timerNeeded && s.durationMin ? s.durationMin * 60 : undefined,
@@ -56,6 +58,7 @@ export function buildSessionData(template, { eaters, inventory, branch }) {
     time_minutes: timeline.totalMin,
     ingredients: scaled.map((i) => ({
       name: i.name,
+      canonical: i.canonical,
       amount: i.qty ? formatAmount(normalizeAmount(i.qty, i.unit).qty, normalizeAmount(i.qty, i.unit).unit) : '',
       have: atHome.has(i.canonical) || Boolean(i.pantryStaple),
       aisle: i.aisle,
@@ -66,6 +69,19 @@ export function buildSessionData(template, { eaters, inventory, branch }) {
     tips: template.description,
     variants: template.variants || null,
     branch: mode,
+    // Prep screen (level 1 verification): equipment + the critical
+    // ingredients that must be confirmed before the stove goes on.
+    prep: {
+      equipment: template.equipmentRequired || [],
+      criticalIngredients: scaled
+        .filter((i) => isCriticalIngredient(i))
+        .map((i) => ({
+          name: i.name,
+          canonical: i.canonical,
+          amount: i.qty ? formatAmount(normalizeAmount(i.qty, i.unit).qty, normalizeAmount(i.qty, i.unit).unit) : '',
+          probablyHome: atHome.has(i.canonical),
+        })),
+    },
   };
 
   return {

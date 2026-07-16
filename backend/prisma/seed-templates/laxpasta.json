@@ -1,0 +1,35 @@
+{
+  "slug": "laxpasta",
+  "title": "Laxpasta med citron och dill",
+  "description": "Lite finare vardag på under halvtimmen. Ugnslax som rörs ner i krämig pasta med citron.",
+  "tags": ["vardag", "fisk", "pasta"],
+  "difficulty": "Medel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 18,
+  "passiveTimeMin": 12,
+  "servingsBase": 4,
+  "costPerPortionMin": 28,
+  "costPerPortionMax": 45,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": [],
+  "equipmentRequired": ["ugn", "spis", "kastrull", "ugnsform"],
+  "robustness": 2,
+  "ingredients": [
+    { "name": "Laxfilé", "canonical": "lax", "qtyPerPortion": 100, "unit": "g", "aisle": "Kött & Fisk", "allergens": ["fisk"], "estPriceSek": 70, "critical": true },
+    { "name": "Pasta", "canonical": "pasta", "qtyPerPortion": 90, "unit": "g", "aisle": "Torrvaror & Pasta", "allergens": ["gluten"], "estPriceSek": 15, "critical": true, "pantryStaple": true,
+      "substitutions": [ { "name": "Glutenfri pasta", "canonical": "glutenfri pasta", "note": "koka enligt paketet" } ] },
+    { "name": "Crème fraiche", "canonical": "crème fraiche", "qtyPerPortion": 0.5, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 18, "critical": true,
+      "substitutions": [ { "name": "Havrefraiche", "canonical": "havrefraiche", "allergens": ["gluten"], "note": "laktosfritt alternativ" } ] },
+    { "name": "Citron", "canonical": "citron", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 8 },
+    { "name": "Dill", "canonical": "dill", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Frukt & Grönt", "estPriceSek": 15, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Sätt ugnen på 200°. Salta laxen och lägg i ugnsform.", "voiceCue": "Sätt ugnen på tvåhundra grader. Salta laxen och lägg den i en ugnsform.", "durationMin": 4, "activeMin": 4, "equipment": ["ugnsform"] },
+    { "id": "s2", "text": "Baka laxen ca 15 min tills den flagar sig.", "voiceCue": "In med laxen i ugnen i femton minuter, tills den precis flagar sig.", "durationMin": 15, "activeMin": 1, "dependsOn": ["s1"], "timerNeeded": true, "warning": "Laxen ska vara ogenomskinlig hela vägen igenom." },
+    { "id": "s3", "text": "Koka pastan under tiden.", "voiceCue": "Koka pastan under tiden laxen är i ugnen.", "durationMin": 12, "activeMin": 3, "timerNeeded": true, "equipment": ["kastrull"] },
+    { "id": "s4", "text": "Blanda pasta, crème fraiche, citronsaft och dill. Rör ner laxen i bitar.", "voiceCue": "Blanda pastan med crème fraiche, citronsaft och dill, och rör försiktigt ner laxen i bitar. Klart!", "durationMin": 4, "activeMin": 4, "dependsOn": ["s2", "s3"] }
+  ]
+}

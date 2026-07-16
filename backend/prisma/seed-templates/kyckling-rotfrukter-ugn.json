@@ -1,0 +1,37 @@
+{
+  "slug": "kyckling-rotfrukter-ugn",
+  "title": "Kyckling och rotfrukter i ugn",
+  "description": "Allt på en plåt: kycklinglår och rotfrukter som sköter sig själva i ugnen. Minimal disk, maximal frihet.",
+  "tags": ["vardag", "helg", "endisk"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 50,
+  "activeTimeMin": 15,
+  "passiveTimeMin": 35,
+  "servingsBase": 4,
+  "costPerPortionMin": 20,
+  "costPerPortionMax": 32,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": ["glutenfri", "laktosfri"],
+  "equipmentRequired": ["ugn", "ugnsform"],
+  "robustness": 4,
+  "ingredients": [
+    { "name": "Kycklinglår", "canonical": "kycklinglår", "qtyPerPortion": 175, "unit": "g", "aisle": "Kött & Fisk", "estPriceSek": 50, "critical": true,
+      "substitutions": [ { "name": "Kycklingfilé", "canonical": "kycklingfilé", "note": "kortare tid, ca 25 min" } ] },
+    { "name": "Potatis", "canonical": "potatis", "qtyPerPortion": 150, "unit": "g", "aisle": "Frukt & Grönt", "estPriceSek": 20, "critical": true,
+      "substitutions": [ { "name": "Sötpotatis", "canonical": "sötpotatis", "note": "samma tid i ugnen" } ] },
+    { "name": "Morot", "canonical": "morot", "qtyPerPortion": 0.75, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 12,
+      "substitutions": [ { "name": "Palsternacka", "canonical": "palsternacka", "note": "eller vilken rotfrukt som helst" } ] },
+    { "name": "Gul lök", "canonical": "lök", "qtyPerPortion": 0.5, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 10 },
+    { "name": "Rapsolja", "canonical": "olja", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Oljor & Vinäger", "estPriceSek": 25, "pantryStaple": true },
+    { "name": "Timjan eller rosmarin", "canonical": "timjan", "qtyPerPortion": 0.25, "unit": "tsk", "aisle": "Kryddor & Smaksättare", "estPriceSek": 12, "optional": true, "pantryStaple": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Sätt ugnen på 200°. Klyfta potatis, morot och lök.", "voiceCue": "Sätt ugnen på tvåhundra grader och klyfta potatisen, morötterna och löken.", "durationMin": 10, "activeMin": 10 },
+    { "id": "s2", "text": "Lägg allt på plåt med kycklingen ovanpå. Olja, salta, krydda.", "voiceCue": "Lägg rotfrukterna på en plåt med kycklingen ovanpå. Ringla över olja, salta och krydda.", "durationMin": 5, "activeMin": 5, "dependsOn": ["s1"], "equipment": ["ugnsform"] },
+    { "id": "s3", "text": "In i ugnen ca 35 min tills kycklingen är genomstekt.", "voiceCue": "In i ugnen i trettiofem minuter, tills kycklingen är helt genomstekt och rotfrukterna mjuka.", "durationMin": 35, "activeMin": 2, "dependsOn": ["s2"], "timerNeeded": true, "warning": "Kycklingen ska vara helt genomstekt vid benet — köttsaften ska vara klar." },
+    { "id": "s4", "text": "Vila 5 min, servera direkt från plåten.", "voiceCue": "Låt vila fem minuter och servera direkt från plåten. Klart!", "durationMin": 5, "activeMin": 1, "dependsOn": ["s3"] }
+  ]
+}

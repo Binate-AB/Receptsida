@@ -1,0 +1,35 @@
+{
+  "slug": "gronsakssoppa",
+  "title": "Grönsakssoppa med varma mackor",
+  "description": "Snäll, billig och flexibel — soppan tar de grönsaker som finns, mackorna gör alla mätta.",
+  "tags": ["vardag", "billigt", "vegetariskt", "soppa"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 15,
+  "passiveTimeMin": 15,
+  "servingsBase": 4,
+  "costPerPortionMin": 10,
+  "costPerPortionMax": 18,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": ["vegetarisk"],
+  "equipmentRequired": ["spis", "kastrull", "mixer"],
+  "robustness": 5,
+  "ingredients": [
+    { "name": "Blandade grönsaker (morot, potatis, purjo…)", "canonical": "grönsaker", "qtyPerPortion": 200, "unit": "g", "aisle": "Frukt & Grönt", "estPriceSek": 25, "critical": true,
+      "substitutions": [ { "name": "Fryst grönsaksblandning", "canonical": "frysta grönsaker", "note": "funkar precis lika bra" } ] },
+    { "name": "Grönsaksbuljong", "canonical": "grönsaksbuljong", "qtyPerPortion": 0.5, "unit": "st", "aisle": "Kryddor & Smaksättare", "estPriceSek": 20, "pantryStaple": true },
+    { "name": "Bröd", "canonical": "bröd", "qtyPerPortion": 1, "unit": "st", "aisle": "Bröd", "allergens": ["gluten"], "estPriceSek": 25,
+      "substitutions": [ { "name": "Glutenfritt bröd", "canonical": "glutenfritt bröd", "note": "rosta så blir det godast" } ] },
+    { "name": "Ost", "canonical": "ost", "qtyPerPortion": 25, "unit": "g", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 30, "optional": true },
+    { "name": "Grädde", "canonical": "grädde", "qtyPerPortion": 0.25, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 18, "optional": true }
+  ],
+  "steps": [
+    { "id": "s1", "text": "Skala och tärna grönsakerna grovt.", "voiceCue": "Skala och tärna grönsakerna grovt — det behöver inte bli fint.", "durationMin": 8, "activeMin": 8 },
+    { "id": "s2", "text": "Koka grönsakerna mjuka i buljong, ca 15 min.", "voiceCue": "Koka grönsakerna mjuka i buljongen, ungefär femton minuter.", "durationMin": 15, "activeMin": 2, "dependsOn": ["s1"], "timerNeeded": true, "equipment": ["kastrull"] },
+    { "id": "s3", "text": "Rosta mackorna med ost under tiden.", "voiceCue": "Gör varma ostmackor under tiden soppan kokar.", "durationMin": 6, "activeMin": 4, "optional": true },
+    { "id": "s4", "text": "Mixa soppan slät, späd med grädde. Salta och peppra.", "voiceCue": "Mixa soppan slät och späd med lite grädde om du vill. Smaka av med salt och peppar. Klart!", "durationMin": 4, "activeMin": 4, "dependsOn": ["s2"], "equipment": ["mixer"] }
+  ]
+}

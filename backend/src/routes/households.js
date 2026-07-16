@@ -14,11 +14,18 @@ import {
   householdMemberSchema,
   updateHouseholdMemberSchema,
   inventoryBulkSchema,
+  joinHouseholdSchema,
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
+import crypto from 'crypto';
+import {
+  getOwnedHousehold,
+  getMemberHousehold,
+  findMemberHousehold,
+} from '../services/nisse/householdAccess.js';
 import { canonicalIngredient } from '../services/nisse/engine/normalize.js';
 import { ALLERGEN_TAXONOMY, DIETARY_RESTRICTIONS, EQUIPMENT } from '../services/nisse/engine/allergens.js';
+import { logEvent } from '../services/nisse/analytics.js';
 
 const router = Router();
 
@@ -38,10 +45,20 @@ router.get(
   '/meta',
   requireAuth,
   asyncHandler(async (_req, res) => {
+    // Curated quick-pick for taste anchoring at onboarding:
+    // "Vilka av dessa brukar fungera hemma hos er?"
+    const dishChoices = await prisma.recipeTemplate.findMany({
+      where: { isActive: true },
+      select: { slug: true, title: true, tags: true, childFriendly: true },
+      orderBy: { childFriendly: 'desc' },
+      take: 24,
+    });
+
     res.json({
       allergens: ALLERGEN_TAXONOMY,
       dietaryRestrictions: DIETARY_RESTRICTIONS,
       equipment: EQUIPMENT,
+      dishChoices,
     });
   })
 );
@@ -54,25 +71,145 @@ router.post(
   requireAuth,
   validate(upsertHouseholdSchema),
   asyncHandler(async (req, res) => {
-    const { name, cookingSkill, equipment } = req.validated;
+    const { name, cookingSkill, equipment, dishPreferences, onboardingCompleted, onboardingDurationMs } =
+      req.validated;
 
-    const household = await prisma.household.upsert({
-      where: { ownerId: req.user.id },
-      create: {
-        ownerId: req.user.id,
-        ...(name && { name }),
-        ...(cookingSkill && { cookingSkill }),
-        ...(equipment && { equipment }),
-      },
-      update: {
-        ...(name && { name }),
-        ...(cookingSkill && { cookingSkill }),
-        ...(equipment && { equipment }),
-      },
-      include: { members: { orderBy: { sortOrder: 'asc' } } },
-    });
+    // A joined adult updates the SHARED household — never a second one.
+    const existing = await findMemberHousehold(prisma, req.user.id);
+    const data = {
+      ...(name && { name }),
+      ...(cookingSkill && { cookingSkill }),
+      ...(equipment && { equipment }),
+    };
+
+    let household;
+    if (existing) {
+      household = await prisma.household.update({
+        where: { id: existing.id },
+        data,
+        include: { members: { orderBy: { sortOrder: 'asc' } } },
+      });
+    } else {
+      household = await prisma.household.create({
+        data: {
+          ownerId: req.user.id,
+          ...data,
+          memberships: { create: { userId: req.user.id, role: 'OWNER' } },
+        },
+        include: { members: { orderBy: { sortOrder: 'asc' } } },
+      });
+    }
+
+    // Smakförankring: replace the ONBOARDING-sourced set with the given slugs
+    // (LEARNED preferences are never touched here).
+    if (dishPreferences) {
+      const templates = await prisma.recipeTemplate.findMany({
+        where: { slug: { in: dishPreferences }, isActive: true },
+        select: { id: true },
+      });
+      await prisma.dishPreference.deleteMany({
+        where: { householdId: household.id, source: 'ONBOARDING' },
+      });
+      if (templates.length > 0) {
+        await prisma.dishPreference.createMany({
+          data: templates.map((t) => ({
+            householdId: household.id,
+            templateId: t.id,
+            source: 'ONBOARDING',
+          })),
+          skipDuplicates: true,
+        });
+      }
+    }
+
+    // onboarding_completed — once per household (first wizard completion)
+    if (onboardingCompleted) {
+      const already = await prisma.analyticsEvent.findFirst({
+        where: { householdId: household.id, name: 'onboarding_completed' },
+        select: { id: true },
+      });
+      if (!already) {
+        await logEvent(prisma, {
+          userId: req.user.id,
+          householdId: household.id,
+          name: 'onboarding_completed',
+          payload: {
+            householdId: household.id,
+            members: household.members.length,
+            children: household.members.filter((m) => m.ageCategory === 'BABY' || m.ageCategory === 'CHILD').length,
+            allergies_count: household.members.reduce((acc, m) => acc + (m.allergies?.length || 0), 0),
+            dish_prefs_count: dishPreferences?.length || 0,
+            duration_ms: onboardingDurationMs ?? null,
+          },
+        });
+      }
+    }
 
     res.status(201).json({ household });
+  })
+);
+
+// ──────────────────────────────────────────
+// POST /households/join — join with invite code
+// Several adults share one household (profile,
+// allergies, preferences, outcomes, learning).
+// ──────────────────────────────────────────
+router.post(
+  '/join',
+  requireAuth,
+  validate(joinHouseholdSchema),
+  asyncHandler(async (req, res) => {
+    const code = req.validated.inviteCode.trim().toUpperCase();
+
+    const target = await prisma.household.findUnique({
+      where: { inviteCode: code },
+      include: { members: { orderBy: { sortOrder: 'asc' } } },
+    });
+    if (!target) {
+      throw new AppError(404, 'invalid_invite', 'Ogiltig inbjudningskod. Kontrollera koden och försök igen.');
+    }
+
+    const existing = await findMemberHousehold(prisma, req.user.id);
+    if (existing && existing.id === target.id) {
+      return res.json({ household: target, joined: false }); // idempotent
+    }
+    if (existing) {
+      throw new AppError(
+        409,
+        'already_in_household',
+        'Du tillhör redan ett hushåll. Lämna det först för att gå med i ett annat.'
+      );
+    }
+
+    await prisma.householdMembership.create({
+      data: { userId: req.user.id, householdId: target.id, role: 'ADULT' },
+    });
+
+    res.status(201).json({ household: target, joined: true });
+  })
+);
+
+// ──────────────────────────────────────────
+// GET /households/current/invite — invite code
+// (generated lazily; any member may share it)
+// ──────────────────────────────────────────
+router.get(
+  '/current/invite',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const household = await getMemberHousehold(prisma, req.user.id);
+
+    let code = household.inviteCode;
+    if (!code) {
+      // Short, readable, no ambiguous chars
+      code = crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 6);
+      await prisma.household.update({
+        where: { id: household.id },
+        data: { inviteCode: code },
+      });
+    }
+
+    res.json({ inviteCode: code });
   })
 );
 
@@ -97,9 +234,16 @@ router.patch(
   validate(upsertHouseholdSchema),
   asyncHandler(async (req, res) => {
     const existing = await getOwnedHousehold(prisma, req.user.id);
+    // Only actual Household columns — the schema also allows onboarding
+    // metadata and dishPreferences, which are handled by POST /households.
+    const { name, cookingSkill, equipment } = req.validated;
     const household = await prisma.household.update({
       where: { id: existing.id },
-      data: req.validated,
+      data: {
+        ...(name && { name }),
+        ...(cookingSkill && { cookingSkill }),
+        ...(equipment && { equipment }),
+      },
       include: { members: { orderBy: { sortOrder: 'asc' } } },
     });
     res.json({ household });

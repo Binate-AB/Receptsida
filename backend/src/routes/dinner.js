@@ -13,7 +13,12 @@ import { Router } from 'express';
 import { prisma } from '../config/db.js';
 import { requireAuth } from '../middleware/auth.js';
 import { dinnerSolveRateLimit } from '../middleware/rateLimit.js';
-import { validate, solveDinnerSchema, alternativeSchema } from '../middleware/validate.js';
+import {
+  validate,
+  solveDinnerSchema,
+  alternativeSchema,
+  assumptionCorrectionSchema,
+} from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
 import { rankCandidates } from '../services/nisse/engine/ranker.js';
@@ -23,6 +28,10 @@ import {
   buildComputedPayload,
   buildFeedbackScores,
 } from '../services/nisse/recommendationService.js';
+import {
+  buildAssumptions,
+  applyAssumptionCorrection,
+} from '../services/nisse/assumptionService.js';
 import { parseMealSituation, writeMotivations } from '../services/nisse/ai/nisseAi.js';
 import { logEvent } from '../services/nisse/analytics.js';
 
@@ -32,7 +41,7 @@ const router = Router();
  * Load everything the ranker needs for a household.
  */
 async function loadRankingContext(householdId) {
-  const [inventory, templates, feedbackRows, recentAccepted] = await Promise.all([
+  const [inventory, templates, feedbackRows, recentAccepted, confidenceRows, preferenceRows] = await Promise.all([
     prisma.inventoryItem.findMany({ where: { householdId } }),
     prisma.recipeTemplate.findMany({ where: { isActive: true } }),
     prisma.mealFeedback.findMany({ where: { householdId } }),
@@ -46,6 +55,8 @@ async function loadRankingContext(householdId) {
       orderBy: { createdAt: 'desc' },
       take: 5,
     }),
+    prisma.householdIngredientConfidence.findMany({ where: { householdId } }),
+    prisma.dishPreference.findMany({ where: { householdId } }),
   ]);
 
   return {
@@ -53,6 +64,8 @@ async function loadRankingContext(householdId) {
     templates,
     feedbackScores: buildFeedbackScores(feedbackRows),
     recentTemplateIds: recentAccepted.map((r) => r.templateId),
+    confidenceRows,
+    dishPreferences: new Map(preferenceRows.map((p) => [p.templateId, p.source])),
   };
 }
 
@@ -91,6 +104,8 @@ async function createRecommendations(requestRow, household, parsed, options = {}
     feedbackScores: ctx.feedbackScores,
     recentTemplateIds: ctx.recentTemplateIds,
     excludeTemplateIds: options.excludeTemplateIds || [],
+    confidenceRows: ctx.confidenceRows,
+    dishPreferences: ctx.dishPreferences,
     ...options.rankOverrides,
   });
 
@@ -98,7 +113,11 @@ async function createRecommendations(requestRow, household, parsed, options = {}
 
   const created = [];
   for (const slotResult of limited) {
-    const computed = buildComputedPayload(slotResult, { eaters, inventory: ctx.inventory });
+    const computed = buildComputedPayload(slotResult, {
+      eaters,
+      inventory: ctx.inventory,
+      portionsOverride: parsed.portionsOverride ?? null,
+    });
     const rec = await prisma.mealRecommendation.create({
       data: {
         requestId: requestRow.id,
@@ -110,7 +129,51 @@ async function createRecommendations(requestRow, household, parsed, options = {}
     created.push({ rec, template: slotResult.template, computed });
   }
 
-  return { created, rejected, eaters };
+  return { created, rejected, eaters, ctx };
+}
+
+/**
+ * Build + persist the decision's assumptions (replacing any existing
+ * rows for the request — corrections re-solve and re-assume).
+ */
+async function persistAssumptions(requestRow, household, parsed, created, ctx, meta = {}) {
+  const eaters = resolveEaters(household.members, parsed);
+  const topTemplate = created.find((c) => c.rec.slot === 'NISSE')?.template || created[0]?.template || null;
+
+  const assumptions = buildAssumptions({
+    parsed,
+    parseSource: meta.parseSource || requestRow.parseSource,
+    aiConfidence: meta.aiConfidence ?? requestRow.aiConfidence,
+    chips: requestRow.chips || null,
+    eaters,
+    topTemplate,
+    inventory: ctx.inventory,
+    confidenceRows: ctx.confidenceRows,
+  });
+
+  // Preserve correction history: only upsert values, never wipe correctedAt
+  for (const a of assumptions) {
+    await prisma.dinnerAssumption.upsert({
+      where: { requestId_key: { requestId: requestRow.id, key: a.key } },
+      create: { requestId: requestRow.id, ...a },
+      update: { value: a.value, confidence: a.confidence, level: a.level },
+    });
+  }
+
+  return prisma.dinnerAssumption.findMany({
+    where: { requestId: requestRow.id },
+    orderBy: { createdAt: 'asc' },
+  });
+}
+
+function assumptionResponse(rows) {
+  return rows.map((a) => ({
+    key: a.key,
+    level: a.level,
+    value: a.correctedValue ?? a.value,
+    confidence: a.confidence,
+    corrected: a.correctedAt != null,
+  }));
 }
 
 /**
@@ -198,13 +261,30 @@ router.post(
       },
     });
 
-    const { created, rejected } = await createRecommendations(
+    const { created, rejected, ctx } = await createRecommendations(
       requestRow,
       household,
       parseResult.parsed
     );
 
+    const assumptionRows = await persistAssumptions(
+      requestRow,
+      household,
+      parseResult.parsed,
+      created,
+      ctx,
+      { parseSource: parseResult.source, aiConfidence: parseResult.confidence }
+    );
+
     await attachMotivations(created, parseResult.parsed, household);
+
+    // Mean pantry uncertainty over the shown slots (decision-level signal)
+    const uncertainties = created
+      .map((c) => c.computed.uncertainty)
+      .filter((u) => Number.isFinite(u));
+    const uncertainty = uncertainties.length
+      ? Math.round((uncertainties.reduce((a, b) => a + b, 0) / uncertainties.length) * 100) / 100
+      : null;
 
     await logEvent(prisma, {
       userId: req.user.id,
@@ -215,6 +295,7 @@ router.post(
         parseSource: parseResult.source,
         slotCount: created.length,
         rejectedCount: rejected.length,
+        uncertainty,
       },
     });
 
@@ -225,9 +306,189 @@ router.post(
         parseSource: parseResult.source,
       },
       recommendations: created.map(recommendationResponse),
+      assumptions: assumptionResponse(assumptionRows),
       degraded:
         created.length < 3
           ? 'Med hushållets krav finns just nu färre än tre säkra förslag.'
+          : null,
+    });
+  })
+);
+
+// ──────────────────────────────────────────
+// PATCH /dinner/requests/:id/assumptions
+// One-tap assumption correction → deterministic
+// re-rank (no new AI call). The correction itself
+// is a learning signal.
+// ──────────────────────────────────────────
+router.patch(
+  '/requests/:id/assumptions',
+  requireAuth,
+  validate(assumptionCorrectionSchema),
+  asyncHandler(async (req, res) => {
+    const { key, value } = req.validated;
+    const household = await getOwnedHousehold(prisma, req.user.id);
+
+    const requestRow = await prisma.mealRequest.findFirst({
+      where: { id: req.params.id, householdId: household.id },
+      include: { recommendations: true },
+    });
+    if (!requestRow) {
+      throw new AppError(404, 'request_not_found', 'Middagsförfrågan hittades inte.');
+    }
+
+    let correction;
+    try {
+      correction = applyAssumptionCorrection(requestRow.parsed, key, value);
+    } catch (err) {
+      throw new AppError(400, 'invalid_correction', err.message);
+    }
+
+    // Pantry corrections persist to the household model (that IS the learning)
+    if (correction.isPantry) {
+      const confidence = correction.normalized ? 0.95 : 0.05;
+      await prisma.householdIngredientConfidence.upsert({
+        where: {
+          householdId_canonical: { householdId: household.id, canonical: correction.canonical },
+        },
+        create: { householdId: household.id, canonical: correction.canonical, confidence },
+        update: { confidence },
+      });
+      if (correction.normalized === false) {
+        await prisma.inventoryItem.deleteMany({
+          where: { householdId: household.id, canonical: correction.canonical },
+        });
+      }
+    }
+
+    // Record the correction on the assumption row
+    await prisma.dinnerAssumption.upsert({
+      where: { requestId_key: { requestId: requestRow.id, key } },
+      create: {
+        requestId: requestRow.id,
+        key,
+        level: 2,
+        value: correction.normalized,
+        confidence: 0.95,
+        correctedValue: correction.normalized,
+        correctedAt: new Date(),
+      },
+      update: { correctedValue: correction.normalized, correctedAt: new Date(), confidence: 0.95 },
+    });
+
+    // Persist the corrected parsed request, retire current proposals, re-rank
+    await prisma.mealRequest.update({
+      where: { id: requestRow.id },
+      data: { parsed: correction.parsed },
+    });
+    await prisma.mealRecommendation.updateMany({
+      where: { requestId: requestRow.id, status: 'PROPOSED' },
+      data: { status: 'REJECTED' },
+    });
+
+    const updatedRequest = { ...requestRow, parsed: correction.parsed };
+    const { created, ctx } = await createRecommendations(
+      updatedRequest,
+      household,
+      correction.parsed
+    );
+    const assumptionRows = await persistAssumptions(
+      updatedRequest,
+      household,
+      correction.parsed,
+      created,
+      ctx
+    );
+    await attachMotivations(created, correction.parsed, household);
+
+    await logEvent(prisma, {
+      userId: req.user.id,
+      householdId: household.id,
+      name: 'assumption_corrected',
+      payload: {
+        requestId: requestRow.id,
+        key,
+        level: 2,
+        to: typeof correction.normalized === 'object' ? null : correction.normalized,
+      },
+    });
+
+    res.json({
+      request: { id: requestRow.id, parsed: correction.parsed },
+      recommendations: created.map(recommendationResponse),
+      assumptions: assumptionResponse(assumptionRows),
+      degraded:
+        created.length < 3
+          ? 'Med hushållets krav finns just nu färre än tre säkra förslag.'
+          : null,
+    });
+  })
+);
+
+// ──────────────────────────────────────────
+// POST /dinner/requests/:id/regenerate
+// "Inget av dessa" → three NEW options, excluding
+// everything already shown. Logged as a learning
+// signal (rejection).
+// ──────────────────────────────────────────
+router.post(
+  '/requests/:id/regenerate',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const household = await getOwnedHousehold(prisma, req.user.id);
+
+    const requestRow = await prisma.mealRequest.findFirst({
+      where: { id: req.params.id, householdId: household.id },
+      include: { recommendations: true },
+    });
+    if (!requestRow) {
+      throw new AppError(404, 'request_not_found', 'Middagsförfrågan hittades inte.');
+    }
+
+    const rejectedBefore = requestRow.recommendations.filter((r) => r.status === 'REJECTED').length;
+    const regenerationRound = Math.floor(rejectedBefore / 3) + 1;
+
+    await prisma.mealRecommendation.updateMany({
+      where: { requestId: requestRow.id, status: 'PROPOSED' },
+      data: { status: 'REJECTED' },
+    });
+
+    const alreadyShown = requestRow.recommendations.map((r) => r.templateId);
+    const { created, ctx } = await createRecommendations(requestRow, household, requestRow.parsed, {
+      excludeTemplateIds: alreadyShown,
+    });
+
+    if (created.length === 0) {
+      throw new AppError(
+        404,
+        'no_more_options',
+        'Det finns inga fler säkra förslag som matchar just nu. Justera ett antagande eller kraven och försök igen.'
+      );
+    }
+
+    const assumptionRows = await persistAssumptions(
+      requestRow,
+      household,
+      requestRow.parsed,
+      created,
+      ctx
+    );
+    await attachMotivations(created, requestRow.parsed, household);
+
+    await logEvent(prisma, {
+      userId: req.user.id,
+      householdId: household.id,
+      name: 'no_option_accepted',
+      payload: { requestId: requestRow.id, regeneration_round: regenerationRound },
+    });
+
+    res.status(201).json({
+      request: { id: requestRow.id, parsed: requestRow.parsed },
+      recommendations: created.map(recommendationResponse),
+      assumptions: assumptionResponse(assumptionRows),
+      degraded:
+        created.length < 3
+          ? 'Med hushållets krav finns just nu färre än tre säkra förslag kvar.'
           : null,
     });
   })
@@ -286,6 +547,8 @@ router.post(
       feedbackScores: ctx.feedbackScores,
       recentTemplateIds: ctx.recentTemplateIds,
       excludeTemplateIds: exclude,
+      confidenceRows: ctx.confidenceRows,
+      dishPreferences: ctx.dishPreferences,
       ...rankOverrides,
     });
 
@@ -340,7 +603,7 @@ router.post(
 
     const rec = await prisma.mealRecommendation.findFirst({
       where: { id: req.params.id, request: { householdId: household.id } },
-      include: { template: true },
+      include: { template: true, request: { include: { recommendations: true } } },
     });
     if (!rec) {
       throw new AppError(404, 'recommendation_not_found', 'Rekommendationen hittades inte.');
@@ -392,11 +655,21 @@ router.post(
       });
     }
 
+    // Time-to-decision + which regeneration round the accepted card came from
+    const msSinceSolve = Date.now() - new Date(rec.request.createdAt).getTime();
+    const rejectedCount = rec.request.recommendations.filter((r) => r.status === 'REJECTED').length;
+
     await logEvent(prisma, {
       userId: req.user.id,
       householdId: household.id,
       name: 'recommendation_accepted',
-      payload: { recommendationId: rec.id, templateId: rec.templateId, slot: rec.slot },
+      payload: {
+        recommendationId: rec.id,
+        templateId: rec.templateId,
+        slot: rec.slot,
+        ms_since_solve: msSinceSolve,
+        regeneration_round: Math.floor(rejectedCount / 3),
+      },
     });
 
     res.json({
