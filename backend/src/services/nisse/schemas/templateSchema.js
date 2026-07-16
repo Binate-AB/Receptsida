@@ -26,6 +26,10 @@ const substitutionSchema = z.object({
   canonical: z.string().min(1),
   note: z.string().optional(),
   allergens: z.array(z.enum(ALLERGEN_CODES)).optional().default([]),
+  // Three-state model: allergens whose presence VARIES by brand
+  // (e.g. vegetarian sausage: soy declared, gluten varies). The hard
+  // gate treats varies as CONTAINS — conservative, never unsafe.
+  allergensVary: z.array(z.enum(ALLERGEN_CODES)).optional().default([]),
 });
 
 export const templateIngredientSchema = z.object({
@@ -38,6 +42,11 @@ export const templateIngredientSchema = z.object({
   // Avgörande ingrediens — dish cannot reasonably be cooked without it.
   // Unset → derived: required and not a pantry staple (see engine/uncertainty.js).
   critical: z.boolean().optional(),
+  // Three-state model per allergen: CONTAINS (allergens[]), FREE (absent
+  // from both lists) or VARIES BY BRAND (allergensVary[]). Store-bought
+  // products like meatballs or spice mixes differ per brand — varies is
+  // the honest answer, and the hard gate treats it as contains.
+  allergensVary: z.array(z.enum(ALLERGEN_CODES)).optional().default([]),
   allergens: z.array(z.enum(ALLERGEN_CODES)).optional().default([]),
   aisle: z.enum(AISLES).optional().default('Övrigt'),
   // Approximate SEK cost of buying this item once (smallest sensible pack)
@@ -122,6 +131,25 @@ export const templateSchema = z
         });
       }
     }
+    // Conservative consistency: a dietary flag may not contradict the
+    // allergen declarations (contains ∪ varies) of any REQUIRED ingredient.
+    // "Varies by brand" is not free — the flag must go, or the recipe must
+    // require the safe variant explicitly (e.g. "glutenfria köttbullar").
+    const FLAG_CONFLICTS = { glutenfri: 'gluten', laktosfri: 'laktos' };
+    for (const [flag, allergen] of Object.entries(FLAG_CONFLICTS)) {
+      if (!tpl.dietaryFlags.includes(flag)) continue;
+      for (const ing of tpl.ingredients) {
+        if (ing.optional) continue;
+        const declared = new Set([...(ing.allergens || []), ...(ing.allergensVary || [])]);
+        if (declared.has(allergen)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `dietaryFlag "${flag}" motsäger ${ing.name} (${allergen} i innehåller/varierar)`,
+          });
+        }
+      }
+    }
+
     const hasChild = tpl.steps.some((s) => s.branch === 'child');
     const hasAdult = tpl.steps.some((s) => s.branch === 'adult');
     if (tpl.hasChildAdultBranch && !(hasChild && hasAdult)) {
@@ -139,13 +167,16 @@ export const templateSchema = z
   });
 
 /**
- * Compute the denormalized template-level allergen union
- * from ingredient declarations (used by the seed script).
+ * Compute the denormalized template-level allergen union from
+ * ingredient declarations (used by the seed script). CONSERVATIVE:
+ * includes allergens that VARY by brand — the union feeds the hard
+ * gate, and varies must block just like contains.
  */
 export function computeAllergenUnion(ingredients) {
   const union = new Set();
   for (const ing of ingredients) {
     for (const code of ing.allergens || []) union.add(code);
+    for (const code of ing.allergensVary || []) union.add(code);
   }
   return [...union].sort();
 }

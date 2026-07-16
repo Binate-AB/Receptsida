@@ -84,7 +84,10 @@
       "qtyPerPortion": 0.5,
       "unit": "msk",
       "aisle": "Kryddor & Smaksättare",
-      "estPriceSek": 15
+      "estPriceSek": 15,
+      "allergensVary": [
+        "gluten"
+      ]
     },
     {
       "name": "Gul lök",

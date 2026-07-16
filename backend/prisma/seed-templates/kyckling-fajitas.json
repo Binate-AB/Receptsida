@@ -2,7 +2,11 @@
   "slug": "kyckling-fajitas",
   "title": "Kycklingfajitas",
   "description": "Strimlad kyckling och paprika i tortilla — barnen får mild, vuxna kryddar upp sin egen.",
-  "tags": ["vardag", "fredagsmys", "barnfavorit"],
+  "tags": [
+    "vardag",
+    "fredagsmys",
+    "barnfavorit"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 30,
   "activeTimeMin": 25,
@@ -14,33 +18,215 @@
   "effortScore": 2,
   "dishLoad": 2,
   "spiceLevel": 1,
-  "dietaryFlags": ["laktosfri"],
-  "equipmentRequired": ["spis", "stekpanna"],
+  "dietaryFlags": [
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "stekpanna"
+  ],
   "hasChildAdultBranch": true,
   "robustness": 3,
   "variants": {
-    "child": { "label": "Mild fajita", "note": "Kycklingen kryddas bara med paprikapulver och salt." },
-    "adult": { "label": "Kryddig fajita", "note": "Fajitakrydda + chili för de vuxna." }
+    "child": {
+      "label": "Mild fajita",
+      "note": "Kycklingen kryddas bara med paprikapulver och salt."
+    },
+    "adult": {
+      "label": "Kryddig fajita",
+      "note": "Fajitakrydda + chili för de vuxna."
+    }
   },
   "ingredients": [
-    { "name": "Kycklingfilé", "canonical": "kycklingfilé", "qtyPerPortion": 125, "unit": "g", "aisle": "Kött & Fisk", "estPriceSek": 55, "critical": true,
-      "substitutions": [ { "name": "Kycklinglårfilé", "canonical": "kycklinglårfilé", "note": "saftigare, samma stektid" }, { "name": "Halloumi", "canonical": "halloumi", "allergens": ["laktos", "mjölkprotein"], "note": "vegetariskt alternativ" } ] },
-    { "name": "Tortillabröd", "canonical": "tortilla", "qtyPerPortion": 2, "unit": "st", "aisle": "Bröd", "allergens": ["gluten"], "estPriceSek": 25, "critical": true,
-      "substitutions": [ { "name": "Majstortilla", "canonical": "majstortilla", "note": "glutenfritt alternativ" }, { "name": "Ris", "canonical": "ris", "note": "servera som bowl i stället" } ] },
-    { "name": "Paprika", "canonical": "paprika", "qtyPerPortion": 0.5, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 15 },
-    { "name": "Gul lök", "canonical": "lök", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Frukt & Grönt", "estPriceSek": 10 },
-    { "name": "Fajitakrydda", "canonical": "fajitakrydda", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Kryddor & Smaksättare", "estPriceSek": 15, "group": "vuxen" },
-    { "name": "Paprikapulver", "canonical": "paprikapulver", "qtyPerPortion": 0.25, "unit": "tsk", "aisle": "Kryddor & Smaksättare", "estPriceSek": 12, "pantryStaple": true, "group": "barn" },
-    { "name": "Rapsolja", "canonical": "olja", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Oljor & Vinäger", "estPriceSek": 25, "pantryStaple": true },
-    { "name": "Gräddfil", "canonical": "gräddfil", "qtyPerPortion": 0.5, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 18, "optional": true }
+    {
+      "name": "Kycklingfilé",
+      "canonical": "kycklingfilé",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 55,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kycklinglårfilé",
+          "canonical": "kycklinglårfilé",
+          "note": "saftigare, samma stektid"
+        },
+        {
+          "name": "Halloumi",
+          "canonical": "halloumi",
+          "allergens": [
+            "laktos",
+            "mjölkprotein"
+          ],
+          "note": "vegetariskt alternativ"
+        }
+      ]
+    },
+    {
+      "name": "Tortillabröd",
+      "canonical": "tortilla",
+      "qtyPerPortion": 2,
+      "unit": "st",
+      "aisle": "Bröd",
+      "allergens": [
+        "gluten"
+      ],
+      "estPriceSek": 25,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Majstortilla",
+          "canonical": "majstortilla",
+          "note": "glutenfritt alternativ"
+        },
+        {
+          "name": "Ris",
+          "canonical": "ris",
+          "note": "servera som bowl i stället"
+        }
+      ]
+    },
+    {
+      "name": "Paprika",
+      "canonical": "paprika",
+      "qtyPerPortion": 0.5,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 15
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Fajitakrydda",
+      "canonical": "fajitakrydda",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 15,
+      "group": "vuxen",
+      "allergensVary": [
+        "gluten"
+      ]
+    },
+    {
+      "name": "Paprikapulver",
+      "canonical": "paprikapulver",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 12,
+      "pantryStaple": true,
+      "group": "barn"
+    },
+    {
+      "name": "Rapsolja",
+      "canonical": "olja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 25,
+      "pantryStaple": true
+    },
+    {
+      "name": "Gräddfil",
+      "canonical": "gräddfil",
+      "qtyPerPortion": 0.5,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "estPriceSek": 18,
+      "optional": true
+    }
   ],
   "steps": [
-    { "id": "s1", "text": "Strimla kyckling, paprika och lök.", "voiceCue": "Strimla kycklingen, paprikan och löken.", "durationMin": 8, "activeMin": 8 },
-    { "id": "s2", "branch": "child", "text": "Stek barnens kyckling med paprikapulver och salt tills genomstekt.", "voiceCue": "Stek barnens del av kycklingen med bara paprikapulver och salt, tills den är helt genomstekt.", "durationMin": 8, "activeMin": 8, "dependsOn": ["s1"], "equipment": ["stekpanna"], "warning": "Kyckling ska vara helt genomstekt — ingen rosa kärna." },
-    { "id": "s3", "branch": "adult", "text": "Stek resten av kycklingen med fajitakrydda tills genomstekt.", "voiceCue": "Stek de vuxnas kyckling med fajitakryddan, tills den är helt genomstekt.", "durationMin": 8, "activeMin": 8, "dependsOn": ["s1"], "equipment": ["stekpanna"], "warning": "Kyckling ska vara helt genomstekt — ingen rosa kärna." },
-    { "id": "s4", "text": "Stek paprika och lök mjuka.", "voiceCue": "Stek paprikan och löken mjuka i samma panna.", "durationMin": 5, "activeMin": 5, "dependsOn": ["s1"] },
-    { "id": "s5", "text": "Värm tortillabröden hastigt.", "voiceCue": "Värm tortillabröden hastigt i en torr panna eller i micron.", "durationMin": 2, "activeMin": 2, "optional": true },
-    { "id": "s6", "branch": "child", "text": "Rulla barnens fajitas med mild kyckling och grönsaker.", "voiceCue": "Rulla barnens fajitas med den milda kycklingen och grönsakerna. Klart för barnen!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s2", "s4"] },
-    { "id": "s7", "branch": "adult", "text": "Duka fram de vuxnas kryddiga fyllning och låt alla rulla sina egna.", "voiceCue": "Duka fram de vuxnas kryddiga fyllning och rulla era egna. Klart!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s3", "s4"] }
+    {
+      "id": "s1",
+      "text": "Strimla kyckling, paprika och lök.",
+      "voiceCue": "Strimla kycklingen, paprikan och löken.",
+      "durationMin": 8,
+      "activeMin": 8
+    },
+    {
+      "id": "s2",
+      "branch": "child",
+      "text": "Stek barnens kyckling med paprikapulver och salt tills genomstekt.",
+      "voiceCue": "Stek barnens del av kycklingen med bara paprikapulver och salt, tills den är helt genomstekt.",
+      "durationMin": 8,
+      "activeMin": 8,
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Kyckling ska vara helt genomstekt — ingen rosa kärna."
+    },
+    {
+      "id": "s3",
+      "branch": "adult",
+      "text": "Stek resten av kycklingen med fajitakrydda tills genomstekt.",
+      "voiceCue": "Stek de vuxnas kyckling med fajitakryddan, tills den är helt genomstekt.",
+      "durationMin": 8,
+      "activeMin": 8,
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Kyckling ska vara helt genomstekt — ingen rosa kärna."
+    },
+    {
+      "id": "s4",
+      "text": "Stek paprika och lök mjuka.",
+      "voiceCue": "Stek paprikan och löken mjuka i samma panna.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "dependsOn": [
+        "s1"
+      ]
+    },
+    {
+      "id": "s5",
+      "text": "Värm tortillabröden hastigt.",
+      "voiceCue": "Värm tortillabröden hastigt i en torr panna eller i micron.",
+      "durationMin": 2,
+      "activeMin": 2,
+      "optional": true
+    },
+    {
+      "id": "s6",
+      "branch": "child",
+      "text": "Rulla barnens fajitas med mild kyckling och grönsaker.",
+      "voiceCue": "Rulla barnens fajitas med den milda kycklingen och grönsakerna. Klart för barnen!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2",
+        "s4"
+      ]
+    },
+    {
+      "id": "s7",
+      "branch": "adult",
+      "text": "Duka fram de vuxnas kryddiga fyllning och låt alla rulla sina egna.",
+      "voiceCue": "Duka fram de vuxnas kryddiga fyllning och rulla era egna. Klart!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s3",
+        "s4"
+      ]
+    }
   ]
 }

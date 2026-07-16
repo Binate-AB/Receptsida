@@ -32,8 +32,13 @@ export function collectTemplateAllergens(template) {
 
   for (const ing of template.ingredients || []) {
     const declared = ing.allergens || [];
+    // CONSERVATIVE RULE (three-state model): an allergen that VARIES by
+    // brand is treated exactly like CONTAINS by the hard gate. "Probably
+    // fine" is never an approval — the dish is filtered out for the
+    // affected household unless the recipe requires the safe variant.
+    const varies = ing.allergensVary || [];
     const fallback = ingredientAllergens(ing.canonical);
-    for (const code of new Set([...declared, ...fallback])) {
+    for (const code of new Set([...declared, ...varies, ...fallback])) {
       add(code, ing.canonical);
     }
   }

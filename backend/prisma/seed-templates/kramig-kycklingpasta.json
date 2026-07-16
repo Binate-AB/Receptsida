@@ -2,7 +2,11 @@
   "slug": "kramig-kycklingpasta",
   "title": "Krämig kycklingpasta",
   "description": "Vardagsfavoriten: stekt kyckling i gräddig sås med pasta. Passar tiden, tål byten och kan delas i mild barnportion.",
-  "tags": ["vardag", "barnfavorit", "pasta"],
+  "tags": [
+    "vardag",
+    "barnfavorit",
+    "pasta"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 25,
   "activeTimeMin": 20,
@@ -15,31 +19,192 @@
   "dishLoad": 2,
   "spiceLevel": 0,
   "dietaryFlags": [],
-  "equipmentRequired": ["spis", "kastrull", "stekpanna"],
+  "equipmentRequired": [
+    "spis",
+    "kastrull",
+    "stekpanna"
+  ],
   "hasChildAdultBranch": true,
   "robustness": 3,
   "variants": {
-    "child": { "label": "Mild och slät", "note": "Barnens sås utan vitlök och soltorkade tomater." },
-    "adult": { "label": "Med sting", "note": "Vitlök, soltorkade tomater och svartpeppar i de vuxnas sås." }
+    "child": {
+      "label": "Mild och slät",
+      "note": "Barnens sås utan vitlök och soltorkade tomater."
+    },
+    "adult": {
+      "label": "Med sting",
+      "note": "Vitlök, soltorkade tomater och svartpeppar i de vuxnas sås."
+    }
   },
   "ingredients": [
-    { "name": "Kycklingfilé", "canonical": "kycklingfilé", "qtyPerPortion": 125, "unit": "g", "aisle": "Kött & Fisk", "estPriceSek": 55, "critical": true,
-      "substitutions": [ { "name": "Kycklinglårfilé", "canonical": "kycklinglårfilé", "note": "saftigare, samma stektid" } ] },
-    { "name": "Pasta", "canonical": "pasta", "qtyPerPortion": 90, "unit": "g", "aisle": "Torrvaror & Pasta", "allergens": ["gluten"], "estPriceSek": 15, "critical": true, "pantryStaple": true,
-      "substitutions": [ { "name": "Glutenfri pasta", "canonical": "glutenfri pasta", "note": "koka enligt paketet" } ] },
-    { "name": "Matlagningsgrädde", "canonical": "grädde", "qtyPerPortion": 0.75, "unit": "dl", "aisle": "Mejeri", "allergens": ["laktos", "mjölkprotein"], "estPriceSek": 18, "critical": true,
-      "substitutions": [ { "name": "Havregrädde", "canonical": "havregrädde", "allergens": ["gluten"], "note": "laktosfritt, samma mängd" } ] },
-    { "name": "Vitlök", "canonical": "vitlök", "qtyPerPortion": 0.25, "unit": "klyfta", "aisle": "Frukt & Grönt", "estPriceSek": 12, "group": "vuxen" },
-    { "name": "Soltorkade tomater", "canonical": "soltorkade tomater", "qtyPerPortion": 15, "unit": "g", "aisle": "Konserver & Såser", "estPriceSek": 25, "group": "vuxen", "optional": true },
-    { "name": "Buljongtärning", "canonical": "kycklingbuljong", "qtyPerPortion": 0.25, "unit": "st", "aisle": "Kryddor & Smaksättare", "estPriceSek": 20, "pantryStaple": true },
-    { "name": "Rapsolja", "canonical": "olja", "qtyPerPortion": 0.5, "unit": "msk", "aisle": "Oljor & Vinäger", "estPriceSek": 25, "pantryStaple": true }
+    {
+      "name": "Kycklingfilé",
+      "canonical": "kycklingfilé",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 55,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kycklinglårfilé",
+          "canonical": "kycklinglårfilé",
+          "note": "saftigare, samma stektid"
+        }
+      ]
+    },
+    {
+      "name": "Pasta",
+      "canonical": "pasta",
+      "qtyPerPortion": 90,
+      "unit": "g",
+      "aisle": "Torrvaror & Pasta",
+      "allergens": [
+        "gluten"
+      ],
+      "estPriceSek": 15,
+      "critical": true,
+      "pantryStaple": true,
+      "substitutions": [
+        {
+          "name": "Glutenfri pasta",
+          "canonical": "glutenfri pasta",
+          "note": "koka enligt paketet"
+        }
+      ]
+    },
+    {
+      "name": "Matlagningsgrädde",
+      "canonical": "grädde",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "estPriceSek": 18,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Havregrädde",
+          "canonical": "havregrädde",
+          "allergens": [
+            "gluten"
+          ],
+          "note": "laktosfritt, samma mängd"
+        }
+      ]
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12,
+      "group": "vuxen"
+    },
+    {
+      "name": "Soltorkade tomater",
+      "canonical": "soltorkade tomater",
+      "qtyPerPortion": 15,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 25,
+      "group": "vuxen",
+      "optional": true
+    },
+    {
+      "name": "Buljongtärning",
+      "canonical": "kycklingbuljong",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 20,
+      "pantryStaple": true,
+      "allergensVary": [
+        "selleri"
+      ]
+    },
+    {
+      "name": "Rapsolja",
+      "canonical": "olja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 25,
+      "pantryStaple": true
+    }
   ],
   "steps": [
-    { "id": "s1", "text": "Koka pastan enligt paketet.", "voiceCue": "Sätt på pastavattnet och koka pastan enligt paketet.", "durationMin": 12, "activeMin": 3, "timerNeeded": true, "equipment": ["kastrull"] },
-    { "id": "s2", "text": "Strimla kycklingen och stek den genomstekt i olja.", "voiceCue": "Strimla kycklingen och stek den i olja tills den är helt genomstekt.", "durationMin": 8, "activeMin": 8, "equipment": ["stekpanna"], "warning": "Kyckling ska vara helt genomstekt — ingen rosa kärna." },
-    { "id": "s3", "branch": "child", "text": "Ta undan barnens kyckling, häll på grädde och lite buljong. Låt småputtra slätt och milt.", "voiceCue": "Ta undan barnens del. Häll grädde och lite buljong över den och låt puttra milt.", "durationMin": 5, "activeMin": 3, "dependsOn": ["s2"] },
-    { "id": "s4", "branch": "adult", "text": "Fräs vitlök och soltorkade tomater med resten, häll på grädde och buljong. Peppra.", "voiceCue": "Fräs vitlök och soltorkade tomater med de vuxnas kyckling. Häll på grädde och buljong, och peppra ordentligt.", "durationMin": 6, "activeMin": 4, "dependsOn": ["s2"] },
-    { "id": "s5", "branch": "child", "text": "Blanda barnens pasta med den milda såsen.", "voiceCue": "Blanda barnens pasta med den milda såsen. Klart för barnen!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s1", "s3"] },
-    { "id": "s6", "branch": "adult", "text": "Blanda de vuxnas pasta med den kryddiga såsen.", "voiceCue": "Blanda de vuxnas pasta med den kryddiga såsen. Klart!", "durationMin": 3, "activeMin": 3, "dependsOn": ["s1", "s4"] }
+    {
+      "id": "s1",
+      "text": "Koka pastan enligt paketet.",
+      "voiceCue": "Sätt på pastavattnet och koka pastan enligt paketet.",
+      "durationMin": 12,
+      "activeMin": 3,
+      "timerNeeded": true,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Strimla kycklingen och stek den genomstekt i olja.",
+      "voiceCue": "Strimla kycklingen och stek den i olja tills den är helt genomstekt.",
+      "durationMin": 8,
+      "activeMin": 8,
+      "equipment": [
+        "stekpanna"
+      ],
+      "warning": "Kyckling ska vara helt genomstekt — ingen rosa kärna."
+    },
+    {
+      "id": "s3",
+      "branch": "child",
+      "text": "Ta undan barnens kyckling, häll på grädde och lite buljong. Låt småputtra slätt och milt.",
+      "voiceCue": "Ta undan barnens del. Häll grädde och lite buljong över den och låt puttra milt.",
+      "durationMin": 5,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2"
+      ]
+    },
+    {
+      "id": "s4",
+      "branch": "adult",
+      "text": "Fräs vitlök och soltorkade tomater med resten, häll på grädde och buljong. Peppra.",
+      "voiceCue": "Fräs vitlök och soltorkade tomater med de vuxnas kyckling. Häll på grädde och buljong, och peppra ordentligt.",
+      "durationMin": 6,
+      "activeMin": 4,
+      "dependsOn": [
+        "s2"
+      ]
+    },
+    {
+      "id": "s5",
+      "branch": "child",
+      "text": "Blanda barnens pasta med den milda såsen.",
+      "voiceCue": "Blanda barnens pasta med den milda såsen. Klart för barnen!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s1",
+        "s3"
+      ]
+    },
+    {
+      "id": "s6",
+      "branch": "adult",
+      "text": "Blanda de vuxnas pasta med den kryddiga såsen.",
+      "voiceCue": "Blanda de vuxnas pasta med den kryddiga såsen. Klart!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s1",
+        "s4"
+      ]
+    }
   ]
 }
