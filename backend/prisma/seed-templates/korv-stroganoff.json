@@ -36,8 +36,14 @@
         {
           "name": "Vegokorv",
           "canonical": "vegokorv",
-          "note": "Vegetariskt alternativ"
+          "note": "Vegetariskt alternativ",
+          "allergensVary": [
+            "gluten"
+          ]
         }
+      ],
+      "allergensVary": [
+        "mjölkprotein"
       ]
     },
     {

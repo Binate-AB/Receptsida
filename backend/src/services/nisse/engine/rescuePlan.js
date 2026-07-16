@@ -39,9 +39,12 @@ export function resolveMissingIngredient(template, canonical, members) {
 
   const allergySet = new Set((members || []).flatMap((m) => m.allergies || []));
 
-  // 1. Safe curated substitution
+  // 1. Safe curated substitution. Conservative three-state rule: an
+  // allergen that VARIES by brand disqualifies the substitute just like
+  // a declared one — never an uncertain approval.
   const safeSub = (ingredient.substitutions || []).find(
-    (sub) => !(sub.allergens || []).some((a) => allergySet.has(a))
+    (sub) =>
+      ![...(sub.allergens || []), ...(sub.allergensVary || [])].some((a) => allergySet.has(a))
   );
   if (safeSub) {
     return {

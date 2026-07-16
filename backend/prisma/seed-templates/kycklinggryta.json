@@ -103,7 +103,10 @@
       "unit": "st",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 20,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "allergensVary": [
+        "selleri"
+      ]
     },
     {
       "name": "Currypulver",
