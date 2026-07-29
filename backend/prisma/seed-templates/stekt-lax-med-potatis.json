@@ -1,0 +1,101 @@
+{
+  "slug": "stekt-lax-med-potatis",
+  "title": "Stekt lax med kokt potatis",
+  "description": "Klassiker utan krusiduller: pannstekt lax, kokt potatis, ärtor och citron. Potatisen kokar medan laxen steks.",
+  "tags": ["vardag", "fisk", "husman"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 25,
+  "activeTimeMin": 12,
+  "passiveTimeMin": 13,
+  "servingsBase": 4,
+  "costPerPortionMin": 26,
+  "costPerPortionMax": 42,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": ["glutenfri", "laktosfri"],
+  "equipmentRequired": ["spis", "kastrull", "stekpanna"],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Laxfilé",
+      "canonical": "lax",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "allergens": ["fisk"],
+      "estPriceSek": 45,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Torskfilé",
+          "canonical": "torsk",
+          "note": "kortare stektid — känsligare fisk",
+          "allergens": ["fisk"]
+        }
+      ]
+    },
+    {
+      "name": "Potatis",
+      "canonical": "potatis",
+      "qtyPerPortion": 250,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10,
+      "critical": true
+    },
+    {
+      "name": "Frysta ärtor",
+      "canonical": "ärtor",
+      "qtyPerPortion": 50,
+      "unit": "g",
+      "aisle": "Frys",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Citron",
+      "canonical": "citron",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8
+    },
+    {
+      "name": "Rapsolja",
+      "canonical": "rapsolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Skölj potatisen och koka den i saltat vatten.",
+      "voiceCue": "Skölj potatisen och sätt den att koka i saltat vatten.",
+      "durationMin": 18,
+      "activeMin": 3,
+      "timerNeeded": true,
+      "equipment": ["kastrull"]
+    },
+    {
+      "id": "s2",
+      "text": "Salta laxen och stek den i olja, ett par minuter per sida.",
+      "voiceCue": "Salta laxen och stek den i olja, ett par minuter per sida.",
+      "durationMin": 8,
+      "activeMin": 6,
+      "equipment": ["stekpanna"]
+    },
+    {
+      "id": "s3",
+      "text": "Häll kokande vatten över ärtorna. Servera lax och potatis med ärtor och en citronklyfta.",
+      "voiceCue": "Häll kokande vatten över ärtorna och servera laxen med potatis, ärtor och citron. Klart!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": ["s1", "s2"]
+    }
+  ]
+}

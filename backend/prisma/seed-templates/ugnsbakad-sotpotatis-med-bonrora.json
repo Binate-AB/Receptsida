@@ -1,0 +1,131 @@
+{
+  "slug": "ugnsbakad-sotpotatis-med-bonrora",
+  "title": "Ugnsbakad sötpotatis med bönröra",
+  "description": "Sötpotatisen sköter sig själv i ugnen medan du rör ihop en enkel bönröra med majs och lime. Låg insats, mycket middag.",
+  "tags": ["vardag", "vegetariskt", "billigt", "ugn"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 40,
+  "activeTimeMin": 13,
+  "passiveTimeMin": 27,
+  "servingsBase": 4,
+  "costPerPortionMin": 14,
+  "costPerPortionMax": 24,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
+  "equipmentRequired": ["ugn", "ugnsform"],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Sötpotatis",
+      "canonical": "sötpotatis",
+      "qtyPerPortion": 250,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 15,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Potatis",
+          "canonical": "potatis",
+          "note": "vanlig potatis funkar — samma tid i ugnen"
+        }
+      ]
+    },
+    {
+      "name": "Svarta bönor",
+      "canonical": "svarta bönor",
+      "qtyPerPortion": 0.5,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kidneybönor",
+          "canonical": "kidneybönor",
+          "note": "samma hantering"
+        }
+      ]
+    },
+    {
+      "name": "Majs",
+      "canonical": "majs",
+      "qtyPerPortion": 40,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Lime",
+      "canonical": "lime",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "substitutions": [
+        {
+          "name": "Citron",
+          "canonical": "citron",
+          "note": "samma mängd"
+        }
+      ]
+    },
+    {
+      "name": "Rödlök",
+      "canonical": "rödlök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "optional": true
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Sätt ugnen på 225 grader. Dela sötpotatisen i klyftor, lägg i form med olja och salt.",
+      "voiceCue": "Sätt ugnen på 225 grader. Dela sötpotatisen i klyftor och lägg dem i en form med olja och salt.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "equipment": ["ugnsform"]
+    },
+    {
+      "id": "s2",
+      "text": "Rosta sötpotatisen i ugnen tills den är mjuk med lite färg.",
+      "voiceCue": "In med sötpotatisen i ugnen. Den ska bli mjuk med lite färg.",
+      "durationMin": 30,
+      "activeMin": 0,
+      "timerNeeded": true,
+      "dependsOn": ["s1"],
+      "equipment": ["ugn"]
+    },
+    {
+      "id": "s3",
+      "text": "Rör ihop bönröran: sköljda bönor, majs, finhackad rödlök, olivolja och pressad lime. Salta.",
+      "voiceCue": "Rör ihop bönröran med bönor, majs, rödlök, olja och pressad lime. Salta.",
+      "durationMin": 6,
+      "activeMin": 6,
+      "dependsOn": ["s1"]
+    },
+    {
+      "id": "s4",
+      "text": "Servera sötpotatisen med bönröran ovanpå.",
+      "voiceCue": "Servera sötpotatisen med bönröran ovanpå. Klart!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": ["s2", "s3"]
+    }
+  ]
+}

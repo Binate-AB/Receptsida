@@ -1,0 +1,133 @@
+{
+  "slug": "kycklingbowl-med-ris",
+  "title": "Kycklingbowl med ris",
+  "description": "Stekt kyckling, ris, majs och färska grönsaker i en skål — alla bygger sin egen. Yoghurtsås för den som vill.",
+  "tags": ["vardag", "barnvänligt"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 25,
+  "activeTimeMin": 17,
+  "passiveTimeMin": 8,
+  "servingsBase": 4,
+  "costPerPortionMin": 20,
+  "costPerPortionMax": 32,
+  "childFriendly": 3,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": ["glutenfri", "laktosfri"],
+  "equipmentRequired": ["spis", "kastrull", "stekpanna"],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Kycklingfilé",
+      "canonical": "kycklingfilé",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "estPriceSek": 30,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kikärtor",
+          "canonical": "kikärtor",
+          "note": "vegetariskt — stek med paprikapulver"
+        }
+      ]
+    },
+    {
+      "name": "Ris",
+      "canonical": "ris",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 10,
+      "critical": true,
+      "pantryStaple": true
+    },
+    {
+      "name": "Majs",
+      "canonical": "majs",
+      "qtyPerPortion": 40,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Gurka",
+      "canonical": "gurka",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Morot",
+      "canonical": "morot",
+      "qtyPerPortion": 0.5,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8
+    },
+    {
+      "name": "Matyoghurt",
+      "canonical": "yoghurt",
+      "qtyPerPortion": 0.5,
+      "unit": "dl",
+      "aisle": "Mejeri",
+      "allergens": ["laktos", "mjölkprotein"],
+      "estPriceSek": 15,
+      "optional": true,
+      "substitutions": [
+        {
+          "name": "Laktosfri matyoghurt",
+          "canonical": "laktosfri yoghurt",
+          "note": "samma mängd",
+          "allergens": ["mjölkprotein"]
+        }
+      ]
+    },
+    {
+      "name": "Rapsolja",
+      "canonical": "rapsolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Koka riset enligt paketet.",
+      "voiceCue": "Sätt på riset och koka det enligt paketet.",
+      "durationMin": 15,
+      "activeMin": 2,
+      "timerNeeded": true,
+      "equipment": ["kastrull"]
+    },
+    {
+      "id": "s2",
+      "text": "Strimla och stek kycklingen i olja med salt och peppar.",
+      "voiceCue": "Strimla och stek kycklingen i olja med salt och peppar.",
+      "durationMin": 10,
+      "activeMin": 8,
+      "equipment": ["stekpanna"]
+    },
+    {
+      "id": "s3",
+      "text": "Hacka gurkan och riv moroten.",
+      "voiceCue": "Hacka gurkan och riv moroten.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s4",
+      "text": "Montera bowls med ris, kyckling, majs och grönsaker. Klicka på yoghurt för den som vill.",
+      "voiceCue": "Montera skålarna med ris, kyckling, majs och grönsaker. Yoghurt för den som vill. Klart!",
+      "durationMin": 4,
+      "activeMin": 4,
+      "dependsOn": ["s1", "s2", "s3"]
+    }
+  ]
+}

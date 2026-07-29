@@ -114,6 +114,10 @@ export const templateSchema = z
       .nullable()
       .optional(),
     version: z.number().int().min(1).default(1),
+    // §21 coverage matrix: extra cells this dish honestly claims beyond the
+    // one derived from totalTimeMin + effortScore ("räkna generöst,
+    // verifiera ärligt" — engine/coverage.js unions these in).
+    coverageCells: z.array(z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])).default([]),
     // §22 verification gate: only VERIFIED dishes enter the candidate pool.
     // New templates are seeded DRAFT until a human has reviewed them against
     // docs/NISSE_DISH_VERIFICATION_CHECKLIST.md. Verification is a HUMAN

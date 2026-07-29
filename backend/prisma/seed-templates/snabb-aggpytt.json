@@ -1,0 +1,84 @@
+{
+  "slug": "snabb-aggpytt",
+  "title": "Snabb äggpytt med ärtor",
+  "description": "Färdigkokt potatis, lök och ärtor i pannan med stekta ägg ovanpå. Vardagsräddare på en kvart.",
+  "tags": ["vardag", "snabbt", "billigt", "vegetariskt"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 15,
+  "activeTimeMin": 12,
+  "passiveTimeMin": 3,
+  "servingsBase": 4,
+  "costPerPortionMin": 10,
+  "costPerPortionMax": 18,
+  "childFriendly": 3,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": ["vegetarisk", "glutenfri", "laktosfri"],
+  "equipmentRequired": ["spis", "stekpanna"],
+  "robustness": 5,
+  "ingredients": [
+    {
+      "name": "Färdigkokt potatis",
+      "canonical": "potatis",
+      "qtyPerPortion": 200,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12,
+      "critical": true
+    },
+    {
+      "name": "Ägg",
+      "canonical": "ägg",
+      "qtyPerPortion": 1,
+      "unit": "st",
+      "aisle": "Mejeri",
+      "allergens": ["ägg"],
+      "estPriceSek": 15,
+      "critical": true
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8
+    },
+    {
+      "name": "Frysta ärtor",
+      "canonical": "ärtor",
+      "qtyPerPortion": 40,
+      "unit": "g",
+      "aisle": "Frys",
+      "estPriceSek": 10
+    },
+    {
+      "name": "Rapsolja",
+      "canonical": "rapsolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Tärna potatisen och hacka löken. Stek i olja tills potatisen fått färg, rör ner ärtorna på slutet.",
+      "voiceCue": "Tärna potatisen och hacka löken. Stek i olja tills potatisen fått färg, och rör ner ärtorna på slutet.",
+      "durationMin": 8,
+      "activeMin": 7,
+      "equipment": ["stekpanna"]
+    },
+    {
+      "id": "s2",
+      "text": "Gör plats i pannan och stek äggen. Salta och peppra.",
+      "voiceCue": "Gör plats i pannan och stek äggen. Salta och peppra. Klart!",
+      "durationMin": 4,
+      "activeMin": 3,
+      "dependsOn": ["s1"]
+    }
+  ]
+}

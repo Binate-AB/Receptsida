@@ -66,19 +66,37 @@ test('VERIFIED without a named reviewer + date is rejected', () => {
 
 // ── Grandfather: the signed-off 24 ───────────
 
-test('every live seed template is VERIFIED with reviewer + date (G0 sign-off 2026-07-29)', async () => {
+// The 24 dishes covered by the G0 allergen-review sign-off (Jonas, 2026-07-29).
+const GRANDFATHERED = new Set([
+  'chili-sin-carne', 'falukorv-i-ugn', 'fiskpinnar-med-mos', 'gronsakssoppa',
+  'halloumiwok', 'korv-stroganoff', 'korvgryta-med-pasta', 'kottbullar-potatismos',
+  'kramig-kycklingpasta', 'kyckling-fajitas', 'kyckling-rotfrukter-ugn', 'kycklinggryta',
+  'laxpasta', 'linssoppa', 'pannkakor', 'pasta-carbonara', 'pasta-kottfarssas',
+  'pyttipanna', 'tacogryta', 'tom-kylen-omelett', 'tonfiskpasta', 'ugnsbakad-lax',
+  'ugnspannkaka', 'vegetarisk-tacos',
+]);
+
+test('grandfathered dishes are VERIFIED; dishes added later must be human-verified first', async () => {
   const files = (await readdir(TEMPLATE_DIR)).filter((f) => f.endsWith('.json'));
   assert.ok(files.length >= 24, `found only ${files.length}`);
+  const seenGrandfathered = new Set();
   for (const file of files) {
     const tpl = templateSchema.parse(
       JSON.parse(await readFile(path.join(TEMPLATE_DIR, file), 'utf-8'))
     );
-    // NOTE: new dishes added after the sign-off are seeded DRAFT — when the
-    // first DRAFT dish lands, replace this blanket assertion with an explicit
-    // list of the grandfathered slugs.
-    assert.equal(tpl.verificationStatus, 'VERIFIED', `${file} är inte VERIFIED`);
-    assert.ok(tpl.verifiedAt && tpl.verifiedBy, `${file} saknar verifiedAt/verifiedBy`);
+    if (GRANDFATHERED.has(tpl.slug)) {
+      seenGrandfathered.add(tpl.slug);
+      assert.equal(tpl.verificationStatus, 'VERIFIED', `${file} är inte VERIFIED`);
+      assert.ok(tpl.verifiedAt && tpl.verifiedBy, `${file} saknar verifiedAt/verifiedBy`);
+    } else if (tpl.verificationStatus === 'VERIFIED') {
+      // A later dish may only be VERIFIED with an explicit human stamp
+      assert.ok(
+        tpl.verifiedAt && tpl.verifiedBy,
+        `${file}: VERIFIED utan mänsklig granskare/datum`
+      );
+    }
   }
+  assert.equal(seenGrandfathered.size, GRANDFATHERED.size, 'en grandfathrad rätt saknas i seeds');
 });
 
 // ── Pool gate semantics ──────────────────────

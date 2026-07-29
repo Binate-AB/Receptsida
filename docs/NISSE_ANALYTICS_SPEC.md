@@ -30,6 +30,7 @@ hushållsmodellen. `rawText` i MealRequest sparas i domäntabellen (för funktio
 | `no_option_accepted` | PLAN | "Inget av dessa" | `requestId`, `regeneration_round` | |
 | `assumption_corrected` | PLAN | `PATCH /dinner/requests/:id/assumptions` | `requestId`, `key`, `level` | `from`, `to` (enum/tal, ej fritext) |
 | `shopping_list_created` | LIVE | Accept skapar lista | `listId`, `recommendationId`, `items` | |
+| `recommendation_gap` | LIVE | Ranking gav <3 kvalificerade, meningsfullt olika slots (solve/korrigering/regenerate/alternativ) | `requestId`, `cell` (A1–C2 ur parsed tid+energi), `qualified` (antal slots), `hard_filter_kinds` (`{allergen, dietary, equipment, time, other}` — **endast räknare per filterslag; ALDRIG vilka allergener, kostkrav eller medlemmar**, §24) | `excluded` (antal exkluderade vid regenerate) |
 
 ### Tillagningsflödet
 

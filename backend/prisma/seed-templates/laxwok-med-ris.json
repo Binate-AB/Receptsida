@@ -1,0 +1,111 @@
+{
+  "slug": "laxwok-med-ris",
+  "title": "Laxwok med ris",
+  "description": "Laxbitar och wokgrönsaker på hög värme, serverat med ris. Snabbt, fräscht och utan krångel.",
+  "tags": ["vardag", "snabbt", "fisk"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 15,
+  "activeTimeMin": 13,
+  "passiveTimeMin": 2,
+  "servingsBase": 4,
+  "costPerPortionMin": 24,
+  "costPerPortionMax": 38,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 0,
+  "dietaryFlags": ["glutenfri", "laktosfri"],
+  "equipmentRequired": ["spis", "stekpanna"],
+  "robustness": 3,
+  "ingredients": [
+    {
+      "name": "Laxfilé",
+      "canonical": "lax",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "allergens": ["fisk"],
+      "estPriceSek": 45,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Torskfilé",
+          "canonical": "torsk",
+          "note": "känsligare — vänd försiktigt",
+          "allergens": ["fisk"]
+        }
+      ]
+    },
+    {
+      "name": "Frysta wokgrönsaker",
+      "canonical": "wokgrönsaker",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Frys",
+      "estPriceSek": 15,
+      "critical": true
+    },
+    {
+      "name": "Färdigkokt ris",
+      "canonical": "ris",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 12,
+      "pantryStaple": true
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "pantryStaple": true
+    },
+    {
+      "name": "Citron",
+      "canonical": "citron",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "optional": true
+    },
+    {
+      "name": "Rapsolja",
+      "canonical": "rapsolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Tärna laxen i stora bitar. Salta lätt.",
+      "voiceCue": "Tärna laxen i stora bitar och salta lätt.",
+      "durationMin": 3,
+      "activeMin": 3
+    },
+    {
+      "id": "s2",
+      "text": "Woka grönsakerna och vitlöken i olja på hög värme.",
+      "voiceCue": "Woka grönsakerna och vitlöken i olja på hög värme.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "dependsOn": ["s1"],
+      "equipment": ["stekpanna"]
+    },
+    {
+      "id": "s3",
+      "text": "Lägg i lax och ris. Woka försiktigt tills laxen är genomstekt. Smaka av med salt och citron.",
+      "voiceCue": "Lägg i laxen och riset, och woka försiktigt tills laxen är klar. Smaka av med citron. Klart!",
+      "durationMin": 6,
+      "activeMin": 5,
+      "dependsOn": ["s2"]
+    }
+  ]
+}

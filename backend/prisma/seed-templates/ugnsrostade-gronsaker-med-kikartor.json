@@ -1,0 +1,125 @@
+{
+  "slug": "ugnsrostade-gronsaker-med-kikartor",
+  "title": "Ugnsrostade grönsaker med kikärtor",
+  "description": "Allt på en plåt: rotfrukter, paprika och kikärtor rostas i ugnen och toppas med citrondressing. Ugnen gör jobbet.",
+  "tags": ["vardag", "vegetariskt", "billigt", "ugn"],
+  "difficulty": "Enkel",
+  "totalTimeMin": 40,
+  "activeTimeMin": 12,
+  "passiveTimeMin": 28,
+  "servingsBase": 4,
+  "costPerPortionMin": 13,
+  "costPerPortionMax": 22,
+  "childFriendly": 2,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
+  "equipmentRequired": ["ugn", "ugnsform"],
+  "robustness": 5,
+  "ingredients": [
+    {
+      "name": "Morot",
+      "canonical": "morot",
+      "qtyPerPortion": 1,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Palsternacka",
+          "canonical": "palsternacka",
+          "note": "samma rostningstid"
+        }
+      ]
+    },
+    {
+      "name": "Potatis",
+      "canonical": "potatis",
+      "qtyPerPortion": 150,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10,
+      "critical": true
+    },
+    {
+      "name": "Paprika",
+      "canonical": "paprika",
+      "qtyPerPortion": 0.5,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Kikärtor",
+      "canonical": "kikärtor",
+      "qtyPerPortion": 0.5,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Vita bönor",
+          "canonical": "vita bönor",
+          "note": "rostas på samma sätt"
+        }
+      ]
+    },
+    {
+      "name": "Rödlök",
+      "canonical": "rödlök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "optional": true
+    },
+    {
+      "name": "Citron",
+      "canonical": "citron",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 1,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Sätt ugnen på 225 grader. Skär rotfrukter och paprika i bitar. Blanda med sköljda kikärtor, olja och salt på en plåt.",
+      "voiceCue": "Sätt ugnen på 225 grader. Skär grönsakerna i bitar och blanda dem med kikärtorna, olja och salt på en plåt.",
+      "durationMin": 8,
+      "activeMin": 8,
+      "equipment": ["ugnsform"]
+    },
+    {
+      "id": "s2",
+      "text": "Rosta i ugnen tills grönsakerna är mjuka och kikärtorna knapriga.",
+      "voiceCue": "In i ugnen tills grönsakerna är mjuka och kikärtorna knapriga.",
+      "durationMin": 28,
+      "activeMin": 0,
+      "timerNeeded": true,
+      "dependsOn": ["s1"],
+      "equipment": ["ugn"]
+    },
+    {
+      "id": "s3",
+      "text": "Rör ihop olivolja och citronsaft, ringla över plåten och servera.",
+      "voiceCue": "Rör ihop olja och citronsaft, ringla över och servera. Klart!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": ["s2"]
+    }
+  ]
+}
