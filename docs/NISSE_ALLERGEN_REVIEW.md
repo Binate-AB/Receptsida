@@ -52,9 +52,13 @@ basreceptet* och *en valfri allergen ingrediens ger en säker väg med villkor*.
 
 ## Status
 
-- [ ] **SIGN-OFF: samtliga 24 rätters path-aware fyrstatus granskad och godkänd**
-  Namn: ________________ Datum: ________________
-- Rättelser begärda: ________________________________________
+- [x] **SIGN-OFF: samtliga 24 rätters path-aware fyrstatus granskad och godkänd**
+  Namn: **Jonas** Datum: **2026-07-29**
+- Rättelser begärda: **Inga — rev 3 godkänd utan ändringar.**
+- Godkännandet gavs i chatt 2026-07-29 ("Du kan stämpla dokumentet med mitt namn"). Mergen till
+  `main` (PR #78) skedde före stämpeln — denna markering är retroaktiv dokumentation av samma beslut.
+  Sign-offen låser upp G1 (verification_status + kandidatpool-grind); de 24 rätterna grandfathras
+  som VERIFIED med `verifiedAt=2026-07-29`, `verifiedBy=Jonas`.
 
 ---
 
