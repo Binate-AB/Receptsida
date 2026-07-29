@@ -112,7 +112,8 @@
       "allergens": [
         "sesam"
       ],
-      "optional": true
+      "optional": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [

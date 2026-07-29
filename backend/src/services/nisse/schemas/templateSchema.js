@@ -55,6 +55,9 @@ export const templateIngredientSchema = z.object({
   // Avgörande ingrediens — dish cannot reasonably be cooked without it.
   // Unset → derived: required and not a pantry staple (see engine/uncertainty.js).
   critical: z.boolean().optional(),
+  // §28: how the quantity scales with portions (engine/portions.js) —
+  // stepwise = whole units (lök/ägg), sublinear = kryddor/fett (^0.6).
+  scaling: z.enum(['linear', 'stepwise', 'sublinear']).optional().default('linear'),
   ...allergenStatusFields,
   aisle: z.enum(AISLES).optional().default('Övrigt'),
   // Approximate SEK cost of buying this item once (smallest sensible pack)
@@ -104,6 +107,10 @@ export const templateSchema = z
     // How well the dish survives uncertain pantry, a missing ingredient,
     // less time than planned, child adaptation and simple substitutions (1-5)
     robustness: z.number().int().min(1).max(5).default(3),
+    // §28: optional per-dish override of the AGE-DEFAULT portion factor
+    // for BABY/CHILD eaters (member-explicit factors always win) —
+    // see computePortions in engine/portions.js.
+    childPortionFactor: z.number().min(0.25).max(1.5).optional(),
     ingredients: z.array(templateIngredientSchema).min(2),
     steps: z.array(templateStepSchema).min(2),
     variants: z

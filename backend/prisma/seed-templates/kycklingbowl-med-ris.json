@@ -2,7 +2,10 @@
   "slug": "kycklingbowl-med-ris",
   "title": "Kycklingbowl med ris",
   "description": "Stekt kyckling, ris, majs och färska grönsaker i en skål — alla bygger sin egen. Yoghurtsås för den som vill.",
-  "tags": ["vardag", "barnvänligt"],
+  "tags": [
+    "vardag",
+    "barnvänligt"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 25,
   "activeTimeMin": 17,
@@ -14,8 +17,15 @@
   "effortScore": 2,
   "dishLoad": 2,
   "spiceLevel": 0,
-  "dietaryFlags": ["glutenfri", "laktosfri"],
-  "equipmentRequired": ["spis", "kastrull", "stekpanna"],
+  "dietaryFlags": [
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull",
+    "stekpanna"
+  ],
   "robustness": 4,
   "ingredients": [
     {
@@ -74,7 +84,10 @@
       "qtyPerPortion": 0.5,
       "unit": "dl",
       "aisle": "Mejeri",
-      "allergens": ["laktos", "mjölkprotein"],
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
       "estPriceSek": 15,
       "optional": true,
       "substitutions": [
@@ -82,7 +95,9 @@
           "name": "Laktosfri matyoghurt",
           "canonical": "laktosfri yoghurt",
           "note": "samma mängd",
-          "allergens": ["mjölkprotein"]
+          "allergens": [
+            "mjölkprotein"
+          ]
         }
       ]
     },
@@ -93,7 +108,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -104,7 +120,9 @@
       "durationMin": 15,
       "activeMin": 2,
       "timerNeeded": true,
-      "equipment": ["kastrull"]
+      "equipment": [
+        "kastrull"
+      ]
     },
     {
       "id": "s2",
@@ -112,7 +130,9 @@
       "voiceCue": "Strimla och stek kycklingen i olja med salt och peppar.",
       "durationMin": 10,
       "activeMin": 8,
-      "equipment": ["stekpanna"]
+      "equipment": [
+        "stekpanna"
+      ]
     },
     {
       "id": "s3",
@@ -127,7 +147,11 @@
       "voiceCue": "Montera skålarna med ris, kyckling, majs och grönsaker. Yoghurt för den som vill. Klart!",
       "durationMin": 4,
       "activeMin": 4,
-      "dependsOn": ["s1", "s2", "s3"]
+      "dependsOn": [
+        "s1",
+        "s2",
+        "s3"
+      ]
     }
   ]
 }

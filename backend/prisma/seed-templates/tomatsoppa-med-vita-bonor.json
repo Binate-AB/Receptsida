@@ -2,7 +2,13 @@
   "slug": "tomatsoppa-med-vita-bonor",
   "title": "Tomatsoppa med vita bönor",
   "description": "Mustig tomatsoppa med vita bönor och kokosgrädde. Snabb, vegansk och snäll mot både barn och plånbok.",
-  "tags": ["vardag", "snabbt", "vegetariskt", "billigt", "soppa"],
+  "tags": [
+    "vardag",
+    "snabbt",
+    "vegetariskt",
+    "billigt",
+    "soppa"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 15,
   "activeTimeMin": 9,
@@ -14,8 +20,16 @@
   "effortScore": 2,
   "dishLoad": 1,
   "spiceLevel": 0,
-  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
-  "equipmentRequired": ["spis", "kastrull"],
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
   "robustness": 4,
   "ingredients": [
     {
@@ -57,7 +71,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 8
+      "estPriceSek": 8,
+      "scaling": "stepwise"
     },
     {
       "name": "Vitlök",
@@ -66,7 +81,8 @@
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Basilika",
@@ -76,7 +92,8 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
       "optional": true,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Olivolja",
@@ -85,7 +102,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -95,7 +113,9 @@
       "voiceCue": "Hacka och fräs löken och vitlöken i olivolja.",
       "durationMin": 4,
       "activeMin": 4,
-      "equipment": ["kastrull"]
+      "equipment": [
+        "kastrull"
+      ]
     },
     {
       "id": "s2",
@@ -104,7 +124,9 @@
       "durationMin": 8,
       "activeMin": 2,
       "timerNeeded": true,
-      "dependsOn": ["s1"]
+      "dependsOn": [
+        "s1"
+      ]
     },
     {
       "id": "s3",
@@ -112,7 +134,9 @@
       "voiceCue": "Smaka av med salt, peppar och basilika. Klart!",
       "durationMin": 3,
       "activeMin": 3,
-      "dependsOn": ["s2"]
+      "dependsOn": [
+        "s2"
+      ]
     }
   ]
 }

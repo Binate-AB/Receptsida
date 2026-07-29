@@ -90,7 +90,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Frysta ärtor",
@@ -111,7 +112,8 @@
       "allergensVaryByProduct": [
         "selleri"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Currypulver",
@@ -121,7 +123,8 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
       "group": "vuxen",
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Smör",
@@ -134,7 +137,8 @@
         "laktos",
         "mjölkprotein"
       ],
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [

@@ -2,7 +2,12 @@
   "slug": "ugnsrostade-gronsaker-med-kikartor",
   "title": "Ugnsrostade grönsaker med kikärtor",
   "description": "Allt på en plåt: rotfrukter, paprika och kikärtor rostas i ugnen och toppas med citrondressing. Ugnen gör jobbet.",
-  "tags": ["vardag", "vegetariskt", "billigt", "ugn"],
+  "tags": [
+    "vardag",
+    "vegetariskt",
+    "billigt",
+    "ugn"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 40,
   "activeTimeMin": 12,
@@ -14,8 +19,16 @@
   "effortScore": 1,
   "dishLoad": 1,
   "spiceLevel": 0,
-  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
-  "equipmentRequired": ["ugn", "ugnsform"],
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "ugn",
+    "ugnsform"
+  ],
   "robustness": 5,
   "ingredients": [
     {
@@ -74,7 +87,8 @@
       "unit": "st",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "optional": true
+      "optional": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Citron",
@@ -91,7 +105,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -101,7 +116,9 @@
       "voiceCue": "Sätt ugnen på 225 grader. Skär grönsakerna i bitar och blanda dem med kikärtorna, olja och salt på en plåt.",
       "durationMin": 8,
       "activeMin": 8,
-      "equipment": ["ugnsform"]
+      "equipment": [
+        "ugnsform"
+      ]
     },
     {
       "id": "s2",
@@ -110,8 +127,12 @@
       "durationMin": 28,
       "activeMin": 0,
       "timerNeeded": true,
-      "dependsOn": ["s1"],
-      "equipment": ["ugn"]
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "ugn"
+      ]
     },
     {
       "id": "s3",
@@ -119,7 +140,9 @@
       "voiceCue": "Rör ihop olja och citronsaft, ringla över och servera. Klart!",
       "durationMin": 3,
       "activeMin": 3,
-      "dependsOn": ["s2"]
+      "dependsOn": [
+        "s2"
+      ]
     }
   ]
 }

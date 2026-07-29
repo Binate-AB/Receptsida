@@ -2,7 +2,11 @@
   "slug": "laxwok-med-ris",
   "title": "Laxwok med ris",
   "description": "Laxbitar och wokgrönsaker på hög värme, serverat med ris. Snabbt, fräscht och utan krångel.",
-  "tags": ["vardag", "snabbt", "fisk"],
+  "tags": [
+    "vardag",
+    "snabbt",
+    "fisk"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 15,
   "activeTimeMin": 13,
@@ -14,8 +18,14 @@
   "effortScore": 2,
   "dishLoad": 2,
   "spiceLevel": 0,
-  "dietaryFlags": ["glutenfri", "laktosfri"],
-  "equipmentRequired": ["spis", "stekpanna"],
+  "dietaryFlags": [
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "stekpanna"
+  ],
   "robustness": 3,
   "ingredients": [
     {
@@ -24,7 +34,9 @@
       "qtyPerPortion": 125,
       "unit": "g",
       "aisle": "Kött & Fisk",
-      "allergens": ["fisk"],
+      "allergens": [
+        "fisk"
+      ],
       "estPriceSek": 45,
       "critical": true,
       "substitutions": [
@@ -32,7 +44,9 @@
           "name": "Torskfilé",
           "canonical": "torsk",
           "note": "känsligare — vänd försiktigt",
-          "allergens": ["fisk"]
+          "allergens": [
+            "fisk"
+          ]
         }
       ]
     },
@@ -61,7 +75,8 @@
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Citron",
@@ -79,7 +94,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -96,8 +112,12 @@
       "voiceCue": "Woka grönsakerna och vitlöken i olja på hög värme.",
       "durationMin": 5,
       "activeMin": 5,
-      "dependsOn": ["s1"],
-      "equipment": ["stekpanna"]
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "stekpanna"
+      ]
     },
     {
       "id": "s3",
@@ -105,7 +125,9 @@
       "voiceCue": "Lägg i laxen och riset, och woka försiktigt tills laxen är klar. Smaka av med citron. Klart!",
       "durationMin": 6,
       "activeMin": 5,
-      "dependsOn": ["s2"]
+      "dependsOn": [
+        "s2"
+      ]
     }
   ]
 }

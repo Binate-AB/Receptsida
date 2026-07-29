@@ -96,7 +96,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Majs",

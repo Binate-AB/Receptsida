@@ -535,6 +535,9 @@ model RecipeTemplate {
   // How well the dish survives uncertain pantry, missing ingredients,
   // less time than planned, child adaptation and simple substitutions (1-5)
   robustness          Int      @default(3)
+  // §28: optional override of the age-default portion factor for
+  // BABY/CHILD eaters (member-explicit factors win) — engine/portions.js
+  childPortionFactor  Float?   @map("child_portion_factor")
   ingredients         Json     // TemplateIngredient[] — Zod-validated at seed
   steps               Json     // TemplateStep[] — DAG with dependsOn + branch tags
   variants            Json?    // branch metadata { child: {...}, adult: {...} }

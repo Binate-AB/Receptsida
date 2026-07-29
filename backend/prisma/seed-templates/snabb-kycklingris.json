@@ -2,7 +2,11 @@
   "slug": "snabb-kycklingris",
   "title": "Snabb kycklingris",
   "description": "Strimlad kyckling, färdigkokt ris, majs och paprika i en panna. Klart på en kvart utan konstigheter.",
-  "tags": ["vardag", "snabbt", "billigt"],
+  "tags": [
+    "vardag",
+    "snabbt",
+    "billigt"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 15,
   "activeTimeMin": 12,
@@ -14,8 +18,14 @@
   "effortScore": 1,
   "dishLoad": 1,
   "spiceLevel": 0,
-  "dietaryFlags": ["glutenfri", "laktosfri"],
-  "equipmentRequired": ["spis", "stekpanna"],
+  "dietaryFlags": [
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "stekpanna"
+  ],
   "robustness": 4,
   "ingredients": [
     {
@@ -72,7 +82,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Rapsolja",
@@ -81,7 +92,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -91,7 +103,9 @@
       "voiceCue": "Strimla kycklingen och paprikan, och stek kycklingen i olja med salt och paprikapulver.",
       "durationMin": 8,
       "activeMin": 8,
-      "equipment": ["stekpanna"]
+      "equipment": [
+        "stekpanna"
+      ]
     },
     {
       "id": "s2",
@@ -99,7 +113,9 @@
       "voiceCue": "Rör ner riset, majsen och paprikan, och låt allt bli genomvarmt.",
       "durationMin": 4,
       "activeMin": 3,
-      "dependsOn": ["s1"]
+      "dependsOn": [
+        "s1"
+      ]
     },
     {
       "id": "s3",
@@ -107,7 +123,9 @@
       "voiceCue": "Smaka av med salt och peppar. Klart!",
       "durationMin": 2,
       "activeMin": 2,
-      "dependsOn": ["s2"]
+      "dependsOn": [
+        "s2"
+      ]
     }
   ]
 }

@@ -2,7 +2,12 @@
   "slug": "ugnsbakad-sotpotatis-med-bonrora",
   "title": "Ugnsbakad sötpotatis med bönröra",
   "description": "Sötpotatisen sköter sig själv i ugnen medan du rör ihop en enkel bönröra med majs och lime. Låg insats, mycket middag.",
-  "tags": ["vardag", "vegetariskt", "billigt", "ugn"],
+  "tags": [
+    "vardag",
+    "vegetariskt",
+    "billigt",
+    "ugn"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 40,
   "activeTimeMin": 13,
@@ -14,8 +19,16 @@
   "effortScore": 1,
   "dishLoad": 1,
   "spiceLevel": 0,
-  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
-  "equipmentRequired": ["ugn", "ugnsform"],
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "ugn",
+    "ugnsform"
+  ],
   "robustness": 4,
   "ingredients": [
     {
@@ -80,7 +93,8 @@
       "unit": "st",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "optional": true
+      "optional": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Olivolja",
@@ -89,7 +103,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -99,7 +114,9 @@
       "voiceCue": "Sätt ugnen på 225 grader. Dela sötpotatisen i klyftor och lägg dem i en form med olja och salt.",
       "durationMin": 5,
       "activeMin": 5,
-      "equipment": ["ugnsform"]
+      "equipment": [
+        "ugnsform"
+      ]
     },
     {
       "id": "s2",
@@ -108,8 +125,12 @@
       "durationMin": 30,
       "activeMin": 0,
       "timerNeeded": true,
-      "dependsOn": ["s1"],
-      "equipment": ["ugn"]
+      "dependsOn": [
+        "s1"
+      ],
+      "equipment": [
+        "ugn"
+      ]
     },
     {
       "id": "s3",
@@ -117,7 +138,9 @@
       "voiceCue": "Rör ihop bönröran med bönor, majs, rödlök, olja och pressad lime. Salta.",
       "durationMin": 6,
       "activeMin": 6,
-      "dependsOn": ["s1"]
+      "dependsOn": [
+        "s1"
+      ]
     },
     {
       "id": "s4",
@@ -125,7 +148,10 @@
       "voiceCue": "Servera sötpotatisen med bönröran ovanpå. Klart!",
       "durationMin": 2,
       "activeMin": 2,
-      "dependsOn": ["s2", "s3"]
+      "dependsOn": [
+        "s2",
+        "s3"
+      ]
     }
   ]
 }

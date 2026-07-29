@@ -104,7 +104,8 @@
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 12,
-      "group": "vuxen"
+      "group": "vuxen",
+      "scaling": "stepwise"
     },
     {
       "name": "Soltorkade tomater",
@@ -127,7 +128,8 @@
       "allergensVaryByProduct": [
         "selleri"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Rapsolja",
@@ -136,7 +138,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 25,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [

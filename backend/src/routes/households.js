@@ -18,6 +18,7 @@ import {
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { VERIFIED_POOL_WHERE } from '../services/nisse/candidatePool.js';
+import { DEFAULT_PORTION_FACTOR } from '../services/nisse/engine/portions.js';
 import crypto from 'crypto';
 import {
   getOwnedHousehold,
@@ -29,15 +30,6 @@ import { ALLERGEN_TAXONOMY, DIETARY_RESTRICTIONS, EQUIPMENT } from '../services/
 import { logEvent } from '../services/nisse/analytics.js';
 
 const router = Router();
-
-// Default portion factors per age category (adjustable per member)
-const DEFAULT_PORTION_FACTOR = {
-  BABY: 0.3,
-  CHILD: 0.6,
-  TEEN: 1.3,
-  ADULT: 1.0,
-  SENIOR: 0.9,
-};
 
 // ──────────────────────────────────────────
 // GET /households/meta — taxonomies for UI pickers

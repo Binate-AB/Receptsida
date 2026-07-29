@@ -94,7 +94,8 @@
       "allergensVaryByProduct": [
         "gluten"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Tomatpuré",

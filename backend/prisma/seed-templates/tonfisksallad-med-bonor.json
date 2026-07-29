@@ -2,7 +2,12 @@
   "slug": "tonfisksallad-med-bonor",
   "title": "Tonfisksallad med vita bönor",
   "description": "Skafferisallad helt utan spis: tonfisk, vita bönor, tomat och citron. Middag på tio minuter.",
-  "tags": ["vardag", "snabbt", "billigt", "skafferi"],
+  "tags": [
+    "vardag",
+    "snabbt",
+    "billigt",
+    "skafferi"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 10,
   "activeTimeMin": 10,
@@ -14,7 +19,10 @@
   "effortScore": 1,
   "dishLoad": 1,
   "spiceLevel": 0,
-  "dietaryFlags": ["glutenfri", "laktosfri"],
+  "dietaryFlags": [
+    "glutenfri",
+    "laktosfri"
+  ],
   "equipmentRequired": [],
   "robustness": 4,
   "ingredients": [
@@ -24,7 +32,9 @@
       "qtyPerPortion": 0.5,
       "unit": "burk",
       "aisle": "Konserver & Såser",
-      "allergens": ["fisk"],
+      "allergens": [
+        "fisk"
+      ],
       "estPriceSek": 15,
       "critical": true,
       "substitutions": [
@@ -75,7 +85,8 @@
       "unit": "st",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "optional": true
+      "optional": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Citron",
@@ -92,7 +103,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -109,7 +121,9 @@
       "voiceCue": "Blanda bönorna, grönsakerna och tonfisken. Ringla över olja, pressa över citron och smaka av. Klart!",
       "durationMin": 4,
       "activeMin": 4,
-      "dependsOn": ["s1"]
+      "dependsOn": [
+        "s1"
+      ]
     }
   ]
 }

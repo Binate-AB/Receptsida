@@ -56,7 +56,8 @@
       "estPriceSek": 35,
       "allergens": [
         "ägg"
-      ]
+      ],
+      "scaling": "stepwise"
     },
     {
       "name": "Falukorv",
@@ -96,7 +97,8 @@
         "laktos",
         "mjölkprotein"
       ],
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [

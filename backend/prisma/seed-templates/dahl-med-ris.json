@@ -2,7 +2,12 @@
   "slug": "dahl-med-ris",
   "title": "Dahl med ris",
   "description": "Krämig linsgryta med kokosmjölk, gurkmeja och spiskummin som sjuder ihop medan riset kokar. Mustig, mild och billig.",
-  "tags": ["vardag", "vegetariskt", "billigt", "gryta"],
+  "tags": [
+    "vardag",
+    "vegetariskt",
+    "billigt",
+    "gryta"
+  ],
   "difficulty": "Medel",
   "totalTimeMin": 35,
   "activeTimeMin": 14,
@@ -14,8 +19,16 @@
   "effortScore": 2,
   "dishLoad": 2,
   "spiceLevel": 1,
-  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
-  "equipmentRequired": ["spis", "kastrull"],
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
   "robustness": 4,
   "ingredients": [
     {
@@ -66,7 +79,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 8
+      "estPriceSek": 8,
+      "scaling": "stepwise"
     },
     {
       "name": "Vitlök",
@@ -75,7 +89,8 @@
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Ingefära",
@@ -85,7 +100,8 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
       "optional": true,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Gurkmeja",
@@ -94,7 +110,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Spiskummin",
@@ -103,7 +120,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -113,7 +131,9 @@
       "voiceCue": "Hacka löken och vitlöken, och fräs dem mjuka med kryddorna.",
       "durationMin": 5,
       "activeMin": 5,
-      "equipment": ["kastrull"]
+      "equipment": [
+        "kastrull"
+      ]
     },
     {
       "id": "s2",
@@ -122,7 +142,9 @@
       "durationMin": 25,
       "activeMin": 5,
       "timerNeeded": true,
-      "dependsOn": ["s1"]
+      "dependsOn": [
+        "s1"
+      ]
     },
     {
       "id": "s3",
@@ -138,7 +160,10 @@
       "voiceCue": "Smaka av dahlen med salt och servera med riset. Klart!",
       "durationMin": 3,
       "activeMin": 2,
-      "dependsOn": ["s2", "s3"]
+      "dependsOn": [
+        "s2",
+        "s3"
+      ]
     }
   ]
 }

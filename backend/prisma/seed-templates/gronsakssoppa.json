@@ -56,7 +56,8 @@
       "allergensVaryByProduct": [
         "selleri"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Bröd",

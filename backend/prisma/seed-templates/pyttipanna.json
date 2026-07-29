@@ -70,7 +70,8 @@
           "canonical": "rödbetor",
           "note": "hoppa över ägget och servera med inlagda rödbetor"
         }
-      ]
+      ],
+      "scaling": "stepwise"
     },
     {
       "name": "Smör",
@@ -90,7 +91,8 @@
           "canonical": "olja",
           "note": "helt laktosfritt"
         }
-      ]
+      ],
+      "scaling": "sublinear"
     },
     {
       "name": "Inlagda rödbetor",

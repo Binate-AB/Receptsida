@@ -73,7 +73,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Vitlök",
@@ -81,7 +82,8 @@
       "qtyPerPortion": 0.25,
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 12
+      "estPriceSek": 12,
+      "scaling": "stepwise"
     },
     {
       "name": "Spiskummin",
@@ -90,7 +92,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 12,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Chilipulver",
@@ -99,7 +102,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 12,
-      "group": "vuxen"
+      "group": "vuxen",
+      "scaling": "sublinear"
     },
     {
       "name": "Ris",

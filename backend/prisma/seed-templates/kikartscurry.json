@@ -2,7 +2,12 @@
   "slug": "kikartscurry",
   "title": "Snabb kikärtscurry",
   "description": "Kikärtor i krämig kokossås med gurkmeja och spiskummin. Vegansk vardagsmiddag på en kvart.",
-  "tags": ["vardag", "snabbt", "vegetariskt", "billigt"],
+  "tags": [
+    "vardag",
+    "snabbt",
+    "vegetariskt",
+    "billigt"
+  ],
   "difficulty": "Enkel",
   "totalTimeMin": 15,
   "activeTimeMin": 10,
@@ -14,8 +19,16 @@
   "effortScore": 2,
   "dishLoad": 2,
   "spiceLevel": 1,
-  "dietaryFlags": ["vegan", "vegetarisk", "glutenfri", "laktosfri"],
-  "equipmentRequired": ["spis", "kastrull"],
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
   "robustness": 4,
   "ingredients": [
     {
@@ -58,7 +71,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 8
+      "estPriceSek": 8,
+      "scaling": "stepwise"
     },
     {
       "name": "Vitlök",
@@ -67,7 +81,8 @@
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 8,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "stepwise"
     },
     {
       "name": "Gurkmeja",
@@ -76,7 +91,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Spiskummin",
@@ -85,7 +101,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -96,7 +113,9 @@
       "durationMin": 12,
       "activeMin": 2,
       "timerNeeded": true,
-      "equipment": ["kastrull"]
+      "equipment": [
+        "kastrull"
+      ]
     },
     {
       "id": "s2",
@@ -111,7 +130,9 @@
       "voiceCue": "Tillsätt kikärtorna och kokosmjölken, låt sjuda ihop och smaka av med salt.",
       "durationMin": 6,
       "activeMin": 3,
-      "dependsOn": ["s2"]
+      "dependsOn": [
+        "s2"
+      ]
     },
     {
       "id": "s4",
@@ -119,7 +140,10 @@
       "voiceCue": "Servera curryn med riset. Klart!",
       "durationMin": 2,
       "activeMin": 2,
-      "dependsOn": ["s1", "s3"]
+      "dependsOn": [
+        "s1",
+        "s3"
+      ]
     }
   ]
 }

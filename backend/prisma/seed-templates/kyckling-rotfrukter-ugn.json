@@ -81,7 +81,8 @@
       "qtyPerPortion": 0.5,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Rapsolja",
@@ -90,7 +91,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 25,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Timjan eller rosmarin",
@@ -100,7 +102,8 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 12,
       "optional": true,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [

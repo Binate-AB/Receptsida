@@ -57,7 +57,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Tomatpuré",
@@ -109,7 +110,8 @@
         "laktos",
         "mjölkprotein"
       ],
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
