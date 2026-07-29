@@ -130,6 +130,15 @@ router.post(
         select: { id: true },
       });
       if (!already) {
+        // §24: only aggregate counters enter the payload — computed OUTSIDE
+        // the logEvent call so the PII source lock stays strict.
+        const childCount = household.members.filter(
+          (m) => m.ageCategory === 'BABY' || m.ageCategory === 'CHILD'
+        ).length;
+        const allergiesCount = household.members.reduce(
+          (acc, m) => acc + (m.allergies?.length || 0),
+          0
+        );
         await logEvent(prisma, {
           userId: req.user.id,
           householdId: household.id,
@@ -137,8 +146,8 @@ router.post(
           payload: {
             householdId: household.id,
             members: household.members.length,
-            children: household.members.filter((m) => m.ageCategory === 'BABY' || m.ageCategory === 'CHILD').length,
-            allergies_count: household.members.reduce((acc, m) => acc + (m.allergies?.length || 0), 0),
+            children: childCount,
+            allergies_count: allergiesCount,
             dish_prefs_count: dishPreferences?.length || 0,
             duration_ms: onboardingDurationMs ?? null,
           },
@@ -318,6 +327,59 @@ router.delete(
     }
 
     await prisma.householdMember.delete({ where: { id: existing.id } });
+    res.json({ deleted: true });
+  })
+);
+
+// ──────────────────────────────────────────
+// DELETE /households/current — GDPR-radering (§24)
+// OWNER only. Deletes the household and everything
+// scoped to it (members, inventory, requests →
+// assumptions/recommendations, shopping lists,
+// cooking sessions, feedback, confidence, dish
+// preferences, memberships — all DB cascades) and
+// ANONYMIZES analytics events: the rows stay for
+// aggregate funnel metrics but lose every link to
+// user and household.
+// ──────────────────────────────────────────
+router.delete(
+  '/current',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const household = await getOwnedHousehold(prisma, req.user.id);
+
+    const membership = await prisma.householdMembership.findUnique({
+      where: { userId: req.user.id },
+      select: { role: true, householdId: true },
+    });
+    const isOwner =
+      household.ownerId === req.user.id ||
+      (membership?.householdId === household.id && membership?.role === 'OWNER');
+    if (!isOwner) {
+      throw new AppError(403, 'owner_required', 'Bara hushållets ägare kan radera hushållet.');
+    }
+
+    const memberUserIds = (
+      await prisma.householdMembership.findMany({
+        where: { householdId: household.id },
+        select: { userId: true },
+      })
+    ).map((m) => m.userId);
+
+    await prisma.$transaction([
+      // Anonymize first (the FK is a plain column — no cascade on events)
+      prisma.analyticsEvent.updateMany({
+        where: {
+          OR: [
+            { householdId: household.id },
+            { userId: { in: memberUserIds.length ? memberUserIds : ['-'] } },
+          ],
+        },
+        data: { userId: null, householdId: null },
+      }),
+      prisma.household.delete({ where: { id: household.id } }),
+    ]);
+
     res.json({ deleted: true });
   })
 );

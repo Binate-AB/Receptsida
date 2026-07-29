@@ -434,6 +434,9 @@ export const households = {
   async removeMember(id) {
     return apiFetch(`/households/current/members/${id}`, { method: 'DELETE' });
   },
+  async deleteHousehold() {
+    return apiFetch('/households/current', { method: 'DELETE' });
+  },
 
   async inventory() {
     return apiFetch('/households/current/inventory');

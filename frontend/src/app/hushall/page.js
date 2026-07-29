@@ -197,7 +197,21 @@ export default function HouseholdPage() {
   const [saving, setSaving] = useState(false);
   const [joinCode, setJoinCode] = useState('');
   const [inviteCode, setInviteCode] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const wizardStartRef = useRef(Date.now());
+
+  const handleDeleteHousehold = async () => {
+    setDeleting(true);
+    try {
+      await householdsApi.deleteHousehold();
+      toast.success('Hushållet är raderat.');
+      window.location.href = '/';
+    } catch (err) {
+      toast.error(err.message);
+      setDeleting(false);
+    }
+  };
 
   const handleJoin = async () => {
     if (!joinCode.trim()) return;
@@ -500,6 +514,44 @@ export default function HouseholdPage() {
             </button>
           )}
         </div>
+
+        {/* GDPR: radera hushållet (endast synligt när ett hushåll finns) */}
+        {household && (
+          <div className="mt-12 pt-6" style={{ borderTop: '1px solid #E5E5EA' }}>
+            {!confirmDelete ? (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="text-sm text-warm-500 underline"
+              >
+                Radera hushållet och all dess data
+              </button>
+            ) : (
+              <div className="card p-4 space-y-3" style={{ borderRadius: 14, border: '1px solid #E8B4B4' }}>
+                <p className="text-sm text-warm-800 font-medium">
+                  Radera hushållet permanent?
+                </p>
+                <p className="text-xs text-warm-500">
+                  Medlemmar (inklusive allergier), skafferi, middagsplaner, inköpslistor och
+                  matlagningshistorik raderas. Statistikhändelser anonymiseras. Detta går inte
+                  att ångra.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDeleteHousehold}
+                    disabled={deleting}
+                    className="btn-secondary text-sm"
+                    style={{ color: '#B23A3A', borderColor: '#E8B4B4' }}
+                  >
+                    {deleting ? <Spinner size="sm" /> : 'Ja, radera allt'}
+                  </button>
+                  <button onClick={() => setConfirmDelete(false)} className="btn-secondary text-sm">
+                    Avbryt
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

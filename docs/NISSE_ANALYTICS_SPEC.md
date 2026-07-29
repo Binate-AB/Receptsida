@@ -104,3 +104,37 @@ GROUP BY 1, 2;
 
 Inga påståenden om personalisering görs i produkt eller kommunikation som inte kan härledas ur
 dessa mått.
+
+## 5. PII-regler, rättslig grund och lagring (§24)
+
+### Vad som ALDRIG får förekomma i en event-payload
+
+- Allergier, kostrestriktioner eller andra hälsorelaterade uppgifter (varken koder eller text)
+- Medlemsnamn/smeknamn eller annan medlemsidentitet
+- Fritext från användaren (`rawText`, rescue-`problem`, feedback-`comment`)
+
+Tillåtet: id:n (request/session/template), enum-värden, **räknare** (`allergies_count`,
+`hard_filter_kinds.allergen` = antal bortfiltrerade rätter — aldrig vilket allergen).
+Detta är låst med statisk källkodsanalys i `backend/test/gdpr/piiSafety.test.js` — ett
+logEvent-anrop som ens refererar `.allergies`, `memberName`, `problem:`, `rawText` eller
+`comment:` fäller CI. Samma test låser att användarriktade felmeddelanden aldrig interpolerar
+medlemsnamn/allergen.
+
+### Rättslig grund
+
+| Data | Grund |
+|---|---|
+| Allergier + kostrestriktioner (`household_members.allergies/dietary_restrictions`) | **Uttryckligt samtycke, art. 9.2 a** (hälsodata). Inhämtas i hushållswizarden; uppgiften är frivillig och kan ändras/raderas när som helst. Används ENBART för säkerhetsgrindar — aldrig analys, aldrig events. |
+| Hushållsprofil i övrigt (medlemmar som smeknamn + ålderskategori, utrustning, skafferi) | Avtal (art. 6.1 b) — krävs för att leverera tjänsten. Dataminimering: smeknamn räcker, inga personnummer/efternamn efterfrågas. |
+| Analytics-events (funnel, §12-mått) | Berättigat intresse (art. 6.1 f) — driftsäkring och produktmått, möjligt endast för att payloads är PII-fria per ovan. |
+
+### Lagring och radering
+
+- **Events:** 24 månader, därefter gallring. Vid hushållsradering anonymiseras hushållets
+  events omedelbart (`user_id`/`household_id` → null) — aggregatvärden bevaras, kopplingen bryts.
+- **Hushållsdata:** tills användaren raderar. `DELETE /households/current` (endast OWNER)
+  raderar hushållet med samtliga kaskader (medlemmar inkl. allergier, skafferi, förfrågningar,
+  antaganden, rekommendationer, inköpslistor, tillagningssessioner, feedback, confidence,
+  preferenser, medlemskap) i samma transaktion som event-anonymiseringen. UI-bekräftelse med
+  konsekvensbeskrivning finns på Hushåll-sidan.
+- **Konto:** raderas separat via befintlig `/gdpr/delete-account`.
