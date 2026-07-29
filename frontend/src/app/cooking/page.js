@@ -225,6 +225,7 @@ function CookingContent() {
         onClose={handleClose}
         initialStep={session ? initialStep : 0}
         onStepChange={session ? handleStepChange : undefined}
+        persistKey={session ? `${session.id}-${activeLane}` : undefined}
       />
 
       {/* Nisse session overlays */}

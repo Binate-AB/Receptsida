@@ -387,6 +387,12 @@ export const lexicon = {
 
 // ── Nisse: Household API ──
 
+export const events = {
+  async log(data) {
+    return apiFetch('/events', { method: 'POST', body: JSON.stringify(data) });
+  },
+};
+
 export const households = {
   async meta() {
     return apiFetch('/households/meta');
@@ -579,4 +585,4 @@ export const cookSessions = {
   },
 };
 
-export default { auth, recipes, lexicon, gdpr, locations, mealPlans, cooking, households, dinner, shoppingLists, cookSessions };
+export default { auth, recipes, lexicon, gdpr, locations, mealPlans, cooking, households, dinner, shoppingLists, cookSessions, events };

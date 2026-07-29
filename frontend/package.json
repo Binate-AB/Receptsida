@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node --test test/*.test.js",
     "build:ios": "CAPACITOR_BUILD=true NEXT_PUBLIC_APP_MODE=native NEXT_PUBLIC_API_URL=https://www.nisse.io/api/v1 next build",
     "cap:sync": "npx cap sync ios",
     "cap:open": "npx cap open ios",

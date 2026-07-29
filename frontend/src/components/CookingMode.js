@@ -16,6 +16,11 @@ import {
   GraduationCap, Wrench,
 } from 'lucide-react';
 import { getStepText, getStepDuration, getStepVoiceCue } from '../data/recipes';
+import {
+  createTimer, startTimer, pauseTimer, resetTimer,
+  remainingSec, isRunning as isTimerRunning,
+  persistTimer, restoreTimer,
+} from '../lib/timerState';
 import { useSpeech, useVoiceInput } from '../hooks/useVoice';
 import { useCookingAssistant } from '../hooks/useRecipes';
 import { Spinner } from './Spinner';
@@ -65,24 +70,55 @@ function getQuickQuestions(step) {
 // Countdown Timer (ring style)
 // ═══════════════════════════════════════════
 
-function CountdownTimer({ duration, onComplete }) {
-  const [remaining, setRemaining] = useState(duration);
-  const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef(null);
-
-  useEffect(() => { setRemaining(duration); setIsRunning(false); }, [duration]);
+function CountdownTimer({ duration, onComplete, persistKey = 'local', stepIndex = 0 }) {
+  // §26: endAt-based — the timer is an absolute end timestamp, computed
+  // remaining survives backgrounding/lock. Persisted per session+step.
+  const storage = typeof window !== 'undefined' ? window.localStorage : null;
+  const [timer, setTimer] = useState(() => {
+    const restored = storage && restoreTimer(storage, persistKey, stepIndex, duration);
+    return restored || createTimer(duration);
+  });
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  const completedRef = useRef(false);
 
   useEffect(() => {
-    if (isRunning && remaining > 0) {
-      intervalRef.current = setInterval(() => {
-        setRemaining((prev) => {
-          if (prev <= 1) { clearInterval(intervalRef.current); setIsRunning(false); onComplete?.(); return 0; }
-          return prev - 1;
-        });
-      }, 1000);
+    const restored = storage && restoreTimer(storage, persistKey, stepIndex, duration);
+    setTimer(restored || createTimer(duration));
+    completedRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration, persistKey, stepIndex]);
+
+  useEffect(() => {
+    if (storage) persistTimer(storage, persistKey, stepIndex, timer);
+  }, [timer, persistKey, stepIndex, storage]);
+
+  const remaining = remainingSec(timer, nowTs);
+  const running = isTimerRunning(timer) && remaining > 0;
+
+  useEffect(() => {
+    if (!isTimerRunning(timer)) return undefined;
+    const id = setInterval(() => setNowTs(Date.now()), 500);
+    return () => clearInterval(id);
+  }, [timer]);
+
+  useEffect(() => {
+    if (isTimerRunning(timer) && remaining === 0 && !completedRef.current) {
+      completedRef.current = true;
+      setTimer((t) => pauseTimer({ ...t }, Date.now()));
+      onComplete?.();
     }
-    return () => clearInterval(intervalRef.current);
-  }, [isRunning, remaining, onComplete]);
+  }, [remaining, timer, onComplete]);
+
+  const setRunning = (shouldRun) => {
+    const now = Date.now();
+    setNowTs(now);
+    setTimer((t) => (shouldRun ? startTimer(t, now) : pauseTimer(t, now)));
+  };
+  const isRunning = running;
+  const setRemainingToFull = () => {
+    completedRef.current = false;
+    setTimer(resetTimer(timer));
+  };
 
   const progress = duration > 0 ? ((duration - remaining) / duration) * 100 : 0;
   const circumference = 2 * Math.PI * 46;
@@ -113,11 +149,11 @@ function CountdownTimer({ duration, onComplete }) {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <button onClick={() => { setRemaining(duration); setIsRunning(false); }}
+        <button onClick={setRemainingToFull}
           className="p-2 rounded-full" style={{ background: DARK_CARD, color: 'rgba(255,255,255,0.5)' }}>
           <RotateCcw size={14} />
         </button>
-        <button onClick={() => setIsRunning(!isRunning)}
+        <button onClick={() => setRunning(!isRunning)}
           className="p-3 rounded-full text-white" style={{ background: CORAL, boxShadow: `0 4px 20px ${CORAL}40` }}>
           {isRunning ? <Pause size={16} /> : <Play size={16} />}
         </button>
@@ -290,8 +326,34 @@ function NisseChat({
 // Main CookingMode Component
 // ═══════════════════════════════════════════
 
-export const CookingMode = forwardRef(function CookingMode({ recipe, onClose, initialStep = 0, onStepChange }, ref) {
+export const CookingMode = forwardRef(function CookingMode({ recipe, onClose, initialStep = 0, onStepChange, persistKey }, ref) {
   const [currentStep, setCurrentStep] = useState(initialStep);
+
+  // §26: keep the screen awake while cooking (feature-detect, fail-open) —
+  // re-acquire on tab return since the lock releases when hidden.
+  useEffect(() => {
+    let lock = null;
+    let disposed = false;
+    const acquire = async () => {
+      try {
+        if (!disposed && navigator.wakeLock?.request) {
+          lock = await navigator.wakeLock.request('screen');
+        }
+      } catch {
+        // fail-open: no wake lock is never an error for the cook
+      }
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') acquire();
+    };
+    acquire();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      disposed = true;
+      document.removeEventListener('visibilitychange', onVisible);
+      lock?.release?.().catch(() => {});
+    };
+  }, []);
 
   // Report step changes to parent (Nisse cook sessions persist progress)
   useEffect(() => {
@@ -493,6 +555,8 @@ export const CookingMode = forwardRef(function CookingMode({ recipe, onClose, in
             <CountdownTimer
               key={currentStep}
               duration={stepDuration}
+              persistKey={persistKey || recipe?.title || 'local'}
+              stepIndex={currentStep}
               onComplete={() => { if (voiceEnabled) speak('Tiden är ute! Gå vidare till nästa steg.'); }}
             />
           </motion.div>

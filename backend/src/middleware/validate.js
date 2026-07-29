@@ -382,4 +382,7 @@ export const analyticsEventSchema = z.object({
     'voice_used',
   ]),
   payload: z.record(z.any()).optional(),
+  // §26 offline queue: client-generated id used for server-side dedup so
+  // a flushed-then-retried event can never double-count.
+  clientEventId: z.string().min(8).max(64).optional(),
 });
