@@ -114,8 +114,21 @@ export const templateSchema = z
       .nullable()
       .optional(),
     version: z.number().int().min(1).default(1),
+    // §22 verification gate: only VERIFIED dishes enter the candidate pool.
+    // New templates are seeded DRAFT until a human has reviewed them against
+    // docs/NISSE_DISH_VERIFICATION_CHECKLIST.md. Verification is a HUMAN
+    // decision — never set VERIFIED without a named reviewer + date.
+    verificationStatus: z.enum(['DRAFT', 'VERIFIED', 'RETIRED']).default('DRAFT'),
+    verifiedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'verifiedAt ska vara YYYY-MM-DD').optional(),
+    verifiedBy: z.string().min(2).optional(),
   })
   .superRefine((tpl, ctx) => {
+    if (tpl.verificationStatus === 'VERIFIED' && (!tpl.verifiedAt || !tpl.verifiedBy)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'verificationStatus VERIFIED kräver verifiedAt + verifiedBy (mänsklig granskare)',
+      });
+    }
     if (tpl.costPerPortionMax < tpl.costPerPortionMin) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'costPerPortionMax < costPerPortionMin' });
     }

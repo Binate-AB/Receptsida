@@ -163,5 +163,8 @@
       ]
     }
   ],
-  "robustness": 5
+  "robustness": 5,
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

@@ -85,6 +85,9 @@ async function main() {
         steps: tpl.steps,
         variants: tpl.variants ?? undefined,
         version: tpl.version,
+        verificationStatus: tpl.verificationStatus,
+        verifiedAt: tpl.verifiedAt ? new Date(tpl.verifiedAt) : undefined,
+        verifiedBy: tpl.verifiedBy,
       },
       update: {
         title: tpl.title,
@@ -110,6 +113,9 @@ async function main() {
         steps: tpl.steps,
         variants: tpl.variants ?? undefined,
         version: tpl.version,
+        verificationStatus: tpl.verificationStatus,
+        verifiedAt: tpl.verifiedAt ? new Date(tpl.verifiedAt) : null,
+        verifiedBy: tpl.verifiedBy ?? null,
         isActive: true,
       },
     });

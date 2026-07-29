@@ -17,6 +17,7 @@ import {
   joinHouseholdSchema,
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { VERIFIED_POOL_WHERE } from '../services/nisse/candidatePool.js';
 import crypto from 'crypto';
 import {
   getOwnedHousehold,
@@ -48,7 +49,7 @@ router.get(
     // Curated quick-pick for taste anchoring at onboarding:
     // "Vilka av dessa brukar fungera hemma hos er?"
     const dishChoices = await prisma.recipeTemplate.findMany({
-      where: { isActive: true },
+      where: VERIFIED_POOL_WHERE,
       select: { slug: true, title: true, tags: true, childFriendly: true },
       orderBy: { childFriendly: 'desc' },
       take: 24,
@@ -104,7 +105,7 @@ router.post(
     // (LEARNED preferences are never touched here).
     if (dishPreferences) {
       const templates = await prisma.recipeTemplate.findMany({
-        where: { slug: { in: dishPreferences }, isActive: true },
+        where: { slug: { in: dishPreferences }, ...VERIFIED_POOL_WHERE },
         select: { id: true },
       });
       await prisma.dishPreference.deleteMany({

@@ -21,6 +21,7 @@ import {
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
+import { isInCandidatePool } from '../services/nisse/candidatePool.js';
 import { buildSessionData } from '../services/nisse/cookSessionService.js';
 import { resolveEaters } from '../services/nisse/recommendationService.js';
 import { hardGates } from '../services/nisse/engine/allergenGate.js';
@@ -86,7 +87,9 @@ router.post(
       eaters = resolveEaters(household.members, recommendation.request.parsed || {});
     } else {
       template = await prisma.recipeTemplate.findUnique({ where: { slug: templateSlug } });
-      if (!template || !template.isActive) {
+      // Pool gate (§22): DRAFT/RETIRED dishes must never be startable by slug.
+      // (Sessions already in flight resolve by templateId and stay unaffected.)
+      if (!isInCandidatePool(template)) {
         throw new AppError(404, 'template_not_found', 'Receptet hittades inte.');
       }
       eaters = resolveEaters(household.members, { eaterIds: eaterIds || null });

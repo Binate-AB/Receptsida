@@ -239,5 +239,8 @@
       "branch": "adult"
     }
   ],
-  "robustness": 4
+  "robustness": 4,
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

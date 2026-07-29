@@ -21,6 +21,7 @@ import {
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
+import { VERIFIED_POOL_WHERE } from '../services/nisse/candidatePool.js';
 import { rankCandidates } from '../services/nisse/engine/ranker.js';
 import { deterministicParse } from '../services/nisse/engine/chipsParse.js';
 import {
@@ -43,7 +44,7 @@ const router = Router();
 async function loadRankingContext(householdId) {
   const [inventory, templates, feedbackRows, recentAccepted, confidenceRows, preferenceRows] = await Promise.all([
     prisma.inventoryItem.findMany({ where: { householdId } }),
-    prisma.recipeTemplate.findMany({ where: { isActive: true } }),
+    prisma.recipeTemplate.findMany({ where: VERIFIED_POOL_WHERE }),
     prisma.mealFeedback.findMany({ where: { householdId } }),
     prisma.mealRecommendation.findMany({
       where: {
