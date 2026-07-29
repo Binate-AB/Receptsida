@@ -114,16 +114,19 @@ test('hard gates cannot be bypassed by any soft signal (no such parameter exists
   assert.equal(result.safe, false);
 });
 
-test('collectTemplateAllergens merges template-level, declared and fallback sources', () => {
+test('collectTemplateAllergens: declared + fallback for undeclared rows (path-aware)', () => {
   const tpl = template({
-    allergens: ['sesam'],
     ingredients: [
       { name: 'Pasta', canonical: 'pasta', allergens: ['gluten'] },
-      { name: 'Grädde', canonical: 'grädde', allergens: [] }, // fallback → laktos
+      { name: 'Grädde', canonical: 'grädde', allergens: [] }, // undeclared → fallback → laktos
     ],
   });
   const map = collectTemplateAllergens(tpl);
-  assert.ok(map.has('sesam'));
   assert.ok(map.has('gluten'));
-  assert.ok(map.has('laktos'));
+  assert.ok(map.has('laktos'), 'fallback safety net applies to undeclared rows');
+
+  // The denormalized template-level union is only trusted when the
+  // object lacks ingredient rows (base-path model computes live otherwise)
+  const denormOnly = template({ allergens: ['sesam'], ingredients: [] });
+  assert.ok(collectTemplateAllergens(denormOnly).has('sesam'));
 });

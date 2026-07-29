@@ -38,25 +38,31 @@
         {
           "name": "Kycklingköttbullar",
           "canonical": "kycklingköttbullar",
-          "note": "samma stektid"
+          "note": "samma stektid",
+          "allergensVaryByProduct": [
+            "mjölkprotein",
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         },
         {
           "name": "Vegobullar",
           "canonical": "vegobullar",
-          "allergens": [
-            "soja"
-          ],
           "note": "stek försiktigt, de är känsligare",
-          "allergensVary": [
-            "gluten"
-          ]
+          "allergensVaryByProduct": [
+            "gluten",
+            "soja",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ],
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "gluten",
         "ägg",
         "mjölkprotein"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Potatis",
@@ -70,10 +76,13 @@
         {
           "name": "Färdigt potatismospulver",
           "canonical": "mospulver",
-          "allergens": [
-            "laktos"
+          "note": "följ paketet",
+          "allergensVaryByProduct": [
+            "laktos",
+            "mjölkprotein",
+            "sulfit"
           ],
-          "note": "följ paketet"
+          "requiresPackageVerification": true
         }
       ]
     },
@@ -92,10 +101,11 @@
         {
           "name": "Havredryck",
           "canonical": "havredryck",
-          "allergens": [
+          "note": "osötad funkar bäst — välj glutenmärkt fri vid glutenallergi",
+          "allergensVaryByProduct": [
             "gluten"
           ],
-          "note": "osötad funkar bäst"
+          "requiresPackageVerification": true
         }
       ]
     },

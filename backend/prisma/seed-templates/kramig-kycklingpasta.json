@@ -89,10 +89,11 @@
         {
           "name": "Havregrädde",
           "canonical": "havregrädde",
-          "allergens": [
+          "note": "laktosfritt, samma mängd — välj glutenmärkt fri vid glutenallergi",
+          "allergensVaryByProduct": [
             "gluten"
           ],
-          "note": "laktosfritt, samma mängd"
+          "requiresPackageVerification": true
         }
       ]
     },
@@ -123,9 +124,10 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 20,
       "pantryStaple": true,
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "selleri"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Rapsolja",

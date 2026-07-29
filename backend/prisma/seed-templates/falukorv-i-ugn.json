@@ -19,9 +19,7 @@
   "effortScore": 1,
   "dishLoad": 2,
   "spiceLevel": 0,
-  "dietaryFlags": [
-    "glutenfri"
-  ],
+  "dietaryFlags": [],
   "equipmentRequired": [
     "ugn",
     "ugnsform",
@@ -42,23 +40,30 @@
         {
           "name": "Kycklingkorv",
           "canonical": "kycklingkorv",
-          "note": "fläskfritt alternativ"
+          "note": "fläskfritt alternativ",
+          "allergensVaryByProduct": [
+            "mjölkprotein",
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         },
         {
           "name": "Vegokorv",
           "canonical": "vegokorv",
-          "allergens": [
-            "soja"
-          ],
           "note": "kortare tid i ugnen",
-          "allergensVary": [
-            "gluten"
-          ]
+          "allergensVaryByProduct": [
+            "gluten",
+            "soja",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ],
-      "allergensVary": [
-        "mjölkprotein"
-      ]
+      "allergensVaryByProduct": [
+        "mjölkprotein",
+        "gluten"
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Riven ost",
@@ -67,7 +72,6 @@
       "unit": "g",
       "aisle": "Mejeri",
       "allergens": [
-        "laktos",
         "mjölkprotein"
       ],
       "estPriceSek": 30,
@@ -80,6 +84,9 @@
           ],
           "note": "smälter likadant"
         }
+      ],
+      "allergensVaryByProduct": [
+        "laktos"
       ]
     },
     {

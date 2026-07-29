@@ -86,9 +86,10 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 20,
       "pantryStaple": true,
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "selleri"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Currypulver",
@@ -96,7 +97,8 @@
       "qtyPerPortion": 0.25,
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
-      "estPriceSek": 15
+      "estPriceSek": 15,
+      "requiresPackageVerification": true
     },
     {
       "name": "Olivolja",

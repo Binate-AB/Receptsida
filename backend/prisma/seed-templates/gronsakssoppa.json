@@ -53,9 +53,10 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 20,
       "pantryStaple": true,
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "selleri"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Bröd",
@@ -82,11 +83,13 @@
       "unit": "g",
       "aisle": "Mejeri",
       "allergens": [
-        "laktos",
         "mjölkprotein"
       ],
       "estPriceSek": 30,
-      "optional": true
+      "optional": true,
+      "allergensVaryByProduct": [
+        "laktos"
+      ]
     },
     {
       "name": "Grädde",

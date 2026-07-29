@@ -71,14 +71,19 @@
           "name": "Vegokorv",
           "canonical": "vegokorv",
           "note": "Vegetariskt alternativ",
-          "allergensVary": [
-            "gluten"
-          ]
+          "allergensVaryByProduct": [
+            "gluten",
+            "soja",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ],
-      "allergensVary": [
-        "mjölkprotein"
-      ]
+      "allergensVaryByProduct": [
+        "mjölkprotein",
+        "gluten"
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Smör",

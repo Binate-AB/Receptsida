@@ -69,7 +69,7 @@ export function rankCandidates(templates, ctx) {
       continue;
     }
 
-    const gates = hardGates(tpl, eaters);
+    const gates = hardGates(tpl, eaters); // path-aware: base path blocks, optionals yield conditions
     if (!gates.safe) {
       const detail = gates.allergen.violations[0] || gates.dietary.violations[0];
       rejected.push({
@@ -211,7 +211,17 @@ export function rankCandidates(templates, ctx) {
       reasons.push('brukar fungera hos er');
     }
 
-    candidates.push({ template: tpl, score, overlap, reasons, uncertainty, uncertainCritical });
+    candidates.push({
+      template: tpl,
+      score,
+      overlap,
+      reasons,
+      uncertainty,
+      uncertainCritical,
+      // Safe-path conditions ("laktosfri om osten utelämnas") — shown on
+      // the card and verified on the prep screen, never silently dropped.
+      conditions: gates.conditions,
+    });
   }
 
   // ── SLOT SELECTION ────────────────────────

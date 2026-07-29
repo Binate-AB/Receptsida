@@ -38,23 +38,30 @@
         {
           "name": "Kycklingkorv",
           "canonical": "kycklingkorv",
-          "note": "fläskfritt"
+          "note": "fläskfritt",
+          "allergensVaryByProduct": [
+            "mjölkprotein",
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         },
         {
           "name": "Vegokorv",
           "canonical": "vegokorv",
-          "allergens": [
-            "soja"
-          ],
           "note": "lägg i på slutet",
-          "allergensVary": [
-            "gluten"
-          ]
+          "allergensVaryByProduct": [
+            "gluten",
+            "soja",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ],
-      "allergensVary": [
-        "mjölkprotein"
-      ]
+      "allergensVaryByProduct": [
+        "mjölkprotein",
+        "gluten"
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Pasta",
@@ -100,10 +107,11 @@
         {
           "name": "Havregrädde",
           "canonical": "havregrädde",
-          "allergens": [
+          "note": "laktosfritt, samma mängd — välj glutenmärkt fri vid glutenallergi",
+          "allergensVaryByProduct": [
             "gluten"
           ],
-          "note": "laktosfritt, samma mängd"
+          "requiresPackageVerification": true
         }
       ]
     },

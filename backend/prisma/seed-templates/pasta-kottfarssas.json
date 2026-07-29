@@ -47,9 +47,12 @@
           "name": "Vegofärs",
           "canonical": "vegofärs",
           "note": "Vegetariskt alternativ",
-          "allergens": [
-            "soja"
-          ]
+          "allergensVaryByProduct": [
+            "soja",
+            "gluten",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ]
     },
@@ -138,7 +141,6 @@
       "aisle": "Mejeri",
       "estPriceSek": 40,
       "allergens": [
-        "laktos",
         "mjölkprotein"
       ],
       "group": "vuxen",

@@ -68,10 +68,12 @@
       "aisle": "Mejeri",
       "estPriceSek": 45,
       "allergens": [
-        "laktos",
         "mjölkprotein"
       ],
-      "optional": true
+      "optional": true,
+      "allergensVaryByProduct": [
+        "laktos"
+      ]
     },
     {
       "name": "Paprika",

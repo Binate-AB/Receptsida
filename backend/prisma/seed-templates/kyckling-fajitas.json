@@ -18,9 +18,7 @@
   "effortScore": 2,
   "dishLoad": 2,
   "spiceLevel": 1,
-  "dietaryFlags": [
-    "laktosfri"
-  ],
+  "dietaryFlags": [],
   "equipmentRequired": [
     "spis",
     "stekpanna"
@@ -78,7 +76,11 @@
         {
           "name": "Majstortilla",
           "canonical": "majstortilla",
-          "note": "glutenfritt alternativ"
+          "note": "välj märkt glutenfri — kontrollera förpackningen",
+          "allergensVaryByProduct": [
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         },
         {
           "name": "Ris",
@@ -111,9 +113,10 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
       "group": "vuxen",
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "gluten"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Paprikapulver",

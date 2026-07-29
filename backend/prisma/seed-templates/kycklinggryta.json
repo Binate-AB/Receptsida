@@ -76,7 +76,11 @@
         {
           "name": "Havregrädde",
           "canonical": "havregrädde",
-          "note": "Laktosfritt alternativ"
+          "note": "Laktosfritt alternativ — välj glutenmärkt fri vid glutenallergi",
+          "allergensVaryByProduct": [
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         }
       ]
     },
@@ -104,9 +108,10 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 20,
       "pantryStaple": true,
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "selleri"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Currypulver",
@@ -115,7 +120,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
-      "group": "vuxen"
+      "group": "vuxen",
+      "requiresPackageVerification": true
     },
     {
       "name": "Smör",
