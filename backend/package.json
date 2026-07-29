@@ -12,6 +12,7 @@
     "start": "node src/index.js",
     "test": "node --test \"test/**/*.test.js\"",
     "seed:templates": "node src/utils/seed-recipe-templates.js",
+    "kpi": "node src/utils/kpi-report.js",
     "seed": "node src/utils/seed-lexicon.js",
     "seed:user": "node src/utils/seed-user.js",
     "migrate": "npx prisma migrate dev",
