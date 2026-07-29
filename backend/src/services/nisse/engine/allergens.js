@@ -6,26 +6,54 @@
 // ============================================
 
 /**
- * Canonical allergen codes (Swedish, lowercase).
- * Based on the 14 EU-regulated allergens, adapted to
- * what the MVP recipe set actually contains.
+ * Canonical allergen codes (Swedish, lowercase), covering ALL 14
+ * EU declaration-mandatory allergen groups plus two Swedish extras:
+ * - `laktos` is a separate INTOLERANCE marker — it complements but
+ *   never replaces `mjölkprotein` (= the EU group "mjölk").
+ * - `skaldjur` is a LEGACY umbrella code kept for existing member
+ *   selections; the gate expands it to kräftdjur ∪ blötdjur.
  */
 export const ALLERGEN_TAXONOMY = [
-  { code: 'gluten', label: 'Gluten', description: 'Vete, råg, korn, havre' },
-  { code: 'laktos', label: 'Laktos', description: 'Mjölksocker i mejeriprodukter' },
-  { code: 'mjölkprotein', label: 'Mjölkprotein', description: 'Kasein/vassle i mejeriprodukter' },
+  { code: 'gluten', label: 'Gluten', description: 'Spannmål som innehåller gluten: vete, råg, korn, havre' },
+  { code: 'kräftdjur', label: 'Kräftdjur', description: 'Räkor, kräftor, krabba, hummer' },
   { code: 'ägg', label: 'Ägg', description: 'Ägg och äggprodukter' },
   { code: 'fisk', label: 'Fisk', description: 'All fisk' },
-  { code: 'skaldjur', label: 'Skaldjur', description: 'Räkor, kräftor, musslor m.m.' },
-  { code: 'nötter', label: 'Nötter', description: 'Trädnötter: hasselnöt, mandel, valnöt m.fl.' },
   { code: 'jordnöt', label: 'Jordnöt', description: 'Jordnötter (baljväxt)' },
   { code: 'soja', label: 'Soja', description: 'Sojabönor och sojaprodukter' },
-  { code: 'sesam', label: 'Sesam', description: 'Sesamfrön' },
+  { code: 'mjölkprotein', label: 'Mjölk (protein)', description: 'EU-gruppen mjölk: kasein/vassle i mejeriprodukter' },
+  { code: 'nötter', label: 'Nötter', description: 'Trädnötter: hasselnöt, mandel, valnöt m.fl.' },
   { code: 'selleri', label: 'Selleri', description: 'Rotselleri och stjälkselleri' },
   { code: 'senap', label: 'Senap', description: 'Senap och senapsfrön' },
+  { code: 'sesam', label: 'Sesam', description: 'Sesamfrön' },
+  { code: 'sulfit', label: 'Svaveldioxid/sulfit', description: 'Konserveringsmedel E220–E228 (>10 mg/kg)' },
+  { code: 'lupin', label: 'Lupin', description: 'Lupinfrön och lupinmjöl' },
+  { code: 'blötdjur', label: 'Blötdjur', description: 'Musslor, ostron, bläckfisk, sniglar' },
+  // Svenska tillägg utanför EU-14:
+  { code: 'laktos', label: 'Laktos (intolerans)', description: 'Mjölksocker — intoleransmarkör, ersätter aldrig mjölkprotein' },
+  { code: 'skaldjur', label: 'Skaldjur (samlingskod)', description: 'Äldre samlingskod — tolkas som kräftdjur + blötdjur' },
 ];
 
 export const ALLERGEN_CODES = ALLERGEN_TAXONOMY.map((a) => a.code);
+
+/**
+ * Expand legacy umbrella codes to their EU groups. Used by the gate
+ * on MEMBER allergies so an old "skaldjur" selection conservatively
+ * matches both kräftdjur and blötdjur declarations (and vice versa).
+ */
+export function expandAllergyCodes(codes) {
+  const out = new Set();
+  for (const code of codes || []) {
+    out.add(code);
+    if (code === 'skaldjur') {
+      out.add('kräftdjur');
+      out.add('blötdjur');
+    }
+    if (code === 'kräftdjur' || code === 'blötdjur') {
+      out.add('skaldjur');
+    }
+  }
+  return [...out];
+}
 
 /**
  * Dietary restrictions treated as HARD gates (like allergies,
@@ -81,8 +109,9 @@ const INGREDIENT_ALLERGEN_MAP = {
   // Fisk
   'lax': ['fisk'], 'torsk': ['fisk'], 'fiskbuljong': ['fisk'], 'sardeller': ['fisk'],
   'tonfisk': ['fisk'],
-  // Skaldjur
-  'räkor': ['skaldjur'], 'musslor': ['skaldjur'], 'kräftstjärtar': ['skaldjur'],
+  // Kräftdjur / blötdjur (EU-separerade grupper)
+  'räkor': ['kräftdjur'], 'kräftstjärtar': ['kräftdjur'], 'krabba': ['kräftdjur'],
+  'musslor': ['blötdjur'], 'bläckfisk': ['blötdjur'], 'ostron': ['blötdjur'],
   // Nötter / jordnöt
   'hasselnötter': ['nötter'], 'mandel': ['nötter'], 'valnötter': ['nötter'],
   'cashewnötter': ['nötter'], 'pinjenötter': ['nötter'],

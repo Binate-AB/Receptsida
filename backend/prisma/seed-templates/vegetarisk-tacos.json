@@ -20,8 +20,7 @@
   "dishLoad": 2,
   "spiceLevel": 1,
   "dietaryFlags": [
-    "vegetarisk",
-    "laktosfri"
+    "vegetarisk"
   ],
   "equipmentRequired": [
     "spis",
@@ -62,7 +61,7 @@
       ]
     },
     {
-      "name": "Tortillabröd eller tacoskal",
+      "name": "Vetetortilla eller tacoskal av vete",
       "canonical": "tortilla",
       "qtyPerPortion": 2,
       "unit": "st",
@@ -76,7 +75,11 @@
         {
           "name": "Majstortilla",
           "canonical": "majstortilla",
-          "note": "glutenfritt alternativ"
+          "note": "välj märkt glutenfri — kontrollera förpackningen",
+          "allergensVaryByProduct": [
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         }
       ]
     },
@@ -88,9 +91,10 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 12,
       "group": "vuxen",
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "gluten"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Tomatpuré",
@@ -133,11 +137,13 @@
       "unit": "g",
       "aisle": "Mejeri",
       "allergens": [
-        "laktos",
         "mjölkprotein"
       ],
       "estPriceSek": 30,
-      "optional": true
+      "optional": true,
+      "allergensVaryByProduct": [
+        "laktos"
+      ]
     }
   ],
   "steps": [

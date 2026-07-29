@@ -65,6 +65,9 @@ export function buildComputedPayload(slotResult, ctx) {
     // Assumption economy: how uncertain the pantry signal was for this
     // dish, and which critical ingredients the prep screen must verify.
     uncertainty: slotResult.uncertainty ?? null,
+    // Path-aware safe conditions for this household (e.g. "Laktosfri om
+    // gräddfilen utelämnas eller ersätts") — displayed, never recomputed.
+    conditions: slotResult.conditions || [],
     criticalToVerify: (slotResult.uncertainCritical || []).map((e) => ({
       name: e.name,
       canonical: e.canonical,

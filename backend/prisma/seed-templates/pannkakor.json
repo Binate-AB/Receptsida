@@ -52,7 +52,11 @@
         {
           "name": "Havredryck",
           "canonical": "havredryck",
-          "note": "Laktosfritt/veganskt alternativ"
+          "note": "Laktosfritt/veganskt alternativ — välj glutenmärkt fri vid glutenallergi",
+          "allergensVaryByProduct": [
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         }
       ]
     },

@@ -37,14 +37,19 @@
           "name": "Vegokorv",
           "canonical": "vegokorv",
           "note": "Vegetariskt alternativ",
-          "allergensVary": [
-            "gluten"
-          ]
+          "allergensVaryByProduct": [
+            "gluten",
+            "soja",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ],
-      "allergensVary": [
-        "mjölkprotein"
-      ]
+      "allergensVaryByProduct": [
+        "mjölkprotein",
+        "gluten"
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Gul lök",
@@ -77,7 +82,11 @@
         {
           "name": "Havregrädde",
           "canonical": "havregrädde",
-          "note": "Laktosfritt alternativ"
+          "note": "Laktosfritt alternativ — välj glutenmärkt fri vid glutenallergi",
+          "allergensVaryByProduct": [
+            "gluten"
+          ],
+          "requiresPackageVerification": true
         }
       ]
     },

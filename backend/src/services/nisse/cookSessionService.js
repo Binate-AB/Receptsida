@@ -10,6 +10,7 @@ import { buildTimeline } from './engine/timeline.js';
 import { formatAmount, normalizeAmount } from './engine/units.js';
 import { matchInventory } from './engine/pantry.js';
 import { isCriticalIngredient } from './engine/uncertainty.js';
+import { collectPackageChecks } from './engine/allergenGate.js';
 
 const LANE_LABELS = { base: 'Gemensamt', child: 'Barnens', adult: 'Vuxnas' };
 
@@ -70,7 +71,9 @@ export function buildSessionData(template, { eaters, inventory, branch }) {
     variants: template.variants || null,
     branch: mode,
     // Prep screen (level 1 verification): equipment + the critical
-    // ingredients that must be confirmed before the stove goes on.
+    // ingredients that must be confirmed before the stove goes on,
+    // plus generic industrial products whose package allergen
+    // declaration must be checked for this household.
     prep: {
       equipment: template.equipmentRequired || [],
       criticalIngredients: scaled
@@ -81,6 +84,7 @@ export function buildSessionData(template, { eaters, inventory, branch }) {
           amount: i.qty ? formatAmount(normalizeAmount(i.qty, i.unit).qty, normalizeAmount(i.qty, i.unit).unit) : '',
           probablyHome: atHome.has(i.canonical),
         })),
+      packageChecks: collectPackageChecks(template, eaters),
     },
   };
 

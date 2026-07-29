@@ -7,6 +7,7 @@
 // ============================================
 
 import { buildTimeline } from './timeline.js';
+import { expandAllergyCodes } from './allergens.js';
 
 /**
  * Resolve a missing ingredient deterministically, in priority order:
@@ -37,14 +38,21 @@ export function resolveMissingIngredient(template, canonical, members) {
     };
   }
 
-  const allergySet = new Set((members || []).flatMap((m) => m.allergies || []));
+  const allergySet = new Set(
+    (members || []).flatMap((m) => expandAllergyCodes(m.allergies || []))
+  );
 
-  // 1. Safe curated substitution. Conservative three-state rule: an
-  // allergen that VARIES by brand disqualifies the substitute just like
-  // a declared one — never an uncertain approval.
+  // 1. Safe curated substitution. A substitution affects safety ONLY when
+  // chosen — and this is the choice point. Conservative four-state rule:
+  // contains, varies-by-product AND may-contain-traces all disqualify the
+  // substitute for an affected member — never an uncertain approval.
   const safeSub = (ingredient.substitutions || []).find(
     (sub) =>
-      ![...(sub.allergens || []), ...(sub.allergensVary || [])].some((a) => allergySet.has(a))
+      ![
+        ...(sub.allergens || []),
+        ...(sub.allergensVaryByProduct || []),
+        ...(sub.mayContainTraces || []),
+      ].some((a) => allergySet.has(a))
   );
   if (safeSub) {
     return {

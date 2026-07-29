@@ -58,15 +58,25 @@ for (const file of files) {
   });
 
   test(`${file}: no ingredient with known allergens is missing declarations`, () => {
+    // Four-state model: an EXPLICIT declaration (any of the three lists,
+    // or requiresPackageVerification) is authoritative and may deviate
+    // from the fallback map (e.g. hard cheese = mjölkprotein, laktos Fri).
+    // Only completely undeclared rows must not silently rely on the
+    // fallback when the map knows the ingredient carries allergens.
     const tpl = templateSchema.parse(raw);
     for (const ing of tpl.ingredients) {
+      const declared =
+        (ing.allergens || []).length > 0 ||
+        (ing.allergensVaryByProduct || []).length > 0 ||
+        (ing.mayContainTraces || []).length > 0 ||
+        ing.requiresPackageVerification;
+      if (declared) continue;
       const fallback = ingredientAllergens(ing.canonical);
-      for (const code of fallback) {
-        assert.ok(
-          (ing.allergens || []).includes(code),
-          `${ing.canonical} should declare allergen "${code}"`
-        );
-      }
+      assert.equal(
+        fallback.length,
+        0,
+        `${ing.canonical} är odeklarerad men fallback-kartan känner till: ${fallback.join(', ')} — deklarera explicit`
+      );
     }
   });
 

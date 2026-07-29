@@ -1,53 +1,60 @@
-# Nisse — Allergengranskning av kandidatpoolen (G0, rev 2 — trestatus)
+# Nisse — Allergengranskning av kandidatpoolen (G0, rev 3 — path-aware fyrstatus)
 
 > **Syfte:** Människoverifiering av allergenfälten på samtliga 24 live-rätter INNAN övrigt
-> §21–§29-arbete tillämpas på innehållet. Icke förhandlingsbart per §13: en språkmodell får aldrig
-> ensam avgöra allergisäkerhet — denna granskning är den mänskliga grinden.
-> **Granskare:** Jonas · **Uppskattad tid:** 1–2 h · **Källa:** genererad direkt ur
-> `backend/prisma/seed-templates/*.json` efter trestatus-uppdateringen (ingen manuell avskrift).
+> §21–§29-arbete tillämpas på innehållet (§13: en språkmodell får aldrig ensam avgöra
+> allergisäkerhet). **Granskare:** Jonas · **Källa:** genererad direkt ur seed-data via motorns
+> egna funktioner (`computeAllergenUnion`, `dietPathStatus`) — tabellerna visar exakt vad grinden gör.
 
-## Nytt sedan rev 1: trestatus-modellen (implementerad och testad)
+## Rev 2 → rev 3: samtliga strukturella blockerare åtgärdade
 
-Varje ingrediens × allergen har nu **tre möjliga utfall**:
+**A1 — Path-aware bedömning (implementerad + testad):**
+- Endast **obligatoriska** ingredienser kan blockera en rätt (basvägen).
+- **Valfria** ingredienser blockerar aldrig — de ger villkor: *"Säker om osten utelämnas eller
+  ersätts med laktosfri ost"*. Grönsakssoppan blockeras inte längre för mjölkallergi.
+- **Substitutioner** påverkar bara när de väljs (grindas vid valtillfället i räddningsflödet).
+- **Kostflaggor beräknas från aktiv väg**: statisk flagga finns bara när basvägen är helt fri;
+  annars visas villkoret (fajitas/vegotacos är nu *villkorat* laktosfria, aldrig statiskt).
 
-| Utfall | Datafält | Grindens beteende |
+**A2 — Två sorters osäkerhet separerade (+ spår):** per ingrediens×allergen finns nu fyra utfall:
+| Utfall | Fält | Grindens beteende |
 |---|---|---|
-| **Innehåller** | `allergens[]` | Blockeras för berörd allergiker |
-| **Fri** | (saknas i båda listorna) | Ingen blockering |
-| **Varierar (märkesberoende)** | `allergensVary[]` | **Blockeras — konservativ regel.** "Troligen fri" är aldrig ett godkännande. |
+| **Innehåller** | `allergens` | Blockerar (obligatorisk) / villkor (valfri) |
+| **Varierar per produkt** | `allergensVaryByProduct` | Samma — konservativt; löses med annan produkt |
+| **Kan innehålla spår** | `mayContainTraces` | Samma — konservativt; löses med spårfri produkt |
+| **Förpackningskoll** | `requiresPackageVerification` | Nisse ber användaren kontrollera förpackningens allergeninformation före start (förberedelseskärmen) |
 
-Den konservativa regeln är kodad i motorn (grind, mall-union, substitutioner) och testad.
-Vill man att en varierar-rätt ska nå allergikern är vägen att **villkora receptet** — t.ex. byta
-ingrediensraden till "Glutenfria köttbullar" (då blir utfallet Fri) — aldrig att avmarkera.
+**A3 — Generiska industriprodukter är aldrig "Fri":** korv, köttbullar, vegoprodukter, fiskpinnar,
+fryst pytt, mospulver, buljong, krydd-/curryblandningar, havreprodukter, Quorn och majstortillor
+har nu `requiresPackageVerification` + relevanta allergener under Varierar. "Fri" används endast
+för kategorier som faktiskt är fria.
 
-**Din uppgift per rad:** avgör att varje allergen står i **rätt kolumn** av de tre. Du kan flytta
-åt båda hållen: skärp (Varierar → Innehåller), lätta (Varierar → Fri, om förekomsten inte är
-märkesberoende i praktiken), eller lägg till det som saknas helt. Rättelser: säg bara vad som ska
-flyttas, så uppdaterar jag seed-JSON:en.
+**A4 — EU-14 komplett:** taxonomin täcker nu alla 14 deklarationspliktiga grupper (+ sulfit, lupin,
+kräftdjur, blötdjur). `skaldjur` är legacy-samlingskod som expanderar till kräftdjur ∪ blötdjur.
+`laktos` är separat intoleransmarkör och ersätter aldrig `mjölkprotein` (= EU-gruppen mjölk).
 
-En konsistensgrind är också aktiv: en rätt kan inte längre flaggas `glutenfri`/`laktosfri` om någon
-obligatorisk ingrediens har allergenet i Innehåller eller Varierar — bygget falerar.
+**B — Alla 52 konkreta rättelser applicerade**, bl.a.: havreprodukter gluten→Varierar (9 rätter);
+hårdost laktos→Fri med mjölkprotein kvar (carbonara, köttfärssås); generisk riven ost
+laktos→Varierar (4 rätter); mospulver laktos/mjölkprotein/sulfit Varierar; fiskpinnar
++mjölkprotein Varierar; all korv/vego aldrig Fri (soja flyttad Innehåller→Varierar — alla
+vegoprodukter är inte sojabaserade); pytt +mjölkprotein, "Smör eller olja"→"Smör" med Rapsolja
+som fri väg; vetetortilla preciserad + majstortilla kräver verifierat glutenfri.
 
-## Rev 1-fynden — nu kodade som Varierar (bekräfta eller skärp)
+**Tester:** 229/229 gröna, inkl. de två krävda: *en oanvänd substitution blockerar aldrig
+basreceptet* och *en valfri allergen ingrediens ger en säker väg med villkor*.
 
-1. **Köttbullar** (`kottbullar-potatismos`): gluten/ägg/mjölkprotein → **Varierar**;
-   `glutenfri`-flaggan **borttagen** (grinden tvingade fram det).
-2. **Falukorv** (4 rätter): mjölkprotein → **Varierar**.
-3. **Buljonger** (4 rätter): selleri → **Varierar**.
-4. **Taco-/fajitakrydda** (3 rätter): gluten → **Varierar**.
-5. **Vegokorv/vegobullar** (substitutioner, 5 rätter): gluten → **Varierar** (soja fortsatt Innehåller).
-6. **Fryst pyttipanna**: gluten/laktos → **Varierar**; `glutenfri`+`laktosfri`-flaggorna **borttagna**.
-7. **Fiskpinnar**: fisk+gluten i Innehåller (bedömdes stabilt över märken — flytta till Varierar om du
-   inte håller med).
+## Så granskar du (per rätt, tre sektioner)
 
-Konsekvens att känna till: dessa rätter filtreras nu bort för berörda allergiker tills receptet
-villkoras (t.ex. egen rad "glutenfri tacokrydda"). Det är avsett — hellre färre förslag än ett osäkert.
+1. **Basväg** — raderna som kan blockera. Stämmer varje allergen och dess kolumn?
+2. **Valfria** — kontrollera att "Om den används"-deltat stämmer (dessa blir villkorstexter).
+3. **Substitutioner** — kontrollera "Om den väljs"-deltat (grindas vid val).
+4. 🔍 = förpackningskoll krävs. Rimligt satt? Saknas någon produkt?
+5. Rättelser rapporteras som förut i chatten: "slug: rad → ändring".
 
 ## Status
 
-- [ ] **SIGN-OFF: samtliga 24 rätters trestatus-utfall granskade och godkända**
+- [ ] **SIGN-OFF: samtliga 24 rätters path-aware fyrstatus granskad och godkänd**
   Namn: ________________ Datum: ________________
-- Rättelser begärda (lista slugs + flytt): ________________________________________
+- Rättelser begärda: ________________________________________
 
 ---
 
@@ -55,374 +62,697 @@ villkoras (t.ex. egen rad "glutenfri tacokrydda"). Det är avsett — hellre fä
 
 ### Chili sin carne (`chili-sin-carne`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Kidneybönor | — | — | Svarta bönor → fri |
-| Krossade tomater | — | — | — |
-| Gul lök | — | — | — |
-| Vitlök | — | — | — |
-| Spiskummin | — | — | — |
-| Chilipulver | — | — | — |
-| Ris | — | — | — |
-| Majs *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** inga allergener
+**Kostflaggor:** vegan · vegetarisk · glutenfri (statisk — basvägen fri) · laktosfri (statisk — basvägen fri)
 
-**Konservativ mall-union (innehåller ∪ varierar):** inga · **Kostflaggor:** vegan, vegetarisk, glutenfri, laktosfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Kidneybönor | — | — | — | — |
+| Krossade tomater | — | — | — | — |
+| Gul lök | — | — | — | — |
+| Vitlök | — | — | — | — |
+| Spiskummin | — | — | — | — |
+| Chilipulver | — | — | — | — |
+| Ris | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Majs | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Kidneybönor | Svarta bönor | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Falukorv i ugn med ost och tomat (`falukorv-i-ugn`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Falukorv | — | mjölkprotein | Kycklingkorv → fri<br>Vegokorv → soja · *varierar: gluten* |
-| Riven ost | laktos, mjölkprotein | — | Laktosfri riven ost → mjölkprotein |
-| Ketchup eller tomatpuré | — | — | — |
-| Ris | — | — | Pasta → gluten<br>Potatis → fri |
-| Gul lök *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein
+**Kostflaggor:** laktosfri VILLKORAD: laktosfri om riven ost byts till laktosfri riven ost
 
-**Konservativ mall-union (innehåller ∪ varierar):** laktos, mjölkprotein · **Kostflaggor:** glutenfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Falukorv | — | mjölkprotein, gluten | — | 🔍 JA |
+| Riven ost | mjölkprotein | laktos | — | — |
+| Ketchup eller tomatpuré | — | — | — | — |
+| Ris | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Gul lök | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Falukorv | Kycklingkorv | + mjölkprotein (varierar), + gluten (varierar) | — | mjölkprotein, gluten | — | 🔍 JA |
+| Falukorv | Vegokorv | + gluten (varierar), + soja (varierar), + ägg (varierar) | — | gluten, soja, ägg | — | 🔍 JA |
+| Riven ost | Laktosfri riven ost | + mjölkprotein | mjölkprotein | — | — | — |
+| Ris | Pasta | + gluten | gluten | — | — | — |
+| Ris | Potatis | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Fiskpinnar med potatismos och ärtor (`fiskpinnar-med-mos`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Fiskpinnar | fisk, gluten | — | — |
-| Potatis | — | — | Färdigt potatismospulver → laktos |
-| Gröna ärtor | — | — | — |
-| Mjölk | laktos, mjölkprotein | — | Havredryck → gluten |
-| Smör | laktos, mjölkprotein | — | — |
-| Citron *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** fisk, gluten, laktos, mjölkprotein
+**Kostflaggor:** inga
 
-**Konservativ mall-union (innehåller ∪ varierar):** fisk, gluten, laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Fiskpinnar | fisk, gluten | mjölkprotein | — | 🔍 JA |
+| Potatis | — | — | — | — |
+| Gröna ärtor | — | — | — | — |
+| Mjölk | laktos, mjölkprotein | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Citron | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Potatis | Färdigt potatismospulver | + laktos (varierar), + mjölkprotein (varierar), + sulfit (varierar) | — | laktos, mjölkprotein, sulfit | — | 🔍 JA |
+| Mjölk | Havredryck | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Grönsakssoppa med varma mackor (`gronsakssoppa`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Blandade grönsaker (morot, potatis, purjo…) | — | — | Fryst grönsaksblandning → fri |
-| Grönsaksbuljong | — | selleri | — |
-| Bröd | gluten | — | Glutenfritt bröd → fri |
-| Ost *(valfri)* | laktos, mjölkprotein | — | — |
-| Grädde *(valfri)* | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, selleri
+**Kostflaggor:** vegetarisk · glutenfri VILLKORAD: glutenfri om bröd byts till glutenfritt bröd · laktosfri VILLKORAD: laktosfri om ost utelämnas; laktosfri om grädde utelämnas
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, selleri · **Kostflaggor:** vegetarisk
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Blandade grönsaker (morot, potatis, purjo…) | — | — | — | — |
+| Grönsaksbuljong | — | selleri | — | 🔍 JA |
+| Bröd | gluten | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Ost | + mjölkprotein, + laktos (varierar) | mjölkprotein | laktos | — | — |
+| Grädde | + laktos, + mjölkprotein | laktos, mjölkprotein | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Blandade grönsaker (morot, potatis, purjo…) | Fryst grönsaksblandning | ingen förändring | — | — | — | — |
+| Bröd | Glutenfritt bröd | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Halloumi- och grönsakswok med nudlar (`halloumiwok`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Halloumi | laktos, mjölkprotein | — | — |
-| Äggnudlar | gluten, ägg | — | Risnudlar → fri |
-| Broccoli | — | — | — |
-| Paprika | — | — | — |
-| Morot | — | — | — |
-| Sojasås | soja, gluten | — | — |
-| Sweet chilisås | — | — | — |
-| Sesamfrön *(valfri)* | sesam | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein, soja, ägg
+**Kostflaggor:** vegetarisk
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, sesam, soja, ägg · **Kostflaggor:** vegetarisk
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Halloumi | laktos, mjölkprotein | — | — | — |
+| Äggnudlar | gluten, ägg | — | — | — |
+| Broccoli | — | — | — | — |
+| Paprika | — | — | — | — |
+| Morot | — | — | — | — |
+| Sojasås | soja, gluten | — | — | — |
+| Sweet chilisås | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Sesamfrön | + sesam | sesam | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Äggnudlar | Risnudlar | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Korv stroganoff med ris (`korv-stroganoff`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Falukorv | — | mjölkprotein | Vegokorv → *varierar: gluten* |
-| Gul lök | — | — | — |
-| Tomatpuré | — | — | — |
-| Vispgrädde | laktos, mjölkprotein | — | Havregrädde → fri |
-| Ris | — | — | — |
-| Smör | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein
+**Kostflaggor:** inga
 
-**Konservativ mall-union (innehåller ∪ varierar):** laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Falukorv | — | mjölkprotein, gluten | — | 🔍 JA |
+| Gul lök | — | — | — | — |
+| Tomatpuré | — | — | — | — |
+| Vispgrädde | laktos, mjölkprotein | — | — | — |
+| Ris | — | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Falukorv | Vegokorv | + gluten (varierar), + soja (varierar), + ägg (varierar) | — | gluten, soja, ägg | — | 🔍 JA |
+| Vispgrädde | Havregrädde | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Krämig korvgryta med pasta (`korvgryta-med-pasta`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Falukorv eller länkkorv | — | mjölkprotein | Kycklingkorv → fri<br>Vegokorv → soja · *varierar: gluten* |
-| Pasta | gluten | — | Glutenfri pasta → fri |
-| Krossade tomater | — | — | — |
-| Matlagningsgrädde | laktos, mjölkprotein | — | Havregrädde → gluten |
-| Gul lök | — | — | — |
-| Paprikapulver | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein
+**Kostflaggor:** laktosfri VILLKORAD: laktosfri om matlagningsgrädde byts till havregrädde
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Falukorv eller länkkorv | — | mjölkprotein, gluten | — | 🔍 JA |
+| Pasta | gluten | — | — | — |
+| Krossade tomater | — | — | — | — |
+| Matlagningsgrädde | laktos, mjölkprotein | — | — | — |
+| Gul lök | — | — | — | — |
+| Paprikapulver | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Falukorv eller länkkorv | Kycklingkorv | + mjölkprotein (varierar), + gluten (varierar) | — | mjölkprotein, gluten | — | 🔍 JA |
+| Falukorv eller länkkorv | Vegokorv | + gluten (varierar), + soja (varierar), + ägg (varierar) | — | gluten, soja, ägg | — | 🔍 JA |
+| Pasta | Glutenfri pasta | ingen förändring | — | — | — | — |
+| Matlagningsgrädde | Havregrädde | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Köttbullar med potatismos (`kottbullar-potatismos`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Köttbullar | — | gluten, ägg, mjölkprotein | Kycklingköttbullar → fri<br>Vegobullar → soja · *varierar: gluten* |
-| Potatis | — | — | Färdigt potatismospulver → laktos |
-| Mjölk | laktos, mjölkprotein | — | Havredryck → gluten |
-| Smör | laktos, mjölkprotein | — | — |
-| Gurka eller ärtor *(valfri)* | — | — | — |
-| Lingonsylt *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein, ägg
+**Kostflaggor:** inga
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, ägg · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Köttbullar | — | gluten, ägg, mjölkprotein | — | 🔍 JA |
+| Potatis | — | — | — | — |
+| Mjölk | laktos, mjölkprotein | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Gurka eller ärtor | ingen förändring | — | — | — | — |
+| Lingonsylt | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Köttbullar | Kycklingköttbullar | + mjölkprotein (varierar), + gluten (varierar) | — | mjölkprotein, gluten | — | 🔍 JA |
+| Köttbullar | Vegobullar | + gluten (varierar), + soja (varierar), + ägg (varierar) | — | gluten, soja, ägg | — | 🔍 JA |
+| Potatis | Färdigt potatismospulver | + laktos (varierar), + mjölkprotein (varierar), + sulfit (varierar) | — | laktos, mjölkprotein, sulfit | — | 🔍 JA |
+| Mjölk | Havredryck | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Krämig kycklingpasta (`kramig-kycklingpasta`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Kycklingfilé | — | — | Kycklinglårfilé → fri |
-| Pasta | gluten | — | Glutenfri pasta → fri |
-| Matlagningsgrädde | laktos, mjölkprotein | — | Havregrädde → gluten |
-| Vitlök | — | — | — |
-| Soltorkade tomater *(valfri)* | — | — | — |
-| Buljongtärning | — | selleri | — |
-| Rapsolja | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein, selleri
+**Kostflaggor:** glutenfri VILLKORAD: glutenfri om pasta byts till glutenfri pasta · laktosfri VILLKORAD: laktosfri om matlagningsgrädde byts till havregrädde
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, selleri · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Kycklingfilé | — | — | — | — |
+| Pasta | gluten | — | — | — |
+| Matlagningsgrädde | laktos, mjölkprotein | — | — | — |
+| Vitlök | — | — | — | — |
+| Buljongtärning | — | selleri | — | 🔍 JA |
+| Rapsolja | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Soltorkade tomater | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Kycklingfilé | Kycklinglårfilé | ingen förändring | — | — | — | — |
+| Pasta | Glutenfri pasta | ingen förändring | — | — | — | — |
+| Matlagningsgrädde | Havregrädde | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Kycklingfajitas (`kyckling-fajitas`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Kycklingfilé | — | — | Kycklinglårfilé → fri<br>Halloumi → laktos, mjölkprotein |
-| Tortillabröd | gluten | — | Majstortilla → fri<br>Ris → fri |
-| Paprika | — | — | — |
-| Gul lök | — | — | — |
-| Fajitakrydda | — | gluten | — |
-| Paprikapulver | — | — | — |
-| Rapsolja | — | — | — |
-| Gräddfil *(valfri)* | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten
+**Kostflaggor:** laktosfri VILLKORAD: laktosfri om gräddfil utelämnas
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein · **Kostflaggor:** laktosfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Kycklingfilé | — | — | — | — |
+| Tortillabröd | gluten | — | — | — |
+| Paprika | — | — | — | — |
+| Gul lök | — | — | — | — |
+| Fajitakrydda | — | gluten | — | 🔍 JA |
+| Paprikapulver | — | — | — | — |
+| Rapsolja | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Gräddfil | + laktos, + mjölkprotein | laktos, mjölkprotein | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Kycklingfilé | Kycklinglårfilé | ingen förändring | — | — | — | — |
+| Kycklingfilé | Halloumi | + laktos, + mjölkprotein | laktos, mjölkprotein | — | — | — |
+| Tortillabröd | Majstortilla | + gluten (varierar) | — | gluten | — | 🔍 JA |
+| Tortillabröd | Ris | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Kyckling och rotfrukter i ugn (`kyckling-rotfrukter-ugn`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Kycklinglår | — | — | Kycklingfilé → fri |
-| Potatis | — | — | Sötpotatis → fri |
-| Morot | — | — | Palsternacka → fri |
-| Gul lök | — | — | — |
-| Rapsolja | — | — | — |
-| Timjan eller rosmarin *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** inga allergener
+**Kostflaggor:** glutenfri (statisk — basvägen fri) · laktosfri (statisk — basvägen fri)
 
-**Konservativ mall-union (innehåller ∪ varierar):** inga · **Kostflaggor:** glutenfri, laktosfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Kycklinglår | — | — | — | — |
+| Potatis | — | — | — | — |
+| Morot | — | — | — | — |
+| Gul lök | — | — | — | — |
+| Rapsolja | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Timjan eller rosmarin | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Kycklinglår | Kycklingfilé | ingen förändring | — | — | — | — |
+| Potatis | Sötpotatis | ingen förändring | — | — | — | — |
+| Morot | Palsternacka | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Krämig kycklinggryta med ris (`kycklinggryta`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Kycklingfilé | — | — | Quornfilé → ägg |
-| Ris | — | — | — |
-| Vispgrädde | laktos, mjölkprotein | — | Havregrädde → fri |
-| Gul lök | — | — | — |
-| Frysta ärtor | — | — | — |
-| Kycklingbuljong | — | selleri | — |
-| Currypulver | — | — | — |
-| Smör | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** laktos, mjölkprotein, selleri
+**Kostflaggor:** inga
 
-**Konservativ mall-union (innehåller ∪ varierar):** laktos, mjölkprotein, selleri · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Kycklingfilé | — | — | — | — |
+| Ris | — | — | — | — |
+| Vispgrädde | laktos, mjölkprotein | — | — | — |
+| Gul lök | — | — | — | — |
+| Frysta ärtor | — | — | — | — |
+| Kycklingbuljong | — | selleri | — | 🔍 JA |
+| Currypulver | — | — | — | 🔍 JA |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Kycklingfilé | Quornfilé | + ägg | ägg | — | — | — |
+| Vispgrädde | Havregrädde | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Laxpasta med citron och dill (`laxpasta`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Laxfilé | fisk | — | — |
-| Pasta | gluten | — | Glutenfri pasta → fri |
-| Crème fraiche | laktos, mjölkprotein | — | Havrefraiche → gluten |
-| Citron | — | — | — |
-| Dill *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** fisk, gluten, laktos, mjölkprotein
+**Kostflaggor:** glutenfri VILLKORAD: glutenfri om pasta byts till glutenfri pasta · laktosfri VILLKORAD: laktosfri om crème fraiche byts till havrefraiche
 
-**Konservativ mall-union (innehåller ∪ varierar):** fisk, gluten, laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Laxfilé | fisk | — | — | — |
+| Pasta | gluten | — | — | — |
+| Crème fraiche | laktos, mjölkprotein | — | — | — |
+| Citron | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Dill | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Pasta | Glutenfri pasta | ingen förändring | — | — | — | — |
+| Crème fraiche | Havrefraiche | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Vegetarisk linssoppa med kokos (`linssoppa`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Röda linser | — | — | — |
-| Kokosmjölk | — | — | — |
-| Krossade tomater | — | — | — |
-| Gul lök | — | — | — |
-| Morot | — | — | — |
-| Vitlök | — | — | — |
-| Grönsaksbuljong | — | selleri | — |
-| Currypulver | — | — | — |
-| Olivolja | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** selleri
+**Kostflaggor:** vegan · vegetarisk · glutenfri (statisk — basvägen fri) · laktosfri (statisk — basvägen fri)
 
-**Konservativ mall-union (innehåller ∪ varierar):** selleri · **Kostflaggor:** vegan, vegetarisk, glutenfri, laktosfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Röda linser | — | — | — | — |
+| Kokosmjölk | — | — | — | — |
+| Krossade tomater | — | — | — | — |
+| Gul lök | — | — | — | — |
+| Morot | — | — | — | — |
+| Vitlök | — | — | — | — |
+| Grönsaksbuljong | — | selleri | — | 🔍 JA |
+| Currypulver | — | — | — | 🔍 JA |
+| Olivolja | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Pannkakor med spenatsallad (`pannkakor`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Vetemjöl | gluten | — | — |
-| Mjölk | laktos, mjölkprotein | — | Havredryck → fri |
-| Ägg | ägg | — | — |
-| Smör | laktos, mjölkprotein | — | — |
-| Babyspenat | — | — | — |
-| Gurka | — | — | — |
-| Olivolja | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein, ägg
+**Kostflaggor:** vegetarisk
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, ägg · **Kostflaggor:** vegetarisk
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Vetemjöl | gluten | — | — | — |
+| Mjölk | laktos, mjölkprotein | — | — | — |
+| Ägg | ägg | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+| Babyspenat | — | — | — | — |
+| Gurka | — | — | — | — |
+| Olivolja | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Mjölk | Havredryck | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Enkel carbonara (`pasta-carbonara`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Spaghetti | gluten | — | Glutenfri spaghetti → fri |
-| Bacon | — | — | Kalkonbacon → fri<br>Rökt tofu → soja |
-| Äggulor | ägg | — | — |
-| Riven parmesan eller västerbotten | laktos, mjölkprotein | — | Vanlig riven ost → laktos, mjölkprotein |
-| Svartpeppar | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, mjölkprotein, ägg
+**Kostflaggor:** glutenfri VILLKORAD: glutenfri om spaghetti byts till glutenfri spaghetti
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, ägg · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Spaghetti | gluten | — | — | — |
+| Bacon | — | — | — | — |
+| Äggulor | ägg | — | — | — |
+| Riven parmesan eller västerbotten | mjölkprotein | — | — | — |
+| Svartpeppar | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Spaghetti | Glutenfri spaghetti | ingen förändring | — | — | — | — |
+| Bacon | Kalkonbacon | ingen förändring | — | — | — | — |
+| Bacon | Rökt tofu | + soja | soja | — | — | — |
+| Riven parmesan eller västerbotten | Vanlig riven ost | + mjölkprotein, + laktos (varierar) | mjölkprotein | laktos | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Pasta med köttfärssås (`pasta-kottfarssas`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Köttfärs | — | — | Vegofärs → soja |
-| Pasta | gluten | — | Glutenfri pasta → fri |
-| Krossade tomater | — | — | — |
-| Gul lök | — | — | — |
-| Morot | — | — | — |
-| Tomatpuré | — | — | — |
-| Olivolja | — | — | — |
-| Vitlök | — | — | — |
-| Chiliflakes | — | — | — |
-| Parmesan *(valfri)* | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten
+**Kostflaggor:** glutenfri VILLKORAD: glutenfri om pasta byts till glutenfri pasta
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Köttfärs | — | — | — | — |
+| Pasta | gluten | — | — | — |
+| Krossade tomater | — | — | — | — |
+| Gul lök | — | — | — | — |
+| Morot | — | — | — | — |
+| Tomatpuré | — | — | — | — |
+| Olivolja | — | — | — | — |
+| Vitlök | — | — | — | — |
+| Chiliflakes | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Parmesan | + mjölkprotein | mjölkprotein | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Köttfärs | Vegofärs | + soja (varierar), + gluten (varierar), + ägg (varierar) | — | soja, gluten, ägg | — | 🔍 JA |
+| Pasta | Glutenfri pasta | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Pyttipanna med stekt ägg (`pyttipanna`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Pyttipanna (fryst) | — | gluten, laktos | Kokt potatis + korv + lök (rester) → fri |
-| Ägg | ägg | — | Rödbetor → fri |
-| Smör eller olja | laktos, mjölkprotein | — | Rapsolja → fri |
-| Inlagda rödbetor *(valfri)* | — | — | — |
-| Ketchup *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein, ägg
+**Kostflaggor:** laktosfri VILLKORAD: laktosfri om pyttipanna (fryst) byts till kokt potatis + korv + lök (rester); laktosfri om smör byts till rapsolja
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, ägg · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Pyttipanna (fryst) | — | gluten, laktos, mjölkprotein | — | 🔍 JA |
+| Ägg | ägg | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Inlagda rödbetor | ingen förändring | — | — | — | — |
+| Ketchup | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Pyttipanna (fryst) | Kokt potatis + korv + lök (rester) | + mjölkprotein (varierar), + gluten (varierar) | — | mjölkprotein, gluten | — | 🔍 JA |
+| Ägg | Rödbetor | ingen förändring | — | — | — | — |
+| Smör | Rapsolja | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Tacogryta med ris (`tacogryta`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Köttfärs | — | — | Vegofärs → soja |
-| Ris | — | — | — |
-| Krossade tomater | — | — | — |
-| Majs | — | — | — |
-| Tacokrydda | — | gluten | — |
-| Gul lök | — | — | — |
-| Gräddfil *(valfri)* | laktos, mjölkprotein | — | — |
-| Chiliflakes | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten
+**Kostflaggor:** laktosfri VILLKORAD: laktosfri om gräddfil utelämnas
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Köttfärs | — | — | — | — |
+| Ris | — | — | — | — |
+| Krossade tomater | — | — | — | — |
+| Majs | — | — | — | — |
+| Tacokrydda | — | gluten | — | 🔍 JA |
+| Gul lök | — | — | — | — |
+| Chiliflakes | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Gräddfil | + laktos, + mjölkprotein | laktos, mjölkprotein | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Köttfärs | Vegofärs | + soja (varierar), + gluten (varierar), + ägg (varierar) | — | soja, gluten, ägg | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Töm kylen-omelett (`tom-kylen-omelett`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Ägg | ägg | — | — |
-| Mjölk *(valfri)* | laktos, mjölkprotein | — | Vatten → fri |
-| Riven ost *(valfri)* | laktos, mjölkprotein | — | — |
-| Paprika *(valfri)* | — | — | Tomat → fri<br>Champinjoner → fri |
-| Smör | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** laktos, mjölkprotein, ägg
+**Kostflaggor:** vegetarisk · glutenfri (statisk — basvägen fri)
 
-**Konservativ mall-union (innehåller ∪ varierar):** laktos, mjölkprotein, ägg · **Kostflaggor:** vegetarisk, glutenfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Ägg | ägg | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Mjölk | + laktos, + mjölkprotein | laktos, mjölkprotein | — | — | — |
+| Riven ost | + mjölkprotein, + laktos (varierar) | mjölkprotein | laktos | — | — |
+| Paprika | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Mjölk | Vatten | ingen förändring | — | — | — | — |
+| Paprika | Tomat | ingen förändring | — | — | — | — |
+| Paprika | Champinjoner | ingen förändring | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Krämig tonfiskpasta (`tonfiskpasta`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Pasta | gluten | — | Glutenfri pasta → fri |
-| Tonfisk i vatten | fisk | — | Kikärtor → fri |
-| Crème fraiche | laktos, mjölkprotein | — | Havrefraiche → gluten |
-| Gul lök | — | — | — |
-| Majs *(valfri)* | — | — | — |
-| Citron *(valfri)* | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** fisk, gluten, laktos, mjölkprotein
+**Kostflaggor:** glutenfri VILLKORAD: glutenfri om pasta byts till glutenfri pasta · laktosfri VILLKORAD: laktosfri om crème fraiche byts till havrefraiche
 
-**Konservativ mall-union (innehåller ∪ varierar):** fisk, gluten, laktos, mjölkprotein · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Pasta | gluten | — | — | — |
+| Tonfisk i vatten | fisk | — | — | — |
+| Crème fraiche | laktos, mjölkprotein | — | — | — |
+| Gul lök | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Majs | ingen förändring | — | — | — | — |
+| Citron | ingen förändring | — | — | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Pasta | Glutenfri pasta | ingen förändring | — | — | — | — |
+| Tonfisk i vatten | Kikärtor | ingen förändring | — | — | — | — |
+| Crème fraiche | Havrefraiche | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Ugnsbakad lax med klyftpotatis och dillsås (`ugnsbakad-lax`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Laxfilé | fisk | — | — |
-| Potatis | — | — | — |
-| Gräddfil | laktos, mjölkprotein | — | — |
-| Färsk dill | — | — | — |
-| Citron | — | — | — |
-| Olivolja | — | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** fisk, laktos, mjölkprotein
+**Kostflaggor:** glutenfri (statisk — basvägen fri)
 
-**Konservativ mall-union (innehåller ∪ varierar):** fisk, laktos, mjölkprotein · **Kostflaggor:** glutenfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Laxfilé | fisk | — | — | — |
+| Potatis | — | — | — | — |
+| Gräddfil | laktos, mjölkprotein | — | — | — |
+| Färsk dill | — | — | — | — |
+| Citron | — | — | — | — |
+| Olivolja | — | — | — | — |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Ugnspannkaka med korv (`ugnspannkaka`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Vetemjöl | gluten | — | — |
-| Mjölk | laktos, mjölkprotein | — | — |
-| Ägg | ägg | — | — |
-| Falukorv *(valfri)* | — | mjölkprotein | Vegokorv → *varierar: gluten* |
-| Smör | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten, laktos, mjölkprotein, ägg
+**Kostflaggor:** inga
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein, ägg · **Kostflaggor:** inga
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Vetemjöl | gluten | — | — | — |
+| Mjölk | laktos, mjölkprotein | — | — | — |
+| Ägg | ägg | — | — | — |
+| Smör | laktos, mjölkprotein | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Falukorv | + mjölkprotein (varierar), + gluten (varierar) | — | mjölkprotein, gluten | — | 🔍 JA |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Falukorv | Vegokorv | + gluten (varierar), + soja (varierar), + ägg (varierar) | — | gluten, soja, ägg | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______
 
 ### Vegetariska tacos på bönor (`vegetarisk-tacos`)
 
-| Ingrediens | Innehåller | Varierar (märkesberoende) | Substitutioner (→ innehåller / *varierar*) |
-|---|---|---|---|
-| Svarta bönor | — | — | Kidneybönor → fri<br>Linser (kokta) → fri |
-| Tortillabröd eller tacoskal | gluten | — | Majstortilla → fri |
-| Tacokrydda | — | gluten | — |
-| Tomatpuré | — | — | — |
-| Majs | — | — | — |
-| Tomat | — | — | — |
-| Gurka *(valfri)* | — | — | — |
-| Riven ost *(valfri)* | laktos, mjölkprotein | — | — |
+**Basväg (obligatoriska ingredienser) — det som kan blockera:** gluten
+**Kostflaggor:** vegetarisk · laktosfri VILLKORAD: laktosfri om riven ost utelämnas
 
-**Konservativ mall-union (innehåller ∪ varierar):** gluten, laktos, mjölkprotein · **Kostflaggor:** vegetarisk, laktosfri
+**Obligatoriska ingredienser**
 
-- [ ] Trestatus-utfallen verifierade (rätt allergen i rätt kolumn) &nbsp;&nbsp; Sign: ______ Datum: ______
+| Ingrediens | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|
+| Svarta bönor | — | — | — | — |
+| Vetetortilla eller tacoskal av vete | gluten | — | — | — |
+| Tacokrydda | — | gluten | — | 🔍 JA |
+| Tomatpuré | — | — | — | — |
+| Majs | — | — | — | — |
+| Tomat | — | — | — | — |
+
+**Valfria ingredienser** *(blockerar aldrig basreceptet — ger villkor)*
+
+| Ingrediens | Om den används | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|
+| Gurka | ingen förändring | — | — | — | — |
+| Riven ost | + mjölkprotein, + laktos (varierar) | mjölkprotein | laktos | — | — |
+
+**Substitutioner** *(påverkar bara när de väljs — grindas vid valtillfället)*
+
+| Ersätter | Substitution | Om den väljs | Innehåller | Varierar per produkt | Kan innehålla spår | Förpackningskoll |
+|---|---|---|---|---|---|---|
+| Svarta bönor | Kidneybönor | ingen förändring | — | — | — | — |
+| Svarta bönor | Linser (kokta) | ingen förändring | — | — | — | — |
+| Vetetortilla eller tacoskal av vete | Majstortilla | + gluten (varierar) | — | gluten | — | 🔍 JA |
+
+- [ ] Fyrstatus + väguppdelning verifierad &nbsp;&nbsp; Sign: ______ Datum: ______

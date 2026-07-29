@@ -48,9 +48,12 @@
           "name": "Vegofärs",
           "canonical": "vegofärs",
           "note": "Vegetariskt alternativ",
-          "allergens": [
-            "soja"
-          ]
+          "allergensVaryByProduct": [
+            "soja",
+            "gluten",
+            "ägg"
+          ],
+          "requiresPackageVerification": true
         }
       ]
     },
@@ -85,9 +88,10 @@
       "unit": "msk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
-      "allergensVary": [
+      "allergensVaryByProduct": [
         "gluten"
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Gul lök",
