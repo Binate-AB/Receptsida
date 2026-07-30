@@ -108,8 +108,11 @@ app.get('/api/health', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     checks.database = 'ok';
-  } catch {
+  } catch (err) {
+    // Surface the real cause in the Vercel logs — a bare catch hid the
+    // pooler prepared-statement failure that took prod down after PR #79.
     checks.database = 'error';
+    console.error('[health] database check failed:', err.message);
   }
 
   // Redis check (optional)
