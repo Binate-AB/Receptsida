@@ -27,7 +27,8 @@ och nya sidor.
 - **Auth**: JWT access (15 min) + roterande refresh tokens i DB; e-post/lösenord + Google +
   Apple; e-postverifiering och lösenordsåterställning via Resend. `req.user` innehåller
   endast `{id, email, plan}` — allt annat måste hämtas ur DB.
-- **AI**: Anthropic SDK (`claude-sonnet-4-20250514`) med `web_search`-verktyg.
+- **AI**: Anthropic SDK, modell via env `ANTHROPIC_MODEL` (default `claude-sonnet-5`; aldrig
+  hårdkodad — en pensionerad modell är en config-ändring, inte en driftstörning).
   Tvåstegs-pipeline: webbsök → strukturering till rik JSON (steg med `voice_cue`,
   `beginner_tip`, `timer_seconds` m.m.). Redis-cache 24 h. JSON-reparation för trunkerad
   output (nu extraherad till `src/utils/json-repair.js`).

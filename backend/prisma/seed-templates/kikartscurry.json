@@ -1,0 +1,149 @@
+{
+  "slug": "kikartscurry",
+  "title": "Snabb kikärtscurry",
+  "description": "Kikärtor i krämig kokossås med gurkmeja och spiskummin. Vegansk vardagsmiddag på en kvart.",
+  "tags": [
+    "vardag",
+    "snabbt",
+    "vegetariskt",
+    "billigt"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 15,
+  "activeTimeMin": 10,
+  "passiveTimeMin": 5,
+  "servingsBase": 4,
+  "costPerPortionMin": 12,
+  "costPerPortionMax": 20,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 1,
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Kikärtor",
+      "canonical": "kikärtor",
+      "qtyPerPortion": 0.5,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Vita bönor",
+          "canonical": "vita bönor",
+          "note": "samma tillagning"
+        }
+      ]
+    },
+    {
+      "name": "Kokosmjölk",
+      "canonical": "kokosmjölk",
+      "qtyPerPortion": 0.25,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 15,
+      "critical": true
+    },
+    {
+      "name": "Ris",
+      "canonical": "ris",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "pantryStaple": true,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Gurkmeja",
+      "canonical": "gurkmeja",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    },
+    {
+      "name": "Spiskummin",
+      "canonical": "spiskummin",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Koka riset enligt paketet.",
+      "voiceCue": "Sätt på riset och koka det enligt paketet.",
+      "durationMin": 12,
+      "activeMin": 2,
+      "timerNeeded": true,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Hacka och fräs lök och vitlök med gurkmeja och spiskummin.",
+      "voiceCue": "Hacka och fräs löken och vitlöken med gurkmejan och spiskumminen.",
+      "durationMin": 4,
+      "activeMin": 4
+    },
+    {
+      "id": "s3",
+      "text": "Tillsätt kikärtor och kokosmjölk. Låt sjuda ihop och smaka av med salt.",
+      "voiceCue": "Tillsätt kikärtorna och kokosmjölken, låt sjuda ihop och smaka av med salt.",
+      "durationMin": 6,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": "Servera curryn med riset.",
+      "voiceCue": "Servera curryn med riset. Klart!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s1",
+        "s3"
+      ]
+    }
+  ]
+}

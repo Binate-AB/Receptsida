@@ -60,7 +60,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Morot",
@@ -76,7 +77,8 @@
       "qtyPerPortion": 0.25,
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 12
+      "estPriceSek": 12,
+      "scaling": "stepwise"
     },
     {
       "name": "Grönsaksbuljong",
@@ -89,7 +91,8 @@
       "allergensVaryByProduct": [
         "selleri"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Currypulver",
@@ -98,7 +101,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Olivolja",
@@ -107,7 +111,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 40,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -164,5 +169,8 @@
       ]
     }
   ],
-  "robustness": 4
+  "robustness": 4,
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

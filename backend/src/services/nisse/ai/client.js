@@ -11,7 +11,9 @@ import Anthropic from '@anthropic-ai/sdk';
 import { config } from '../../../config/env.js';
 import { parseJsonLoose } from '../../../utils/json-repair.js';
 
-const MODEL = 'claude-sonnet-4-20250514';
+// Model id comes from config (env ANTHROPIC_MODEL) — never hardcoded, so a
+// model retirement is a config change, not a code deploy. See config/env.js.
+const MODEL = config.ANTHROPIC_MODEL;
 
 export class AiOutputError extends Error {
   constructor(message, cause) {

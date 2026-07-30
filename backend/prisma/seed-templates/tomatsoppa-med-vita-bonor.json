@@ -1,0 +1,142 @@
+{
+  "slug": "tomatsoppa-med-vita-bonor",
+  "title": "Tomatsoppa med vita bönor",
+  "description": "Mustig tomatsoppa med vita bönor och kokosgrädde. Snabb, vegansk och snäll mot både barn och plånbok.",
+  "tags": [
+    "vardag",
+    "snabbt",
+    "vegetariskt",
+    "billigt",
+    "soppa"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 15,
+  "activeTimeMin": 9,
+  "passiveTimeMin": 6,
+  "servingsBase": 4,
+  "costPerPortionMin": 10,
+  "costPerPortionMax": 18,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Passerade tomater",
+      "canonical": "passerade tomater",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true
+    },
+    {
+      "name": "Vita bönor",
+      "canonical": "vita bönor",
+      "qtyPerPortion": 0.5,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kikärtor",
+          "canonical": "kikärtor",
+          "note": "samma tillagning"
+        }
+      ]
+    },
+    {
+      "name": "Kokosgrädde",
+      "canonical": "kokosgrädde",
+      "qtyPerPortion": 0.5,
+      "unit": "dl",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 15
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "pantryStaple": true,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Basilika",
+      "canonical": "basilika",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 10,
+      "optional": true,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Hacka och fräs lök och vitlök i olivolja.",
+      "voiceCue": "Hacka och fräs löken och vitlöken i olivolja.",
+      "durationMin": 4,
+      "activeMin": 4,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Tillsätt passerade tomater, bönor och kokosgrädde. Låt sjuda.",
+      "voiceCue": "Tillsätt tomaterna, bönorna och kokosgrädden, och låt soppan sjuda.",
+      "durationMin": 8,
+      "activeMin": 2,
+      "timerNeeded": true,
+      "dependsOn": [
+        "s1"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": "Smaka av med salt, peppar och basilika. Servera.",
+      "voiceCue": "Smaka av med salt, peppar och basilika. Klart!",
+      "durationMin": 3,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2"
+      ]
+    }
+  ]
+}

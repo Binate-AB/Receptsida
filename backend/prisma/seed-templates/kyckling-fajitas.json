@@ -103,7 +103,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Fajitakrydda",
@@ -116,7 +117,8 @@
       "allergensVaryByProduct": [
         "gluten"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Paprikapulver",
@@ -126,7 +128,8 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 12,
       "pantryStaple": true,
-      "group": "barn"
+      "group": "barn",
+      "scaling": "sublinear"
     },
     {
       "name": "Rapsolja",
@@ -135,7 +138,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 25,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Gräddfil",
@@ -231,5 +235,8 @@
         "s4"
       ]
     }
-  ]
+  ],
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

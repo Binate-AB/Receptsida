@@ -6,6 +6,7 @@
 
 export const EVENT_NAMES = [
   'dinner_solved',
+  'recommendation_gap',
   'recommendation_viewed',
   'recommendation_accepted',
   'alternative_requested',

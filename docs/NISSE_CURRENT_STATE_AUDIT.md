@@ -127,3 +127,20 @@ kärnflödet beror på dem, och borttagning är inte hypotestestande arbete.
 Hela exkluderingslistan i `NISSE_MVP_90_DAYS.md` §4 (kylskåpsfoto, kvitton, streckkoder,
 butiksintegration, veckooptimering, röststyrning, social feed, fri AI-felsökning, annonser,
 betalvägg m.m.).
+
+## 11. Innehållsinventering — kandidatpoolen (§23, 2026-07-29)
+
+Verifieringsgrinden (`RecipeTemplate.verificationStatus`, migration
+`20260729000001_verification_status`) infördes efter G0-allergensign-offen. Beslut per innehållskälla:
+
+| Källa | Antal | Beslut |
+|---|---|---|
+| `RecipeTemplate` (seed-templates i repo) | 24 | **Grandfather → VERIFIED** (`verifiedAt=2026-07-29`, `verifiedBy=Jonas`). Täcks av G0-allergengranskningen rev 3 (`docs/NISSE_ALLERGEN_REVIEW.md`, sign-off 2026-07-29). Övriga annoteringsfält (tider, kostnad, robusthet) grandfathras med retroaktiv granskning via checklistan — datum sätts per rätt när Jonas går igenom dem. |
+| `RecipeTemplate` i prod-DB | 10 seedade (äldre uppsättning) | Uppdateras till repo-uppsättningen (24, rev 3-allergendata) vid nästa seed-körning mot prod. Diskrepans dokumenterad; grandfather-migrationen sätter VERIFIED på det som finns vid körning. |
+| Legacy `Recipe` (AI-genererade/sökresultat) | varierar | **Utanför kandidatpoolen.** Nås endast via legacy receptsök — ingår inte i `dinner/solve`, onboarding-snabbval eller cook-session-start (grindas av `VERIFIED_POOL_WHERE`/`isInCandidatePool`). |
+| `ScrapedRecipe`/`ScrapedIngredient`/`ScrapedSteps` | fryst pipeline | **Utanför poolen, fryst** (se §9). Betraktas som retired-innehåll; ingen väg in i poolen utan att gå genom seed-pipelinen (LLM-utkast → människa → seed, addendum §23). |
+
+**Regel framåt:** nya rätter seedas `DRAFT` och blir `VERIFIED` först efter mänsklig granskning
+enligt `docs/NISSE_DISH_VERIFICATION_CHECKLIST.md`. Poolgrinden är låst med källkodstest
+(`test/templates/verification.test.js`) — en `findMany` på recipeTemplate utan
+`VERIFIED_POOL_WHERE` fäller sviten.

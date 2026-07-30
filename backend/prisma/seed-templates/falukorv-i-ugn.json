@@ -130,7 +130,8 @@
       "unit": "st",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 10,
-      "optional": true
+      "optional": true,
+      "scaling": "stepwise"
     }
   ],
   "steps": [
@@ -187,5 +188,8 @@
         "s4"
       ]
     }
-  ]
+  ],
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

@@ -502,6 +502,15 @@ model InventoryItem {
 
 // ── Recipe templates (quality-assured structures) ──
 
+// §22/§23: only human-VERIFIED dishes may enter the candidate pool.
+// DRAFT = seeded but not yet reviewed against the verification checklist
+// (docs/NISSE_DISH_VERIFICATION_CHECKLIST.md); RETIRED = withdrawn.
+enum VerificationStatus {
+  DRAFT
+  VERIFIED
+  RETIRED
+}
+
 model RecipeTemplate {
   id                  String   @id @default(cuid())
   slug                String   @unique
@@ -526,11 +535,19 @@ model RecipeTemplate {
   // How well the dish survives uncertain pantry, missing ingredients,
   // less time than planned, child adaptation and simple substitutions (1-5)
   robustness          Int      @default(3)
+  // §28: optional override of the age-default portion factor for
+  // BABY/CHILD eaters (member-explicit factors win) — engine/portions.js
+  childPortionFactor  Float?   @map("child_portion_factor")
   ingredients         Json     // TemplateIngredient[] — Zod-validated at seed
   steps               Json     // TemplateStep[] — DAG with dependsOn + branch tags
   variants            Json?    // branch metadata { child: {...}, adult: {...} }
   version             Int      @default(1)
   isActive            Boolean  @default(true) @map("is_active")
+  // Human verification gate (§22): only VERIFIED templates reach the
+  // candidate pool (see src/services/nisse/candidatePool.js).
+  verificationStatus  VerificationStatus @default(DRAFT) @map("verification_status")
+  verifiedAt          DateTime? @map("verified_at")
+  verifiedBy          String?  @map("verified_by")
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
@@ -539,6 +556,7 @@ model RecipeTemplate {
   dishPreferences DishPreference[]
 
   @@index([isActive])
+  @@index([verificationStatus])
   @@map("recipe_templates")
 }
 

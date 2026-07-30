@@ -8,6 +8,13 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(10),
   REDIS_URL: z.string().optional().default(''),
   ANTHROPIC_API_KEY: z.string().min(10),
+  // Model id for ALL Anthropic calls. A retired model id → API 404 → 502 in
+  // every LLM flow, so the model is config, never hardcoded: the next model
+  // retirement is a one-line env change, not an outage. The default is a
+  // current, valid model so prod self-heals on redeploy even if the Vercel var
+  // is unset. Low-latency/cost alternative for the tight serverless budgets:
+  // ANTHROPIC_MODEL=claude-haiku-4-5-20251001
+  ANTHROPIC_MODEL: z.string().default('claude-sonnet-5'),
   JWT_SECRET: z.string().min(16),
   JWT_REFRESH_SECRET: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default('15m'),

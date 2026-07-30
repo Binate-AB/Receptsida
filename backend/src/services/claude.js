@@ -16,6 +16,10 @@ const client = new Anthropic({
   maxRetries: 1,
 });
 
+// Model id from config (env ANTHROPIC_MODEL) — a retired model must be a
+// one-line env change, not a redeploy. Never hardcode a model string here.
+const MODEL = config.ANTHROPIC_MODEL;
+
 // ──────────────────────────────────────────
 // Nisse System Identity
 // ──────────────────────────────────────────
@@ -134,7 +138,7 @@ async function searchWebForRecipes(query, householdSize, preferences) {
   const householdLabel = getHouseholdLabel(householdSize);
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 4000,
     system: `${NISSE_IDENTITY}
 
@@ -210,7 +214,7 @@ async function structureRecipes(searchText, sources, query, householdSize, prefe
   const sourcesStr = sources.map((s) => `- ${s.title}: ${s.url}`).join('\n');
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 12000,
     system: NISSE_IDENTITY,
     messages: [
@@ -380,7 +384,7 @@ BETEENDE:
   ];
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 400,
     messages,
   });
@@ -473,7 +477,7 @@ SÄKERHET & HÄLSA:
   ];
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 500,
     messages,
   });
@@ -516,7 +520,7 @@ export async function generateMealPlan(householdSize = 2, preferences = {}, lock
     : '';
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 12000,
     system: `${NISSE_IDENTITY}\n\nDu agerar nu som MENYPLANERAREN — du skapar varierade, realistiska veckomenyer som svenska familjer faktiskt vill laga.`,
     tools: [{ type: 'web_search_20250305', name: 'web_search' }],

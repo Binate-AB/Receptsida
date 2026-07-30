@@ -21,6 +21,7 @@ import {
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
+import { isInCandidatePool } from '../services/nisse/candidatePool.js';
 import { buildSessionData } from '../services/nisse/cookSessionService.js';
 import { resolveEaters } from '../services/nisse/recommendationService.js';
 import { hardGates } from '../services/nisse/engine/allergenGate.js';
@@ -86,7 +87,9 @@ router.post(
       eaters = resolveEaters(household.members, recommendation.request.parsed || {});
     } else {
       template = await prisma.recipeTemplate.findUnique({ where: { slug: templateSlug } });
-      if (!template || !template.isActive) {
+      // Pool gate (§22): DRAFT/RETIRED dishes must never be startable by slug.
+      // (Sessions already in flight resolve by templateId and stay unaffected.)
+      if (!isInCandidatePool(template)) {
         throw new AppError(404, 'template_not_found', 'Receptet hittades inte.');
       }
       eaters = resolveEaters(household.members, { eaterIds: eaterIds || null });
@@ -96,11 +99,13 @@ router.post(
     // may have changed since the recommendation was computed.
     const gates = hardGates(template, eaters);
     if (!gates.safe) {
-      const v = gates.allergen.violations[0] || gates.dietary.violations[0];
+      // §24: the error must not name the member or the allergen — the
+      // household sees WHO/WHAT in their own profile, not in error strings
+      // that end up in logs and monitoring.
       throw new AppError(
         409,
         'unsafe_for_household',
-        `Receptet är inte säkert för ${v.memberName} (${v.allergen || v.restriction}). Välj ett annat.`
+        'Receptet är inte säkert för alla i hushållet. Välj ett annat.'
       );
     }
 
@@ -371,7 +376,9 @@ router.post(
       userId: req.user.id,
       householdId: household.id,
       name: 'rescue_used',
-      payload: { sessionId: session.id, problem: req.validated.problem, source: result.source },
+      // §24: no free text in analytics — the problem string may contain
+      // anything the user typed (names, health details). Source suffices.
+      payload: { sessionId: session.id, source: result.source },
     });
 
     res.json(result);

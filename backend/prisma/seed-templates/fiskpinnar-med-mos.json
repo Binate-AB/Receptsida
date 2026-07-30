@@ -107,7 +107,8 @@
         "mjölkprotein"
       ],
       "estPriceSek": 30,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Citron",
@@ -173,5 +174,8 @@
         "s4"
       ]
     }
-  ]
+  ],
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

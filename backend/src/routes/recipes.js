@@ -8,14 +8,23 @@ import { requireAuth, optionalAuth } from '../middleware/auth.js';
 import { recipeSearchRateLimit } from '../middleware/rateLimit.js';
 import { validate, recipeSearchSchema, cookingAskSchema, shoppingAskSchema, shareRecipeSchema } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { searchRecipes, generateCacheKey, estimateApiCost, askCookingAssistant, askShoppingAssistant } from '../services/claude.js';
+import { generateCacheKey, estimateApiCost, askCookingAssistant, askShoppingAssistant } from '../services/claude.js';
+import { searchVerifiedPool } from '../services/nisse/poolSearch.js';
 import { parseIngredients } from '../services/lexicon.js';
 import { sendRecipeShareEmail } from '../config/email.js';
 
 const router = Router();
 
 // ──────────────────────────────────────────
-// POST /recipes/search — Universal AI recipe search
+// POST /recipes/search — search the VERIFIED candidate pool
+//
+// DEPRECATED legacy path: this used to be an AI web-search
+// (services/claude.js), which (a) bypassed the pool gate and
+// (b) 502'd whenever the model id was retired. It now runs a
+// deterministic search over the verified pool — no AI, no
+// network, no 502, and DRAFT/RETIRED dishes can never surface.
+// Nisse is not a web search engine (vision §1); the primary
+// flow is "Lös middagen" (/dinner/solve).
 // ──────────────────────────────────────────
 router.post(
   '/search',
@@ -23,7 +32,7 @@ router.post(
   recipeSearchRateLimit,
   validate(recipeSearchSchema),
   asyncHandler(async (req, res) => {
-    const { query, householdSize, preferences } = req.validated;
+    const { query, householdSize } = req.validated;
     const effectiveHouseholdSize =
       householdSize || (req.user ? await getUserHouseholdSize(req.user.id) : 2);
 
@@ -34,8 +43,11 @@ router.post(
       console.warn('Ingredient parsing failed, continuing with search:', err.message);
     }
 
-    const result = await searchRecipes(query, effectiveHouseholdSize, preferences || {});
+    const recipes = await searchVerifiedPool(prisma, query, {
+      householdSize: effectiveHouseholdSize,
+    });
 
+    const result = { recipes, shopping_list: [], sources: [], cached: false };
     const cacheKey = generateCacheKey(query, effectiveHouseholdSize);
 
     // Only save to DB and track quota if user is logged in
@@ -59,6 +71,7 @@ router.post(
         query,
         householdSize: effectiveHouseholdSize,
         recipeCount: result.recipes.length,
+        source: 'verified_pool',
       },
     });
   })

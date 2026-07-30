@@ -56,7 +56,8 @@
       "allergensVaryByProduct": [
         "selleri"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Bröd",
@@ -148,5 +149,8 @@
         "mixer"
       ]
     }
-  ]
+  ],
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

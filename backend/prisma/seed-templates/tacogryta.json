@@ -91,7 +91,8 @@
       "allergensVaryByProduct": [
         "gluten"
       ],
-      "requiresPackageVerification": true
+      "requiresPackageVerification": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Gul lök",
@@ -99,7 +100,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Gräddfil",
@@ -121,7 +123,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
-      "group": "vuxen"
+      "group": "vuxen",
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -205,5 +208,8 @@
       "branch": "adult"
     }
   ],
-  "robustness": 3
+  "robustness": 3,
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

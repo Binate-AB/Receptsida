@@ -21,6 +21,7 @@ import {
 } from '../middleware/validate.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { getOwnedHousehold } from '../services/nisse/householdAccess.js';
+import { VERIFIED_POOL_WHERE } from '../services/nisse/candidatePool.js';
 import { rankCandidates } from '../services/nisse/engine/ranker.js';
 import { deterministicParse } from '../services/nisse/engine/chipsParse.js';
 import {
@@ -33,6 +34,7 @@ import {
   applyAssumptionCorrection,
 } from '../services/nisse/assumptionService.js';
 import { parseMealSituation, writeMotivations } from '../services/nisse/ai/nisseAi.js';
+import { requestCell, countFilterKinds } from '../services/nisse/engine/coverage.js';
 import { logEvent } from '../services/nisse/analytics.js';
 
 const router = Router();
@@ -43,7 +45,7 @@ const router = Router();
 async function loadRankingContext(householdId) {
   const [inventory, templates, feedbackRows, recentAccepted, confidenceRows, preferenceRows] = await Promise.all([
     prisma.inventoryItem.findMany({ where: { householdId } }),
-    prisma.recipeTemplate.findMany({ where: { isActive: true } }),
+    prisma.recipeTemplate.findMany({ where: VERIFIED_POOL_WHERE }),
     prisma.mealFeedback.findMany({ where: { householdId } }),
     prisma.mealRecommendation.findMany({
       where: {
@@ -127,6 +129,25 @@ async function createRecommendations(requestRow, household, parsed, options = {}
       },
     });
     created.push({ rec, template: slotResult.template, computed });
+  }
+
+  // §21 gap signal: fewer than 3 qualified, meaningfully different slots.
+  // Payload is §24-safe by construction: the situation CELL and per-KIND
+  // rejection counters only — never which allergen, restriction or member.
+  if (created.length < 3) {
+    await logEvent(prisma, {
+      householdId: household.id,
+      name: 'recommendation_gap',
+      payload: {
+        requestId: requestRow.id,
+        cell: requestCell(parsed),
+        qualified: created.length,
+        hard_filter_kinds: countFilterKinds(rejected),
+        ...(options.excludeTemplateIds?.length
+          ? { excluded: options.excludeTemplateIds.length }
+          : {}),
+      },
+    });
   }
 
   return { created, rejected, eaters, ctx };

@@ -1,0 +1,153 @@
+{
+  "slug": "torskgryta-med-tomat",
+  "title": "Torskgryta med tomat och potatis",
+  "description": "Mild fiskgryta där potatisen kokar direkt i tomatsåsen och torsken sjuder klart på slutet. En kastrull, hela middagen.",
+  "tags": [
+    "vardag",
+    "fisk",
+    "husman"
+  ],
+  "difficulty": "Medel",
+  "totalTimeMin": 30,
+  "activeTimeMin": 14,
+  "passiveTimeMin": 16,
+  "servingsBase": 4,
+  "costPerPortionMin": 24,
+  "costPerPortionMax": 38,
+  "childFriendly": 2,
+  "effortScore": 3,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
+  "robustness": 3,
+  "ingredients": [
+    {
+      "name": "Torskfilé",
+      "canonical": "torsk",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Kött & Fisk",
+      "allergens": [
+        "fisk"
+      ],
+      "estPriceSek": 40,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Laxfilé",
+          "canonical": "lax",
+          "note": "tål lite längre sjudning",
+          "allergens": [
+            "fisk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Passerade tomater",
+      "canonical": "passerade tomater",
+      "qtyPerPortion": 125,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true
+    },
+    {
+      "name": "Potatis",
+      "canonical": "potatis",
+      "qtyPerPortion": 200,
+      "unit": "g",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 10,
+      "critical": true
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.25,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "pantryStaple": true,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Oliver",
+      "canonical": "oliver",
+      "qtyPerPortion": 20,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 15,
+      "optional": true
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Hacka lök och vitlök, tärna potatisen. Fräs löken mjuk i olivolja.",
+      "voiceCue": "Hacka löken och vitlöken, tärna potatisen och fräs löken mjuk i olivolja.",
+      "durationMin": 6,
+      "activeMin": 6,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Tillsätt passerade tomater, potatis och en skvätt vatten. Sjud tills potatisen är mjuk.",
+      "voiceCue": "Tillsätt tomaterna, potatisen och en skvätt vatten. Låt sjuda tills potatisen är mjuk.",
+      "durationMin": 15,
+      "activeMin": 3,
+      "timerNeeded": true,
+      "dependsOn": [
+        "s1"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": "Lägg i torsken i bitar och sjud försiktigt tills fisken är klar. Smaka av med salt och peppar.",
+      "voiceCue": "Lägg i torsken i bitar och sjud försiktigt tills fisken är klar. Smaka av med salt och peppar.",
+      "durationMin": 7,
+      "activeMin": 3,
+      "dependsOn": [
+        "s2"
+      ]
+    },
+    {
+      "id": "s4",
+      "text": "Toppa med oliver och servera direkt ur kastrullen.",
+      "voiceCue": "Toppa med oliver och servera. Klart!",
+      "durationMin": 2,
+      "activeMin": 2,
+      "dependsOn": [
+        "s3"
+      ]
+    }
+  ]
+}

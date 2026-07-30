@@ -88,7 +88,8 @@
       "qtyPerPortion": 0.25,
       "unit": "st",
       "aisle": "Frukt & Grönt",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "scaling": "stepwise"
     },
     {
       "name": "Morot",
@@ -113,7 +114,8 @@
       "unit": "msk",
       "aisle": "Oljor & Vinäger",
       "estPriceSek": 40,
-      "pantryStaple": true
+      "pantryStaple": true,
+      "scaling": "sublinear"
     },
     {
       "name": "Vitlök",
@@ -122,7 +124,8 @@
       "unit": "klyfta",
       "aisle": "Frukt & Grönt",
       "estPriceSek": 12,
-      "group": "vuxen"
+      "group": "vuxen",
+      "scaling": "stepwise"
     },
     {
       "name": "Chiliflakes",
@@ -131,7 +134,8 @@
       "unit": "tsk",
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 15,
-      "group": "vuxen"
+      "group": "vuxen",
+      "scaling": "sublinear"
     },
     {
       "name": "Parmesan",
@@ -239,5 +243,8 @@
       "branch": "adult"
     }
   ],
-  "robustness": 4
+  "robustness": 4,
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }

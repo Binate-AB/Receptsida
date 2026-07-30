@@ -1,0 +1,129 @@
+{
+  "slug": "tonfisksallad-med-bonor",
+  "title": "Tonfisksallad med vita bönor",
+  "description": "Skafferisallad helt utan spis: tonfisk, vita bönor, tomat och citron. Middag på tio minuter.",
+  "tags": [
+    "vardag",
+    "snabbt",
+    "billigt",
+    "skafferi"
+  ],
+  "difficulty": "Enkel",
+  "totalTimeMin": 10,
+  "activeTimeMin": 10,
+  "passiveTimeMin": 0,
+  "servingsBase": 4,
+  "costPerPortionMin": 14,
+  "costPerPortionMax": 22,
+  "childFriendly": 1,
+  "effortScore": 1,
+  "dishLoad": 1,
+  "spiceLevel": 0,
+  "dietaryFlags": [
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Tonfisk i vatten",
+      "canonical": "tonfisk",
+      "qtyPerPortion": 0.5,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "allergens": [
+        "fisk"
+      ],
+      "estPriceSek": 15,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kikärtor",
+          "canonical": "kikärtor",
+          "note": "vegetariskt — mosa lätt med gaffel"
+        }
+      ]
+    },
+    {
+      "name": "Vita bönor",
+      "canonical": "vita bönor",
+      "qtyPerPortion": 0.5,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Kidneybönor",
+          "canonical": "kidneybönor",
+          "note": "samma hantering"
+        }
+      ]
+    },
+    {
+      "name": "Tomat",
+      "canonical": "tomat",
+      "qtyPerPortion": 0.5,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Gurka",
+      "canonical": "gurka",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 12,
+      "optional": true
+    },
+    {
+      "name": "Rödlök",
+      "canonical": "rödlök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "optional": true,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Citron",
+      "canonical": "citron",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8
+    },
+    {
+      "name": "Olivolja",
+      "canonical": "olivolja",
+      "qtyPerPortion": 0.5,
+      "unit": "msk",
+      "aisle": "Oljor & Vinäger",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Skölj bönorna. Hacka tomat, gurka och rödlök.",
+      "voiceCue": "Skölj bönorna och hacka tomaten, gurkan och rödlöken.",
+      "durationMin": 5,
+      "activeMin": 5
+    },
+    {
+      "id": "s2",
+      "text": "Blanda bönor, grönsaker och tonfisk. Ringla över olivolja och pressa över citron. Salta och peppra.",
+      "voiceCue": "Blanda bönorna, grönsakerna och tonfisken. Ringla över olja, pressa över citron och smaka av. Klart!",
+      "durationMin": 4,
+      "activeMin": 4,
+      "dependsOn": [
+        "s1"
+      ]
+    }
+  ]
+}

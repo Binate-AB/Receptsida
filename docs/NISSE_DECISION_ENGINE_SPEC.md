@@ -137,3 +137,28 @@ Allergen-mall blockeras även med maximal mjukscore · substitution med allergen
 förstahandsvalet har högst score · tre olika slots med rätt dimensioner · hög osäkerhet lyfter
 robusta rätter · avvisningar påverkar nästa ranking · omgenerering exkluderar visade ·
 korrigerat antagande ändrar re-rank · cold start ger giltigt beslut · ärlig degradering <3 säkra.
+
+## 11. Portionsberäkning och skalning (§28) [LIVE]
+
+**Portioner** (`computePortions`, `engine/portions.js`): summan av närvarande medlemmars
+portionsfaktorer (ålderstandard: BABY 0.3, CHILD 0.6, TEEN 1.3, ADULT 1.0, SENIOR 0.9),
+avrundad UPPÅT till närmaste 0,5, aldrig under 1.
+
+**`childPortionFactor` per rätt** (valfritt fält): ersätter ÅLDERSSTANDARDEN för BABY/CHILD-ätare
+för just den rätten (t.ex. pannkakor där barn äter som vuxna). Prioritetsordning, högst först:
+
+1. Medlemmens EXPLICIT satta faktor (avviker från ålderstandarden) — vinner alltid
+2. Rättens `childPortionFactor` (om satt)
+3. Ålderstandarden
+
+**Skalningsregler per ingrediens** (`scaling`-fält, `scaleIngredients`):
+
+| Regel | Användning | Beteende |
+|---|---|---|
+| `linear` (default) | Det mesta | `qtyPerPortion × portioner`, köksavrundning |
+| `stepwise` | Hela enheter: lök, vitlök, ägg | Avrundas till heltal, aldrig < 1 — "1 lök blir inte 1,5" |
+| `sublinear` | Kryddor, fett, oljor | `basmängd × (portioner/servingsBase)^0,6` — dubbla portioner ≠ dubbelt fett; förankrad i författarens `servingsBase` så 4-portionersreceptet är oförändrat |
+
+Alla seeds är annoterade (lök/vitlök/ägg → stepwise; kryddhyllan + oljor/smör → sublinear).
+Mängder formateras alltid med svenskt decimalkomma (`formatAmount`, §27).
+Tester: `test/engine/scaling.test.js`.

@@ -35,8 +35,13 @@ export function buildComputedPayload(slotResult, ctx) {
   const { eaters, inventory } = ctx;
 
   // A corrected portions assumption overrides the member-derived count
-  const portions = ctx.portionsOverride ?? computePortions(eaters, eaters.map((m) => m.id));
-  const scaled = scaleIngredients(template.ingredients, portions);
+  const portions = ctx.portionsOverride
+    ?? computePortions(eaters, eaters.map((m) => m.id), {
+      childPortionFactor: template.childPortionFactor ?? null,
+    });
+  const scaled = scaleIngredients(template.ingredients, portions, {
+    servingsBase: template.servingsBase,
+  });
   const match = matchInventory(scaled, inventory);
   const cost = estimateCost(template, portions, [...match.toBuy, ...match.uncertain]);
   const shoppingItems = aggregateShoppingList(match);

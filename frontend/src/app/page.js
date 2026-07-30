@@ -15,6 +15,7 @@ import { HeroSearch } from '../components/HeroSearch';
 import { AppHome } from '../components/app/AppHome';
 import { IngredientSearch } from '../components/app/IngredientSearch';
 import { RecipeCard } from '../components/RecipeCard';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { RecipeDetail } from '../components/RecipeDetail';
 import { ShoppingList } from '../components/ShoppingList';
 import { LoadingState } from '../components/LoadingState';
@@ -88,23 +89,25 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className={isApp ? 'space-y-4' : 'space-y-6'}>
-            {results.recipes.map((recipe, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-              >
-                <RecipeCard
-                  recipe={recipe}
-                  rank={idx + 1}
-                  onToggleFavorite={user ? toggleFavorite : null}
-                  onSelect={setSelectedRecipe}
-                />
-              </motion.div>
-            ))}
-          </div>
+          <ErrorBoundary>
+            <div className={isApp ? 'space-y-4' : 'space-y-6'}>
+              {(results.recipes || []).map((recipe, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                >
+                  <RecipeCard
+                    recipe={recipe}
+                    rank={idx + 1}
+                    onToggleFavorite={user ? toggleFavorite : null}
+                    onSelect={setSelectedRecipe}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </ErrorBoundary>
 
           {results.shopping_list?.length > 0 && (
             <div className="mt-8">

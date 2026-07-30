@@ -55,6 +55,9 @@ export const templateIngredientSchema = z.object({
   // Avgörande ingrediens — dish cannot reasonably be cooked without it.
   // Unset → derived: required and not a pantry staple (see engine/uncertainty.js).
   critical: z.boolean().optional(),
+  // §28: how the quantity scales with portions (engine/portions.js) —
+  // stepwise = whole units (lök/ägg), sublinear = kryddor/fett (^0.6).
+  scaling: z.enum(['linear', 'stepwise', 'sublinear']).optional().default('linear'),
   ...allergenStatusFields,
   aisle: z.enum(AISLES).optional().default('Övrigt'),
   // Approximate SEK cost of buying this item once (smallest sensible pack)
@@ -104,6 +107,10 @@ export const templateSchema = z
     // How well the dish survives uncertain pantry, a missing ingredient,
     // less time than planned, child adaptation and simple substitutions (1-5)
     robustness: z.number().int().min(1).max(5).default(3),
+    // §28: optional per-dish override of the AGE-DEFAULT portion factor
+    // for BABY/CHILD eaters (member-explicit factors always win) —
+    // see computePortions in engine/portions.js.
+    childPortionFactor: z.number().min(0.25).max(1.5).optional(),
     ingredients: z.array(templateIngredientSchema).min(2),
     steps: z.array(templateStepSchema).min(2),
     variants: z
@@ -114,8 +121,25 @@ export const templateSchema = z
       .nullable()
       .optional(),
     version: z.number().int().min(1).default(1),
+    // §21 coverage matrix: extra cells this dish honestly claims beyond the
+    // one derived from totalTimeMin + effortScore ("räkna generöst,
+    // verifiera ärligt" — engine/coverage.js unions these in).
+    coverageCells: z.array(z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])).default([]),
+    // §22 verification gate: only VERIFIED dishes enter the candidate pool.
+    // New templates are seeded DRAFT until a human has reviewed them against
+    // docs/NISSE_DISH_VERIFICATION_CHECKLIST.md. Verification is a HUMAN
+    // decision — never set VERIFIED without a named reviewer + date.
+    verificationStatus: z.enum(['DRAFT', 'VERIFIED', 'RETIRED']).default('DRAFT'),
+    verifiedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'verifiedAt ska vara YYYY-MM-DD').optional(),
+    verifiedBy: z.string().min(2).optional(),
   })
   .superRefine((tpl, ctx) => {
+    if (tpl.verificationStatus === 'VERIFIED' && (!tpl.verifiedAt || !tpl.verifiedBy)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'verificationStatus VERIFIED kräver verifiedAt + verifiedBy (mänsklig granskare)',
+      });
+    }
     if (tpl.costPerPortionMax < tpl.costPerPortionMin) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'costPerPortionMax < costPerPortionMin' });
     }

@@ -1,0 +1,169 @@
+{
+  "slug": "dahl-med-ris",
+  "title": "Dahl med ris",
+  "description": "Krämig linsgryta med kokosmjölk, gurkmeja och spiskummin som sjuder ihop medan riset kokar. Mustig, mild och billig.",
+  "tags": [
+    "vardag",
+    "vegetariskt",
+    "billigt",
+    "gryta"
+  ],
+  "difficulty": "Medel",
+  "totalTimeMin": 35,
+  "activeTimeMin": 14,
+  "passiveTimeMin": 21,
+  "servingsBase": 4,
+  "costPerPortionMin": 11,
+  "costPerPortionMax": 19,
+  "childFriendly": 2,
+  "effortScore": 2,
+  "dishLoad": 2,
+  "spiceLevel": 1,
+  "dietaryFlags": [
+    "vegan",
+    "vegetarisk",
+    "glutenfri",
+    "laktosfri"
+  ],
+  "equipmentRequired": [
+    "spis",
+    "kastrull"
+  ],
+  "robustness": 4,
+  "ingredients": [
+    {
+      "name": "Röda linser",
+      "canonical": "röda linser",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 12,
+      "critical": true,
+      "substitutions": [
+        {
+          "name": "Gula ärtor (kokta)",
+          "canonical": "gula ärtor",
+          "note": "kokta — kortare sjudtid"
+        }
+      ]
+    },
+    {
+      "name": "Kokosmjölk",
+      "canonical": "kokosmjölk",
+      "qtyPerPortion": 0.25,
+      "unit": "burk",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 15,
+      "critical": true
+    },
+    {
+      "name": "Passerade tomater",
+      "canonical": "passerade tomater",
+      "qtyPerPortion": 100,
+      "unit": "g",
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 12
+    },
+    {
+      "name": "Ris",
+      "canonical": "ris",
+      "qtyPerPortion": 0.75,
+      "unit": "dl",
+      "aisle": "Torrvaror & Pasta",
+      "estPriceSek": 10,
+      "pantryStaple": true
+    },
+    {
+      "name": "Gul lök",
+      "canonical": "lök",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Vitlök",
+      "canonical": "vitlök",
+      "qtyPerPortion": 0.5,
+      "unit": "klyfta",
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 8,
+      "pantryStaple": true,
+      "scaling": "stepwise"
+    },
+    {
+      "name": "Ingefära",
+      "canonical": "ingefära",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 10,
+      "optional": true,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    },
+    {
+      "name": "Gurkmeja",
+      "canonical": "gurkmeja",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    },
+    {
+      "name": "Spiskummin",
+      "canonical": "spiskummin",
+      "qtyPerPortion": 0.25,
+      "unit": "tsk",
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 10,
+      "pantryStaple": true,
+      "scaling": "sublinear"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "text": "Hacka lök och vitlök. Fräs dem mjuka med gurkmeja, spiskummin och ingefära.",
+      "voiceCue": "Hacka löken och vitlöken, och fräs dem mjuka med kryddorna.",
+      "durationMin": 5,
+      "activeMin": 5,
+      "equipment": [
+        "kastrull"
+      ]
+    },
+    {
+      "id": "s2",
+      "text": "Tillsätt sköljda linser, passerade tomater, kokosmjölk och vatten. Sjud under omrörning då och då tills linserna är mjuka.",
+      "voiceCue": "Tillsätt linserna, tomaterna, kokosmjölken och lite vatten. Låt sjuda tills linserna är mjuka, och rör om då och då.",
+      "durationMin": 25,
+      "activeMin": 5,
+      "timerNeeded": true,
+      "dependsOn": [
+        "s1"
+      ]
+    },
+    {
+      "id": "s3",
+      "text": "Koka riset enligt paketet.",
+      "voiceCue": "Koka riset enligt paketet medan dahlen sjuder.",
+      "durationMin": 15,
+      "activeMin": 2,
+      "timerNeeded": true
+    },
+    {
+      "id": "s4",
+      "text": "Smaka av dahlen med salt och servera med riset.",
+      "voiceCue": "Smaka av dahlen med salt och servera med riset. Klart!",
+      "durationMin": 3,
+      "activeMin": 2,
+      "dependsOn": [
+        "s2",
+        "s3"
+      ]
+    }
+  ]
+}

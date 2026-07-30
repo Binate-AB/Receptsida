@@ -13,6 +13,7 @@ import { cacheGet, cacheSet } from '../config/redis.js';
 import crypto from 'crypto';
 
 const client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
+const MODEL = config.ANTHROPIC_MODEL;
 
 /**
  * Generate an original recipe using AI + our lexicon
@@ -61,7 +62,7 @@ export async function generateRecipe(params) {
 
   // Generate with Claude
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 3000,
     messages: [{ role: 'user', content: prompt }],
   });
@@ -131,7 +132,7 @@ Svara ENBART med giltig JSON:
 }`;
 
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: MODEL,
     max_tokens: 1500,
     messages: [{ role: 'user', content: prompt }],
   });

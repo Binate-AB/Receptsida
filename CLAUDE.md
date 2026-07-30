@@ -92,6 +92,10 @@ npm run ios           # Capacitor: build:ios → cap sync ios → cap open ios (
 - Obligatoriska env-vars (backend kraschar annars vid boot — se `src/config/env.js`):
   `DATABASE_URL`, `JWT_SECRET`/`JWT_REFRESH_SECRET` (≥16), `ANTHROPIC_API_KEY` (≥10, placeholder ok),
   `RESEND_API_KEY` (≥5), `CORS_ORIGIN`, `NODE_ENV`. `REDIS_URL` tom = fail-open utan cache.
+- **Modellval:** `ANTHROPIC_MODEL` (default `claude-sonnet-5`) styr ALLA Anthropic-anrop. Hårdkoda
+  aldrig en modellsträng — en pensionerad modell → API 404 → 502 i alla LLM-flöden; det ska vara ett
+  env-byte, inte en deploy. Default är en giltig aktuell modell så prod självläker vid redeploy.
+  Lågbudget-/låglatens-alternativ: `claude-haiku-4-5-20251001`.
 
 ## Kända fallgropar (lärdomar)
 

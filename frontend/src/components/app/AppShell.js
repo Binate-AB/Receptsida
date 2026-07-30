@@ -13,6 +13,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BottomTabBar } from './BottomTabBar';
 import { OnboardingGate } from './OnboardingGate';
 import { NisseLogo } from '../NisseLogo';
+import { initOfflineQueue } from '../../lib/offlineQueue';
+import { cookSessions, events } from '../../lib/api';
 
 // Routes where tab bar is hidden (auth flows, onboarding)
 const HIDE_TABS = ['/login', '/register', '/tutorial', '/verify', '/forgot-password', '/reset-password'];
@@ -29,6 +31,19 @@ export function AppShell({ children }) {
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1800);
     return () => clearTimeout(timer);
+  }, []);
+
+  // §26: flush the offline queue on app start and whenever the network
+  // returns. The server dedupes (clientEventId / unique sessionId), so a
+  // retried flush can never double-count.
+  useEffect(() => {
+    initOfflineQueue(async (entry) => {
+      if (entry.kind === 'feedback') {
+        await cookSessions.feedback(entry.body.sessionId, entry.body.data);
+      } else if (entry.kind === 'event') {
+        await events.log({ ...entry.body, clientEventId: entry.clientEventId });
+      }
+    });
   }, []);
 
   return (

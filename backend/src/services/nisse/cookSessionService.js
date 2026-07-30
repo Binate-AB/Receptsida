@@ -28,8 +28,12 @@ const LANE_LABELS = { base: 'Gemensamt', child: 'Barnens', adult: 'Vuxnas' };
  */
 export function buildSessionData(template, { eaters, inventory, branch }) {
   const mode = branch === 'split' && template.hasChildAdultBranch ? 'split' : 'base';
-  const portions = computePortions(eaters, eaters.map((m) => m.id));
-  const scaled = scaleIngredients(template.ingredients, portions);
+  const portions = computePortions(eaters, eaters.map((m) => m.id), {
+    childPortionFactor: template.childPortionFactor ?? null,
+  });
+  const scaled = scaleIngredients(template.ingredients, portions, {
+    servingsBase: template.servingsBase,
+  });
   const match = matchInventory(scaled, inventory || []);
   const atHome = new Set(match.atHome.map((e) => e.ingredient.canonical));
 

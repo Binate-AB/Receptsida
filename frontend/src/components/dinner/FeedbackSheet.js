@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Check, ThumbsDown, RotateCcw } from 'lucide-react';
 import { cookSessions } from '../../lib/api';
+import { enqueue } from '../../lib/offlineQueue';
 import { Spinner } from '../Spinner';
 
 const TIME_OPTIONS = [15, 20, 30, 45, 60];
@@ -22,16 +23,22 @@ export function FeedbackSheet({ sessionId, members, onDone, onSkip }) {
 
   const submit = async () => {
     setSaving(true);
+    const body = {
+      cooked: true,
+      actualTimeMin: actualTime || undefined,
+      cookAgain: verdict === 'again' ? true : verdict === 'avoid' ? false : undefined,
+      avoid: verdict === 'avoid',
+      memberRatings: Object.entries(ratings).map(([memberId, rating]) => ({ memberId, rating })),
+    };
     try {
-      await cookSessions.feedback(sessionId, {
-        cooked: true,
-        actualTimeMin: actualTime || undefined,
-        cookAgain: verdict === 'again' ? true : verdict === 'avoid' ? false : undefined,
-        avoid: verdict === 'avoid',
-        memberRatings: Object.entries(ratings).map(([memberId, rating]) => ({ memberId, rating })),
-      });
+      await cookSessions.feedback(sessionId, body);
       onDone?.();
-    } catch {
+    } catch (err) {
+      // §26: offline/network → queue for exactly-once flush when the
+      // network returns (server dedupes on sessionId, 409 = already there).
+      if (err?.status === 0 && typeof window !== 'undefined') {
+        enqueue(window.localStorage, { kind: 'feedback', body: { sessionId, data: body } });
+      }
       onDone?.(); // never trap the user in the sheet
     } finally {
       setSaving(false);

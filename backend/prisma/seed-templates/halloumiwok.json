@@ -112,7 +112,8 @@
       "allergens": [
         "sesam"
       ],
-      "optional": true
+      "optional": true,
+      "scaling": "sublinear"
     }
   ],
   "steps": [
@@ -170,5 +171,8 @@
       ]
     }
   ],
-  "robustness": 2
+  "robustness": 2,
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-07-29",
+  "verifiedBy": "Jonas"
 }
