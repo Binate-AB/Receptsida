@@ -130,7 +130,7 @@ app.get('/api/health', async (req, res) => {
       const Anthropic = (await import('@anthropic-ai/sdk')).default;
       const client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY, timeout: 10_000 });
       const response = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: config.ANTHROPIC_MODEL,
         max_tokens: 10,
         messages: [{ role: 'user', content: 'Svara med OK' }],
       });
