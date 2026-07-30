@@ -28,3 +28,24 @@ export function poolerSafeUrl(raw) {
     return raw + (raw.includes('?') ? '&' : '?') + 'pgbouncer=true&connection_limit=1';
   }
 }
+
+// Supabase's DIRECT connection host (db.<ref>.supabase.co) is IPv6-only and
+// therefore unreachable from Vercel — using it as the runtime DATABASE_URL
+// yields "Can't reach database server" on every request (this was the second
+// wave of the 2026-07-30 outage: the env var was edited to the direct host by
+// mistake). This guard turns that silent 503 loop into a self-explaining boot
+// error that names the exact fix. It only THROWS on Vercel (process.env.VERCEL),
+// so a developer pointing at the direct host locally — where IPv6 works — is
+// merely warned, not blocked.
+const DIRECT_HOST_RE = /@db\.[a-z0-9-]+\.supabase\.co[:/]/i;
+
+export function assertRuntimeHostReachable(raw, { onVercel = !!process.env.VERCEL } = {}) {
+  if (!raw || !DIRECT_HOST_RE.test(raw)) return;
+  const fix =
+    'DATABASE_URL points at the Supabase DIRECT host (db.<ref>.supabase.co), which is IPv6-only ' +
+    'and unreachable from Vercel. Use the transaction pooler instead: ' +
+    'postgresql://postgres.<ref>:<pwd>@aws-0-<region>.pooler.supabase.com:6543/postgres' +
+    '?pgbouncer=true&connection_limit=1 (copy it from Supabase → Connect → Transaction pooler).';
+  console.error(`[db] FATAL CONFIG: ${fix}`);
+  if (onVercel) throw new Error(`Invalid DATABASE_URL host — ${fix}`);
+}
