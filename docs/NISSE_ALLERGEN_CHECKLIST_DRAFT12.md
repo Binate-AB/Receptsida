@@ -682,4 +682,4 @@ Kommentar: ____________________________________________________________________
 
 **Sammanfattande beslut:** ☐ Alla 12 godkända ☐ Godkända med rättelser (se per rätt) ☐ Vissa underkända
 
-Granskad mot commit: `f638a10`
+Granskad mot commit: `1548794`
