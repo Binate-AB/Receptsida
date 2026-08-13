@@ -4,7 +4,11 @@
 
 import { PrismaClient } from '@prisma/client';
 import { isDev } from './env.js';
-import { poolerSafeUrl } from './poolerUrl.js';
+import { poolerSafeUrl, assertRuntimeHostReachable } from './poolerUrl.js';
+
+// Fail fast (on Vercel) with a self-explaining message if DATABASE_URL points
+// at the IPv6-only direct host instead of the pooler — see poolerUrl.js.
+assertRuntimeHostReachable(process.env.DATABASE_URL);
 
 const globalForPrisma = globalThis;
 
