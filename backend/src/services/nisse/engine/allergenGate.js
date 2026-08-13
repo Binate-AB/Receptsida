@@ -30,7 +30,7 @@ import { ingredientAllergens, expandAllergyCodes } from './allergens.js';
  * overrides an explicit four-state declaration (e.g. hard cheese
  * declared mjölkprotein-only must not get laktos re-added).
  */
-function ingredientStatuses(ing) {
+export function ingredientStatuses(ing) {
   const declaredContains = ing.allergens || [];
   const declaredVaries = ing.allergensVaryByProduct || [];
   const declaredTraces = ing.mayContainTraces || [];
