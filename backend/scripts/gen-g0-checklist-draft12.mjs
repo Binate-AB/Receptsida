@@ -219,6 +219,27 @@ const md = MD_HEADER + models.map(dishMd).join('\n---\n\n') + '\n' + MD_FOOTER(m
 writeFileSync(MD_OUT, md);
 console.log(`✓ Skrev ${MD_OUT} (${models.length} rätter, commit ${COMMIT})`);
 
+// ── Machine-readable model (single source of truth for the fillable-PDF
+// builder, so the PDF never re-derives allergen data — same engine truth). ──
+const MODEL_OUT = process.argv[3];
+if (MODEL_OUT) {
+  const s = (m) => m.tpl.servingsBase;
+  const dump = {
+    commit: COMMIT,
+    dishes: models.map((m) => ({
+      title: m.tpl.title,
+      servings: m.tpl.servingsBase,
+      required: m.req.map((i) => ({ name: i.name, amount: amount(i, s(m)) })),
+      optional: m.opt.map((i) => ({ name: i.name, amount: amount(i, s(m)) })),
+      subs: m.subs.map(({ from, s: sub }) => ({ from, name: sub.name })),
+      bRows: m.bRows.map((r) => ({ name: r.name, optional: r.optional, free: r.free, text: r.text, groups: r.groups })),
+      cRows: m.cRows.map((r) => ({ name: r.name, cat: r.cat })),
+    })),
+  };
+  writeFileSync(MODEL_OUT, JSON.stringify(dump, null, 2));
+  console.log(`✓ Skrev ${MODEL_OUT} (modell för ifyllbar PDF)`);
+}
+
 // ── HTML print view (same model) for PDF export ──
 const esc = (x) => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 function dishHtml(m) {
