@@ -50,7 +50,8 @@
       ],
       "estPriceSek": 15,
       "critical": true,
-      "scaling": "stepwise"
+      "scaling": "stepwise",
+      "requiresPackageVerification": true
     },
     {
       "name": "Gul lök",
@@ -67,7 +68,8 @@
       "qtyPerPortion": 40,
       "unit": "g",
       "aisle": "Frys",
-      "estPriceSek": 10
+      "estPriceSek": 10,
+      "requiresPackageVerification": true
     },
     {
       "name": "Rapsolja",

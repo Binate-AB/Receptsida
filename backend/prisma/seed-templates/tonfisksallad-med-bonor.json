@@ -43,7 +43,8 @@
           "canonical": "kikärtor",
           "note": "vegetariskt — mosa lätt med gaffel"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Vita bönor",
@@ -59,7 +60,8 @@
           "canonical": "kidneybönor",
           "note": "samma hantering"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Tomat",
@@ -105,6 +107,47 @@
       "estPriceSek": 10,
       "pantryStaple": true,
       "scaling": "sublinear"
+    },
+    {
+      "name": "Selleri (stjälk)",
+      "canonical": "selleri",
+      "qtyPerPortion": 25,
+      "unit": "g",
+      "optional": true,
+      "scaling": "linear",
+      "allergens": [
+        "selleri"
+      ],
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 15
+    },
+    {
+      "name": "Oliver",
+      "canonical": "oliver",
+      "qtyPerPortion": 15,
+      "unit": "g",
+      "optional": true,
+      "scaling": "linear",
+      "allergensVaryByProduct": [
+        "sulfit"
+      ],
+      "requiresPackageVerification": true,
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 20
+    },
+    {
+      "name": "Kapris",
+      "canonical": "kapris",
+      "qtyPerPortion": 5,
+      "unit": "g",
+      "optional": true,
+      "scaling": "sublinear",
+      "allergensVaryByProduct": [
+        "sulfit"
+      ],
+      "requiresPackageVerification": true,
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 20
     }
   ],
   "steps": [

@@ -45,7 +45,8 @@
           "canonical": "vita bönor",
           "note": "samma tillagning"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Kokosmjölk",
@@ -54,7 +55,8 @@
       "unit": "burk",
       "aisle": "Konserver & Såser",
       "estPriceSek": 15,
-      "critical": true
+      "critical": true,
+      "requiresPackageVerification": true
     },
     {
       "name": "Ris",
@@ -103,6 +105,37 @@
       "estPriceSek": 10,
       "pantryStaple": true,
       "scaling": "sublinear"
+    },
+    {
+      "name": "Grön currypasta",
+      "canonical": "grön currypasta",
+      "qtyPerPortion": 1,
+      "unit": "msk",
+      "optional": true,
+      "scaling": "sublinear",
+      "allergensVaryByProduct": [
+        "fisk",
+        "kräftdjur",
+        "soja",
+        "gluten"
+      ],
+      "requiresPackageVerification": true,
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 30
+    },
+    {
+      "name": "Grönsaksbuljong",
+      "canonical": "grönsaksbuljong",
+      "qtyPerPortion": 0.25,
+      "unit": "st",
+      "optional": true,
+      "scaling": "stepwise",
+      "allergensVaryByProduct": [
+        "selleri"
+      ],
+      "requiresPackageVerification": true,
+      "aisle": "Kryddor & Smaksättare",
+      "estPriceSek": 20
     }
   ],
   "steps": [

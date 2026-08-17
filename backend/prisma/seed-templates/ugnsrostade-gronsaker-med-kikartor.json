@@ -78,7 +78,8 @@
           "canonical": "vita bönor",
           "note": "rostas på samma sätt"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Rödlök",
@@ -107,6 +108,19 @@
       "estPriceSek": 10,
       "pantryStaple": true,
       "scaling": "sublinear"
+    },
+    {
+      "name": "Rotselleri",
+      "canonical": "rotselleri",
+      "qtyPerPortion": 50,
+      "unit": "g",
+      "optional": true,
+      "scaling": "linear",
+      "allergens": [
+        "selleri"
+      ],
+      "aisle": "Frukt & Grönt",
+      "estPriceSek": 15
     }
   ],
   "steps": [

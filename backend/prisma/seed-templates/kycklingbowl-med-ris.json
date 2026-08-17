@@ -60,7 +60,8 @@
       "qtyPerPortion": 40,
       "unit": "g",
       "aisle": "Konserver & Såser",
-      "estPriceSek": 12
+      "estPriceSek": 12,
+      "requiresPackageVerification": true
     },
     {
       "name": "Gurka",
@@ -99,7 +100,8 @@
             "mjölkprotein"
           ]
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Rapsolja",

@@ -57,7 +57,8 @@
       "unit": "g",
       "aisle": "Frys",
       "estPriceSek": 15,
-      "critical": true
+      "critical": true,
+      "requiresPackageVerification": true
     },
     {
       "name": "Färdigkokt ris",
@@ -96,6 +97,32 @@
       "estPriceSek": 10,
       "pantryStaple": true,
       "scaling": "sublinear"
+    },
+    {
+      "name": "Sojasås",
+      "canonical": "sojasås",
+      "qtyPerPortion": 1,
+      "unit": "msk",
+      "optional": true,
+      "scaling": "sublinear",
+      "allergens": [
+        "soja",
+        "gluten"
+      ],
+      "requiresPackageVerification": true,
+      "aisle": "Konserver & Såser",
+      "estPriceSek": 25,
+      "substitutions": [
+        {
+          "name": "Tamari (glutenfri sojasås)",
+          "canonical": "tamari",
+          "allergens": [
+            "soja"
+          ],
+          "requiresPackageVerification": true,
+          "note": "glutenfri men innehåller fortfarande soja"
+        }
+      ]
     }
   ],
   "steps": [
