@@ -57,7 +57,8 @@
       "unit": "g",
       "aisle": "Konserver & Såser",
       "estPriceSek": 12,
-      "critical": true
+      "critical": true,
+      "requiresPackageVerification": true
     },
     {
       "name": "Potatis",
@@ -94,7 +95,8 @@
       "unit": "g",
       "aisle": "Konserver & Såser",
       "estPriceSek": 15,
-      "optional": true
+      "optional": true,
+      "requiresPackageVerification": true
     },
     {
       "name": "Olivolja",
@@ -105,6 +107,36 @@
       "estPriceSek": 10,
       "pantryStaple": true,
       "scaling": "sublinear"
+    },
+    {
+      "name": "Grädde",
+      "canonical": "grädde",
+      "qtyPerPortion": 0.5,
+      "unit": "dl",
+      "optional": true,
+      "scaling": "linear",
+      "allergens": [
+        "laktos",
+        "mjölkprotein"
+      ],
+      "aisle": "Mejeri",
+      "estPriceSek": 22,
+      "substitutions": [
+        {
+          "name": "Havregrädde",
+          "canonical": "havregrädde",
+          "allergensVaryByProduct": [
+            "gluten"
+          ],
+          "requiresPackageVerification": true,
+          "note": "välj glutenmärkt vid glutenallergi"
+        },
+        {
+          "name": "Kokosgrädde",
+          "canonical": "kokosgrädde",
+          "note": "mjölkfri"
+        }
+      ]
     }
   ],
   "steps": [

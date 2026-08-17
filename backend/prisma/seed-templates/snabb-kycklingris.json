@@ -65,7 +65,8 @@
       "qtyPerPortion": 40,
       "unit": "g",
       "aisle": "Konserver & Såser",
-      "estPriceSek": 12
+      "estPriceSek": 12,
+      "requiresPackageVerification": true
     },
     {
       "name": "Paprika",
@@ -83,7 +84,8 @@
       "aisle": "Kryddor & Smaksättare",
       "estPriceSek": 10,
       "pantryStaple": true,
-      "scaling": "sublinear"
+      "scaling": "sublinear",
+      "requiresPackageVerification": true
     },
     {
       "name": "Rapsolja",

@@ -39,7 +39,8 @@
       "unit": "g",
       "aisle": "Konserver & Såser",
       "estPriceSek": 12,
-      "critical": true
+      "critical": true,
+      "requiresPackageVerification": true
     },
     {
       "name": "Vita bönor",
@@ -55,7 +56,8 @@
           "canonical": "kikärtor",
           "note": "samma tillagning"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Kokosgrädde",
@@ -63,7 +65,8 @@
       "qtyPerPortion": 0.5,
       "unit": "dl",
       "aisle": "Konserver & Såser",
-      "estPriceSek": 15
+      "estPriceSek": 15,
+      "requiresPackageVerification": true
     },
     {
       "name": "Gul lök",

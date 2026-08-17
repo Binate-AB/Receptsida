@@ -43,7 +43,8 @@
           "canonical": "kikärtor",
           "note": "vegetariskt — mosa lätt med gaffel"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Vita bönor",
@@ -59,7 +60,8 @@
           "canonical": "kidneybönor",
           "note": "samma hantering"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Tomat",

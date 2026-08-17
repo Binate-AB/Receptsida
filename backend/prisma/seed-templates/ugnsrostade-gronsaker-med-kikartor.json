@@ -78,7 +78,8 @@
           "canonical": "vita bönor",
           "note": "rostas på samma sätt"
         }
-      ]
+      ],
+      "requiresPackageVerification": true
     },
     {
       "name": "Rödlök",
