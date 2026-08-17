@@ -141,5 +141,8 @@
         "s2"
       ]
     }
-  ]
+  ],
+  "verificationStatus": "VERIFIED",
+  "verifiedAt": "2026-08-17",
+  "verifiedBy": "Erik Gustafsson"
 }
