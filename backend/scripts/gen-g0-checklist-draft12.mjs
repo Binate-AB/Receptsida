@@ -23,15 +23,25 @@ import { formatAmount } from '../src/services/nisse/engine/units.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SEED_DIR = path.join(__dirname, '..', 'prisma', 'seed-templates');
-const MD_OUT = path.join(__dirname, '..', '..', 'docs', 'NISSE_ALLERGEN_CHECKLIST_DRAFT12.md');
+// Which dish set + framing. Defaults reproduce the original 12-DRAFT checklist
+// unchanged; env vars let the same generator produce the 24-grandfathered
+// re-review (CHECKLIST_SLUGS, CHECKLIST_TITLE, CHECKLIST_MODE, CHECKLIST_MD_OUT).
+const SET_TITLE = process.env.CHECKLIST_TITLE || '12 nya rätter';
+const SET_MODE = process.env.CHECKLIST_MODE || 'new'; // 'new' | 'review'
+const MD_OUT = process.env.CHECKLIST_MD_OUT
+  ? path.resolve(process.env.CHECKLIST_MD_OUT)
+  : path.join(__dirname, '..', '..', 'docs', 'NISSE_ALLERGEN_CHECKLIST_DRAFT12.md');
 const HTML_OUT = process.argv[2] || path.join(__dirname, 'checklist-draft12.html');
 
-const DRAFT_SLUGS = [
+const DEFAULT_SLUGS = [
   'dahl-med-ris', 'kikartscurry', 'kycklingbowl-med-ris', 'laxwok-med-ris',
   'snabb-aggpytt', 'snabb-kycklingris', 'stekt-lax-med-potatis',
   'tomatsoppa-med-vita-bonor', 'tonfisksallad-med-bonor', 'torskgryta-med-tomat',
   'ugnsbakad-sotpotatis-med-bonrora', 'ugnsrostade-gronsaker-med-kikartor',
 ];
+const DRAFT_SLUGS = process.env.CHECKLIST_SLUGS
+  ? process.env.CHECKLIST_SLUGS.split(',').map((s) => s.trim()).filter(Boolean)
+  : DEFAULT_SLUGS;
 
 let COMMIT = 'okänd';
 try { COMMIT = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim(); } catch { /* not a repo */ }
@@ -180,8 +190,10 @@ function dishMd(m) {
   return L.join('\n');
 }
 
-const MD_HEADER = `# Nisse — Allergengranskning (checklista) · 12 nya rätter
-
+const MD_HEADER = `# Nisse — Allergengranskning (checklista) · ${SET_TITLE}
+${SET_MODE === 'review'
+  ? '\n> **Re-granskning:** dessa rätter är redan aktiva i appen (tidigare grandfathrade). Syftet är att\n> ersätta den retroaktiva stämpeln med ett riktigt granskningsspår — bekräfta att allergendatan\n> stämmer, eller flagga rättelser.\n'
+  : ''}
 > **Till dig som granskar:** Du behöver bara din livsmedelskunskap — ingen datorvana. För varje rätt:
 > läs ingredienslistan, svara på Fråga A (saknas något?), gå igenom Fråga B rad för rad (stämmer vår
 > bedömning?), och Fråga C (bör en beredd produkt kräva förpackningskoll?). Sätt till sist ett beslut.
@@ -226,6 +238,8 @@ if (MODEL_OUT) {
   const s = (m) => m.tpl.servingsBase;
   const dump = {
     commit: COMMIT,
+    title: SET_TITLE,
+    mode: SET_MODE,
     dishes: models.map((m) => ({
       title: m.tpl.title,
       servings: m.tpl.servingsBase,
@@ -272,7 +286,7 @@ function dishHtml(m) {
     <p>Kommentar:</p><div class="write"></div>
   </section>`;
 }
-const HTML = `<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>Nisse — Allergenchecklista (12 nya rätter)</title>
+const HTML = `<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>Nisse — Allergenchecklista (${SET_TITLE})</title>
 <style>
   body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;font-size:11pt;line-height:1.4;margin:24px;}
   h1{font-size:19pt;margin:0 0 6px;} h2{font-size:15pt;margin:0 0 4px;color:#0b5;} h3{font-size:12pt;margin:14px 0 4px;}
@@ -288,7 +302,7 @@ const HTML = `<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>
   .foot{margin-top:18px;border-top:2px solid #0b5;padding-top:10px;}
   @page{margin:16mm;}
 </style></head><body>
-<h1>Nisse — Allergengranskning (checklista) · 12 nya rätter</h1>
+<h1>Nisse — Allergengranskning (checklista) · ${SET_TITLE}</h1>
 <div class="intro">
 <b>Till dig som granskar:</b> Du behöver bara din livsmedelskunskap. Per rätt: läs ingredienslistan, svara på
 Fråga A (saknas något?), gå igenom Fråga B rad för rad, och Fråga C (bör en beredd produkt kräva förpackningskoll?).

@@ -22,6 +22,8 @@ from reportlab.platypus import (
 MODEL, OUT = sys.argv[1], sys.argv[2]
 data = json.load(open(MODEL))
 COMMIT = data.get("commit", "okänd")
+TITLE = data.get("title", "12 nya rätter")
+MODE = data.get("mode", "new")
 DISHES = data["dishes"]
 
 styles = getSampleStyleSheet()
@@ -171,6 +173,9 @@ def dish_flow(idx, d):
 story = []
 # Intro box + EU-14
 intro_txt = (
+    ("<b>Re-granskning:</b> dessa rätter är redan aktiva i appen (tidigare grandfathrade). Syftet är att "
+     "ersätta den retroaktiva stämpeln med ett riktigt granskningsspår — bekräfta att allergendatan stämmer, "
+     "eller flagga rättelser.<br/>" if MODE == "review" else "") +
     "<b>Till dig som granskar:</b> Du behöver bara din livsmedelskunskap. Per rätt: läs ingredienslistan, "
     "svara på Fråga A (saknas något?), gå igenom Fråga B rad för rad, och Fråga C (bör en beredd produkt kräva "
     "förpackningskoll?). Sätt sist ett beslut.<br/>"
@@ -179,7 +184,7 @@ intro_txt = (
     "<b>EU:s 14 allergengrupper:</b> Gluten · Kräftdjur · Ägg · Fisk · Jordnötter · Soja · Mjölk · Nötter · Selleri · "
     "Senap · Sesam · Svaveldioxid/sulfit · Lupin · Blötdjur. (Laktos hör inte hit — intoleransmarkör, skild från mjölkprotein.)"
 )
-story.append(Paragraph("Nisse — Allergengranskning (checklista) · 12 nya rätter", styles["Title"]))
+story.append(Paragraph("Nisse — Allergengranskning (checklista) · %s" % TITLE, styles["Title"]))
 box = Table([[Paragraph(intro_txt, INTRO)]], colWidths=[525])
 box.setStyle(TableStyle([
     ("BOX", (0, 0), (-1, -1), 0.8, colors.HexColor("#cfe6d8")),
